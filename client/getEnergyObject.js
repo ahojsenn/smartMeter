@@ -29,7 +29,6 @@ function energyObject () {
 		console.log( 'gotData!!!, #datapoints=' , event);
 		this.calculate (this.myData);
 		this.tableSummary(this.myData);
-		
 		plotN (this.myData, this.meterPlotDiv, this.title);
 				
 		this.listenOnWebSocket ();
@@ -63,6 +62,7 @@ function energyObject () {
 				// pop the first array entry and put the new data on the end
 				objref.myData.push(d);
 				objref.myData.shift();
+				objref.tableSummary(objref.myData);				
 				plotN (objref.myData, objref.meterPlotDiv, objref.title);
 	  		});
 		return this;
