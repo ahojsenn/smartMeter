@@ -5,13 +5,12 @@
 */
 
 function energyObject () {
-	var objref=this,
-		gotDataEvent = "gotData";	
+	var objref = this,
+	    gotDataEvent = "gotData";	
 		
 	this.summaryTableDiv = "summaryTableDiv1234";
 	this.meterPlotDiv = "meterPlotDiv1234";
-	$('body').append ('<div id="'+this.summaryTableDiv+'"></div>');
-	$('body').append ('<div id="'+this.meterPlotDiv+'"></div>');
+	$('body').append ('<div id="'+this.summaryTableDiv+'"></div> <div id="'+this.meterPlotDiv+'"></div>');
 
 	this.setDomain = function (URL) { this.domain = URL; return this; };
 	this.setURL = function (URL) { this.URL = URL; return this; };
