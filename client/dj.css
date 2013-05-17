@@ -2,7 +2,7 @@ body {
 	font-family: "Courier New", Courier, monospace;
 /*	background: #373737;*/
 /*	background-color: rgb(00, 65, 67); */
-	background-color: rgb(255, 255, 255); 
+	background-color: rgb(255, 255, 255);
 	padding: 15px;
 /*	color: rgba(238, 156, 00, 1);*/
 	text-align: center;
@@ -12,7 +12,7 @@ table {
 	text-align: left;
 }
 table.center {
-  margin-left:auto; 
+  margin-left:auto;
   margin-right:auto;
 }
 tr:first-child {background: rgba(00, 135,137, 0.25); }
