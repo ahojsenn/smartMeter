@@ -6,7 +6,8 @@
 
 function energyObject(params) {
 	var objref = this,
-	    gotDataEvent = "gotData";
+	    gotDataEvent = "gotData",
+	    $el;
 
 	// Simple constructor
 	if (params && Object.keys && Object.keys(params).length >= 1) {
@@ -17,7 +18,14 @@ function energyObject(params) {
 
 	this.summaryTableDiv = "summaryTableDiv1234";
 	this.meterPlotDiv = "meterPlotDiv1234";
-	$('body').append ('<div id="'+this.summaryTableDiv+'"></div> <div id="'+this.meterPlotDiv+'"></div>');
+
+	// Introduce a wrapper div to match jQuery style
+	this.$el = $el = $([
+		'<div>',
+			'<div id="'+this.summaryTableDiv+'"></div>',
+			'<div id="'+this.meterPlotDiv+'"></div>',
+		'</div>'
+	].join(' '));
 
 	this.setDomain = function (URL) { this.domain = URL; return this; };
 	this.setURL = function (URL) { this.URL = URL; return this; };
@@ -91,13 +99,15 @@ function energyObject(params) {
 	// render some calculation on the data
 	this.tableSummary = function (data) {
 		console.log ("in tableSummary..." + data[0].timestamp );
-		var t1=data[0].timestamp,
-		    t2=data[data.length-1].timestamp,
-			tdiff = t2 - t1;
-		$('#'+this.summaryTableDiv)
-			//.appendTo('body')
-			.html('<table id="summaryTable" class="center"/>');
-		$('#summaryTable').append( $('<tr/>')
+
+		var t1 = data[0].timestamp,
+				t2 = data[data.length-1].timestamp,
+				tdiff = t2 - t1;
+
+		// Let's not work on the DOM
+		$summaryTable = $('<table id="summaryTable" class="center"/>');
+
+		$summaryTable.append( $('<tr/>')
 				.append( $('<td/>').append('selected entries: ') )
 				.append( $('<td/>').append(data.length + ", last at: "+new Date (data[data.length-1].timestamp)) )
 			)
@@ -114,7 +124,12 @@ function energyObject(params) {
 				.append( $('<td/>').append( Math.round( 10*365*(data.length/75) * (86400*1000)/tdiff) /10 ) )
 			);
 
+		$('#'+this.summaryTableDiv, $el).html($summaryTable);
+
 	};
+
+	// call append only once on DOM for better performance
+	$('body').append($el);
 
 	return this;
 }
