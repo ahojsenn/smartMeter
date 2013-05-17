@@ -4,9 +4,16 @@
 	instanciate an Energy Object and calculate consumption
 */
 
-function energyObject () {
+function energyObject(params) {
 	var objref = this,
 	    gotDataEvent = "gotData";
+
+	// Simple constructor
+	if (params && Object.keys && Object.keys(params).length >= 1) {
+		Object.keys(params).forEach(function(param) {
+			objref[param] = params[param];
+		})
+	}
 
 	this.summaryTableDiv = "summaryTableDiv1234";
 	this.meterPlotDiv = "meterPlotDiv1234";

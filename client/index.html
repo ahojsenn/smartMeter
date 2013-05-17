@@ -31,12 +31,12 @@
 	<h1>Energy Meter</h1>
 
 	<script type="text/javascript">
-		var V39energy = new energyObject ()
-			.setTitle ("smart meter of V39")
-			.setDomain (baseURL)
-			.setURL (baseURL+'/smartMeter')
-			.listenOnGotDataEvent ()
- 			.getData(1000)
+		var V39energy = new energyObject({
+			title: "smart meter of V39",
+			domain: baseURL,
+			URL: baseURL + '/smartMeter'
+		}).listenOnGotDataEvent().getData(1000)
 	</script>
 
-</body></html>
+</body>
+</html>
