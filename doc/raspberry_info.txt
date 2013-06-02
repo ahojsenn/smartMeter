@@ -53,13 +53,13 @@ ifconfig
 
 sudo vi /etc/network/interfaces 
 # iface wlan0 inet6 static
-#  address 2001:6f8:900:8f76::1
+#  address 2001:6f8:900:8fc6::1
 #  netmask 64
 
 sudo service networking restart
 
 sudo vi /etc/radvd.conf
-sudo service radvd start
+
 
 # der Inhalt
 interface wlan0
@@ -68,7 +68,7 @@ interface wlan0
   AdvManagedFlag on;
 
   # SIXXS Tunnel Network
-  prefix 2001:6f8:900:8f76::/64
+  prefix 2001:6f8:900:8fc6::/64
   {
   AdvOnLink on;
   AdvAutonomous on;
@@ -76,6 +76,8 @@ interface wlan0
   DeprecatePrefix on;
   };
 };
+
+sudo service radvd start
 
 # IPv6 forwarding einschalten...
 sudo vi /etc/sysctl.conf
@@ -100,6 +102,7 @@ inet6-Adresse: fe80::821f:2ff:fe82:38aa/64 Gültigkeitsbereich:Verbindung
 inet6-Adresse: 2001:6f8:900:8f76::1/64 Gültigkeitsbereich:Global
 
 ULX1-SIXXS/T116770
+
 
 
 
