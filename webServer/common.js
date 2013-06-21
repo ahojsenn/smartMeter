@@ -2,7 +2,7 @@ Common = {
   	DEBUG: true,
 	mode: 'prod',
 	exitEventString: 'close',
-	datafilename : '/home/pi/production/meter_eenergy/data/gotResults.json',
+	datafilename : '/home/pi/production/smartMeter/data/gotResults.json',
 	logdebug: function logdebug (mystring) { if (Common.DEBUG==true) console.log(mystring); }
 };
 

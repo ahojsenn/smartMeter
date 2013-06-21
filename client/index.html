@@ -35,7 +35,14 @@
 			title: "smart meter of V39",
 			domain: baseURL,
 			URL: baseURL + '/smartMeter'
-		}).listenOnGotDataEvent().getData(1000)
+		}).listenOnGotDataEvent().getData(1000);
+		
+	(function reloadMe (){
+		window.setInterval(function() {
+		location.reload();
+	}, 30000);
+	})()
+	
 	</script>
 
 </body>

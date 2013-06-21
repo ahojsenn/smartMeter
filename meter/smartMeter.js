@@ -24,7 +24,7 @@ var gpio = require('rpi-gpio'),
 	gpio_input_pin = 3,
 	polling_intervall = 20,
 	lastValue = "start",
-	logFile = "smartMeter.log",
+	logFile = "data/gotResults.json",
 	lastTimestamp = 0,
 	secondLastTimestamp = 0,
 	LOG_DEBUG = false,
@@ -103,7 +103,7 @@ eventEmitter.on('pinChange', function(message){
 // a function to calculate ower consumption of my power meter...
 //
 function powerConsumption (t1, t2, inputValue) {
-	var myWatt = 0,
+	var myWatt = 1,  // set myWatt to 1 rather than 0, that will allow me to have a log scale later...
 		UmdrehungenProKWh = 75,
 		UmdrehungenProh = 1000 * 60 * 60 / (t1 - t2);
 	
