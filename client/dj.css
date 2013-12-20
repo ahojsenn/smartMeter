@@ -2,7 +2,11 @@ body {
 	font-family: "Courier New", Courier, monospace;
 /*	background: #373737;*/
 /*	background-color: rgb(00, 65, 67); */
+<<<<<<< HEAD
 	background-color: rgb(255, 255, 255); 
+=======
+	background-color: rgb(255, 255, 255);
+>>>>>>> 0a33f59c605aa3eccc90a0d9982c1fae2aa198b2
 	padding: 15px;
 /*	color: rgba(238, 156, 00, 1);*/
 	text-align: center;
@@ -12,7 +16,11 @@ table {
 	text-align: left;
 }
 table.center {
+<<<<<<< HEAD
   margin-left:auto; 
+=======
+  margin-left:auto;
+>>>>>>> 0a33f59c605aa3eccc90a0d9982c1fae2aa198b2
   margin-right:auto;
 }
 tr:first-child {background: rgba(00, 135,137, 0.25); }

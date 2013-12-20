@@ -13,15 +13,30 @@ case "$1" in
 	sudo apachectl stop
 	sudo apachectl start
 
+<<<<<<< HEAD
 	node /Volumes/docdata/johannes.mainusch/docjoe/development/smartMeter/server/djserver_eenergy.js 
+=======
+	$NODEJS /Volumes/docdata/johannes.mainusch/docjoe/development/smartMeter/server/djserver_eenergy.js 
+>>>>>>> 0a33f59c605aa3eccc90a0d9982c1fae2aa198b2
 	exit 0
 	;;
 
 	'-deploySmartMeter' | '-sm' )
 	# the smartMeter
+<<<<<<< HEAD
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER "ps aux | grep smartMeter.js | grep -v grep | awk '{ print \$2}' | xargs -t kill > /dev/null 2>&1 "	
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'cp myMeter.log myMeter.log.last'
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo node production/myMeter/myMeter.js  > /dev/null 2>&1 &'
+=======
+    clear
+	echo "killing any running smartMeters"
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER "ps aux | grep smartMeter.js | grep -v grep | awk '{ print \$2}' | xargs -t kill > /dev/null 2>&1 "	
+	echo "move away any existing smartMeter.log files"
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'if [ -f smartMeter.log ]; then cp smartMeter.log smartMeter.log.last; fi'
+    echo "starting the smartMeter"
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/meter/smartMeter.js  > /dev/null 2>&1 &'
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'ps -ef | grep nodejs'
+>>>>>>> 0a33f59c605aa3eccc90a0d9982c1fae2aa198b2
 	;;
 	
 	'-deploy2pi' | * )
