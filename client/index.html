@@ -16,13 +16,11 @@
 	-->
 
 	<script type="text/javascript">
-		/*var baseURL ="";
-		if (document.URL.indexOF("file:///")) 
-
-*/
-		var baseURL="http://krukas.no-ip.org:42080";
-		alert(document.URL);
-		var baseURL="";
+		// for debugging while using local files I'd like to set the baseURL to my first smartmeter at home
+		// otherwise the baseURL should be an empty string an all further requests relative 
+		// to the original document
+		var baseURL ="";
+     	if (!document.URL.indexOf("file://")) baseURL="http://krukas.no-ip.org:42080";
 	</script>
 
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
