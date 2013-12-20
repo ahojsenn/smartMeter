@@ -16,7 +16,12 @@
 	-->
 
 	<script type="text/javascript">
+		/*var baseURL ="";
+		if (document.URL.indexOF("file:///")) 
+
+*/
 		var baseURL="http://krukas.no-ip.org:42080";
+		alert(document.URL);
 		var baseURL="";
 	</script>
 
@@ -34,8 +39,8 @@
 	<script type="text/javascript">
 		var V39energy = new energyObject({
 			title: "smart meter of V39",
-			domain: baseURL,
-			URL: baseURL + '/smartMeter'
+			webSocketDomain: baseURL,  // for the webSocket, on which new data will be listened on
+			URL: baseURL + '/smartMeter' // for the get data request
 		}).listenOnGotDataEvent().getData(1000);
 		
 	(function reloadMe (){

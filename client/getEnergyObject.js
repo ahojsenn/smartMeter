@@ -27,7 +27,7 @@ function energyObject(params) {
 		'</div>'
 	].join(' '));
 
-	this.setDomain = function (URL) { this.domain = URL; return this; };
+	this.setDomain = function (URL) { this.webSocketDomain = URL; return this; };
 	this.setURL = function (URL) { this.URL = URL; return this; };
 	this.setTitle = function (title) { this.title = title; return this; };
 	this.setMyData = function (d) { this.myData = d; return this; };
@@ -68,8 +68,8 @@ function energyObject(params) {
 	};
 
 	this.listenOnWebSocket = function () {
-		console.log('in listenOnWebSocket', this.domain);
-		var socket = io.connect(this.domain);
+		console.log('in listenOnWebSocket', this.webSocketDomain);
+		var socket = io.connect(this.webSocketDomain);
 	  		socket.on('got new data', function (d) {
 	    		console.log('WebSocket speaks:',  d);
 	    		//socket.emit('my other event', { my: 'data' });
