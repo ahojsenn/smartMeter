@@ -2,11 +2,7 @@
 	plot N Lines of data on the same graph
 	this is a more complete version of plotDJ
 	the data is expected as N-Dimensional array with
-<<<<<<< HEAD
-	data.xLabels: 
-=======
 	data.xLabels:
->>>>>>> 0a33f59c605aa3eccc90a0d9982c1fae2aa198b2
 	data.x
 	data.y1
 	data.y* ...
@@ -15,28 +11,16 @@
 
 var plotN = function (data, targetdiv, title) {
 	console.log ('in plotN (data, '+targetdiv+', '+title+')');
-<<<<<<< HEAD
-	var 
-=======
 	var
->>>>>>> 0a33f59c605aa3eccc90a0d9982c1fae2aa198b2
 		title = typeof(title)=="undefined" ? targetdiv : title,
 		fminhou = pv.Format.date("%H:%M:%S"),
 		y_value = function (d) {return d.Watt = (d.Watt == 0) ? 0.01 : d.Watt; },
 		date = new Date();
-<<<<<<< HEAD
-		
-		/** the data looks like this...
-		{"term":"v39.powerConsumption.3", 	"Watt":204.72226013375186, "timestamp":1362413445121}
-		*/
-	
-=======
 
 		/** the data looks like this...
 		{"term":"v39.powerConsumption.3", 	"Watt":204.72226013375186, "timestamp":1362413445121}
 		*/
 
->>>>>>> 0a33f59c605aa3eccc90a0d9982c1fae2aa198b2
 	// put the data into a more hierachical structure grouped by 'term'
 	// this way I could put more than just on type of data - distinguished by term - into the plot
 	// details are here: http://mbostock.github.com/protovis/jsdoc/symbols/pv.Nest.html
@@ -44,11 +28,7 @@ var plotN = function (data, targetdiv, title) {
 	var nesteddata = pv.nest(data)
 	    .key(function(d) {return d.term;})
 	    .entries();
-<<<<<<< HEAD
-								
-=======
 
->>>>>>> 0a33f59c605aa3eccc90a0d9982c1fae2aa198b2
 	/* Sizing and scales. */
 	var w = window.innerWidth*0.85,
 	    h1 = 300,
@@ -60,16 +40,6 @@ var plotN = function (data, targetdiv, title) {
 		y = pv.Scale.log(1, pv.max(data, function(d) {return d.Watt+0.01}) ).range(0, h2),
 		ycolor = pv.Scale.linear(0, pv.max(data, y_value ) ).range("#1f77b4", "#ff7f0e");
 		ii = new Array;
-<<<<<<< HEAD
-		
-	// a general label to inherit from
-	var label = new pv.Label()
-	    .font("bold 14px sans-serif");
-	
-	/* now loop through the number of nested data sets and set ii[setnr] to -1 */
-	$.each(nesteddata, function (key, val) { ii[key] =  -1});
-	
-=======
 
 	// a general label to inherit from
 	var label = new pv.Label()
@@ -78,16 +48,11 @@ var plotN = function (data, targetdiv, title) {
 	/* now loop through the number of nested data sets and set ii[setnr] to -1 */
 	$.each(nesteddata, function (key, val) { ii[key] =  -1});
 
->>>>>>> 0a33f59c605aa3eccc90a0d9982c1fae2aa198b2
 	/* Interaction state. Focus scales will have domain set on-render. */
 	var i = {dx:100, x: w-100},
 	    fx = pv.Scale.linear().range(0, w),
 	    fy = pv.Scale.log().range(0, h1);
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 0a33f59c605aa3eccc90a0d9982c1fae2aa198b2
 	/* The root panel. */
 	var vis = new pv.Panel()
 	    .width(w)
@@ -108,26 +73,16 @@ var plotN = function (data, targetdiv, title) {
 	    .bottom(h)
 	    .textAlign("center");
 
-<<<<<<< HEAD
-   	/* Focus panel (zoomed in). */				
-=======
    	/* Focus panel (zoomed in). */
->>>>>>> 0a33f59c605aa3eccc90a0d9982c1fae2aa198b2
 	var focus = vis.add(pv.Panel)
 	    .top(0)
 		.fillStyle("rgba(200, 200, 240, .4)")
 		.strokeStyle("#ccc")
 	    .height(h1)
 		.def("init", function() {
-<<<<<<< HEAD
-			/** 
-			  * this function will initialize the x and y scale of the focus panel
-			  * first d1 and d2 are filled with the corresponding 
-=======
 			/**
 			  * this function will initialize the x and y scale of the focus panel
 			  * first d1 and d2 are filled with the corresponding
->>>>>>> 0a33f59c605aa3eccc90a0d9982c1fae2aa198b2
 			  * x-values of the pixel range of the focus area of the context panel
 			  */
 			var d1 = x.invert(i.x),
@@ -137,29 +92,17 @@ var plotN = function (data, targetdiv, title) {
 				var dd = data.values.slice(
 					Math.max(0, pv.search.index(data.values, d1, function(d) {return new Date(d.timestamp)} ) - 1),
 					pv.search.index(data.values, d2, function(d) {return new Date(d.timestamp)} ) + 1);
-<<<<<<< HEAD
-		
-			    maxy = maxy > pv.max(dd, y_value ) ? maxy : pv.max(dd, y_value );
-
-			})
-		
-=======
 
 			    maxy = maxy > pv.max(dd, y_value ) ? maxy : pv.max(dd, y_value );
 
 			})
 
->>>>>>> 0a33f59c605aa3eccc90a0d9982c1fae2aa198b2
 			fx.domain(d1, d2);
 			// now get the y.domain. y.domain returns the lower and upper boundary of the input domain.
 		    fy.domain( [10, maxy*1.1] );
 			return nesteddata;
 	});
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 0a33f59c605aa3eccc90a0d9982c1fae2aa198b2
 	//
 	focus.add(pv.Rule) // the time line in the focus panel
 		.visible(function () { return this.parent.index==0 && ii[this.parent.index] >= 0})
@@ -172,15 +115,9 @@ var plotN = function (data, targetdiv, title) {
 		.top(40)
 		.textAlign("right")
 		.text(function(d) {return fminhou(fx.invert(vis.mouse().x) ); } );
-<<<<<<< HEAD
-	
-
-	/* X-axis ticks. */	
-=======
 
 
 	/* X-axis ticks. */
->>>>>>> 0a33f59c605aa3eccc90a0d9982c1fae2aa198b2
     focus.add(pv.Rule)
 		.data(function () {return fx.ticks()} )
 		.strokeStyle("#ccc")
@@ -209,22 +146,14 @@ var plotN = function (data, targetdiv, title) {
 		.left(function(d)   { if (d === undefined) alert("undefined 151" ); return fx(new Date(d.timestamp) ) } )
 	    .bottom(function(d) { return fy(parseFloat ( d.Watt+0.01) )  })
 	    .lineWidth(2);
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 0a33f59c605aa3eccc90a0d9982c1fae2aa198b2
 	/* The mouseover dots and label. */
    	line.add(pv.Dot)
        	.visible(function _jm01() {return ii[this.parent.index] >= 0} )
 		.data( function _jm02(d) { return [d.values[ii[this.parent.index]]] } )
 		.fillStyle(function _jm03() {return line.strokeStyle() } )
        	.strokeStyle("#000")
-<<<<<<< HEAD
-       	.size(20) 
-=======
        	.size(20)
->>>>>>> 0a33f59c605aa3eccc90a0d9982c1fae2aa198b2
        	.lineWidth(1)
     .add(pv.Dot)
        	.left(10)
@@ -232,11 +161,7 @@ var plotN = function (data, targetdiv, title) {
     .anchor("right").add(pv.Label)
 		.font("14px 'Courier New' monospace")
        	.text(function(d) {
-<<<<<<< HEAD
-				return d.term+" \t"+Math.round(d.Watt*10)/10 
-=======
 				return d.term+" \t"+Math.round(d.Watt*10)/10
->>>>>>> 0a33f59c605aa3eccc90a0d9982c1fae2aa198b2
 				} );
 
 	/* An invisible bar to capture events (without flickering). */
@@ -256,22 +181,14 @@ var plotN = function (data, targetdiv, title) {
 		    	ii[lnr]  = ii[lnr]  < 0 ? (-ii[lnr]  - 2) : ii[lnr] ;
 			}
 			return focus;
-<<<<<<< HEAD
-	      });	
-=======
 	      });
->>>>>>> 0a33f59c605aa3eccc90a0d9982c1fae2aa198b2
 
 
 	/* Context panel (zoomed out). *********************/
 	var context = vis.add(pv.Panel)
 	    .bottom(0)
 	    .height(h2);
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 0a33f59c605aa3eccc90a0d9982c1fae2aa198b2
 	/* X-axis ticks. */
 	context.add(pv.Rule)
 	    .data(x.ticks())
@@ -284,11 +201,7 @@ var plotN = function (data, targetdiv, title) {
 	/* Y-axis ticks. */
 	context.add(pv.Rule)
 	    .bottom(0);
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 0a33f59c605aa3eccc90a0d9982c1fae2aa198b2
 	/* the hierachy by term */
 	var panel = context.add(pv.Panel)
 		.data(nesteddata);

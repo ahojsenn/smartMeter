@@ -1,7 +1,7 @@
 # deployment of $1 to pi@192.168.2.42:production/. and remote execution...
 #
 
-TARGETSERVER=krukas.dyndns.org
+TARGETSERVER=krukas.no-ip.org
 # TARGETSERVER=192.168.2.42
 TARGET_SSH_PORT=42022
 TARGET_HTTP_PORT=42080
