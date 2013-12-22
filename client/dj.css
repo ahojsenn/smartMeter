@@ -21,3 +21,22 @@ tr:nth-child(2n+3) {background: rgba(00, 95,97, 0.15); }
 .meterRed   {background: rgba(220, 146, 140, 1); }
 .meterSiver {background: rgba(250, 250, 250, 1); }
 .meterBlack {background: rgba(149, 149, 149, 1); }
+
+@-webkit-keyframes demo {
+    0% 		{ background-color: Red; opacity:1; }
+    25% 	{ background-color: Red; }
+    50% 	{ background-color: Red; }
+    75% 	{ background-color: Red; }
+    100% 	{ background-color: #FFFFFF; }
+}
+    
+.redFlash{
+  -webkit-animation-name: demo;
+    -webkit-animation-duration: 1000ms;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: linear;
+  -moz-animation-name: demo;
+    -moz-animation-duration: 1000ms;
+    -moz-animation-iteration-count: 1;
+    -moz-animation-timing-function: linear;
+}

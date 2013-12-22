@@ -72,6 +72,7 @@ function energyObject(params) {
 		var socket = io.connect(this.webSocketDomain);
 	  		socket.on('got new data', function (d) {
 	    		console.log('WebSocket speaks:',  d);
+				$('h1').addClass('redFlash');
 	    		//socket.emit('my other event', { my: 'data' });
 				// pop the first array entry and put the new data on the end
 				objref.myData.push(d);
