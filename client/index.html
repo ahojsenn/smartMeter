@@ -49,13 +49,6 @@
 			webSocketDomain: baseURL,  // for the webSocket, on which new data will be listened on
 			URL: baseURL + '/smartMeter' // for the get data request
 		}).listenOnGotDataEvent().getData(2000);
-		
-	(function reloadMe (){
-		window.setInterval(function() {
-		location.reload();
-	}, 30000);
-	})()
-	
 	</script>
 
 </body>

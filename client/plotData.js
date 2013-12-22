@@ -15,7 +15,8 @@ var plotN = function (data, targetdiv, title) {
 		title = typeof(title)=="undefined" ? targetdiv : title,
 		fminhou = pv.Format.date("%H:%M:%S"),
 		y_value = function (d) {return d.Watt = (d.Watt == 0) ? 0.01 : d.Watt; },
-		date = new Date();
+		date = new Date()
+		mousedown = 0;
 
 		/** the data looks like this...
 		{"term":"v39.powerConsumption.3", 	"Watt":204.72226013375186, "timestamp":1362413445121}
@@ -28,6 +29,8 @@ var plotN = function (data, targetdiv, title) {
 	var nesteddata = pv.nest(data)
 	    .key(function(d) {return d.term;})
 	    .entries();
+
+
 
 	/* Sizing and scales. */
 	var w = window.innerWidth*0.85,
@@ -230,7 +233,7 @@ var plotN = function (data, targetdiv, title) {
 	/* */
 
 
-	vis.render();
+ 	vis.render();
 	return this;
 }
 

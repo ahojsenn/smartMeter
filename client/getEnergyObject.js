@@ -7,7 +7,19 @@
 function energyObject(params) {
 	var objref = this,
 	    gotDataEvent = "gotData",
-	    $el;
+	    $el,
+	    mouseDown = 0;
+
+	// check if mouse is down to lock refresh
+	document.body.onmousedown = function() { 
+		++mouseDown;
+		$('h1').css("background-color", "grey");
+	}
+	document.body.onmouseup = function() {
+  		--mouseDown;
+		$('h1').css("background-color", "white");
+	}
+
 
 	// Simple constructor
 	if (params && Object.keys && Object.keys(params).length >= 1) {
@@ -78,7 +90,7 @@ function energyObject(params) {
 				objref.myData.push(d);
 				objref.myData.shift();
 				objref.tableSummary(objref.myData);
-				plotN (objref.myData, objref.meterPlotDiv, objref.title);
+				if(!mouseDown) plotN (objref.myData, objref.meterPlotDiv, objref.title);
 	  		});
 		return this;
 	};
