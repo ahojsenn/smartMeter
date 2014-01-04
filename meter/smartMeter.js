@@ -27,8 +27,8 @@ var gpio = require('rpi-gpio'),
 	logFile = "data/gotResults.json",
 	lastTimestamp = 0,
 	secondLastTimestamp = 0,
-	LOG_DEBUG = false,
-	LOG_WARN = false;
+	LOG_DEBUG = true,
+	LOG_WARN = true;
 
 //
 // some startup logging on the console...
@@ -43,6 +43,14 @@ gpio.on('export', function(channel) {
     console.log('Channel set: '  + channel);
 });
 
+//
+// just listen on gpio changes...
+// 20131229: I think this does not work in input direction, lets just output a message on change
+//
+gpio.on('change', function(channel) {
+
+    console.log('==> got change event on Channel ' + channel + ' value is now ' + value);
+});
 
 //
 // GPIO setup
