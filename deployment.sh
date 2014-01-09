@@ -1,10 +1,21 @@
 # deployment of $1 to pi@192.168.2.42:production/. and remote execution...
 #
 
-TARGETSERVER=krukas.no-ip.org
-# TARGETSERVER=192.168.2.42
-TARGET_SSH_PORT=42022
 TARGET_HTTP_PORT=42080
+
+case "$#" in
+	0 )
+    	TARGETSERVER=krukas.no-ip.org
+		TARGET_SSH_PORT=42022
+	;;
+	2 )
+	    TARGETSERVER=$1
+		TARGET_SSH_PORT=$2
+	;;
+	*) 
+	echo "Usage: ./deployment.sh TARGETSERVER TARGET_SSH_PORT"
+	exit 1;
+esac
 
 case "$1" in
 	'-devServer' )
@@ -21,12 +32,11 @@ case "$1" in
 	# the smartMeter
     clear
 	echo "killing any running smartMeters"
-	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER "ps aux | grep smartMeter.js | grep -v grep | awk '{ print \$2}' | xargs -t kill > /dev/null 2>&1 "	
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/meter/rcdSmartMeter stop'
 	echo "move away any existing smartMeter.log files"
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'if [ -f smartMeter.log ]; then cp smartMeter.log smartMeter.log.last; fi'
     echo "starting the smartMeter"
-	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/meter/smartMeter.js  > /dev/null 2>&1 &'
-	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'ps -ef | grep nodejs'
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/meter/rcdSmartMeter start'
 	;;
 	
 	'-deploy2pi' | * )
@@ -41,16 +51,24 @@ case "$1" in
 	# link the data file
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'ln -sf ~/myMeter.log production/smartMeter/data/gotResults.json';	
 	
+	# the smartMeter
+	echo "killing any running smartMeters"
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/meter/rcdSmartMeter stop'
+	echo "move away any existing smartMeter.log files"
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'if [ -f smartMeter.log ]; then cp smartMeter.log smartMeter.log.last; fi'
+    echo "starting the smartMeter"
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/meter/rcdSmartMeter start'
+
 	# the webServer
 	# kill any running server	
 	echo "killing the currently running server..."
-	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER "ps aux | grep djserver_eenergy.js | grep -v grep | awk '{ print \$2}' | xargs -t kill > /dev/null 2>&1 "	
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'production/smartMeter/webServer/rcdSmartMeterWebServer stop'
 	# start the server
 	echo "set the server file to executable..."
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'chmod +x production/smartMeter/webServer/djserver_eenergy.js'
 	###ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'cd production/smartMeter; ./server/djserver_eenergy.js serverport=42080 &'
 	echo "start the server..."
-	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER '(cd production/smartMeter; ./webServer/djserver_eenergy.js serverport=42080 ) > djserver_eenergy.log 2>&1 &'
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'production/smartMeter/webServer/rcdSmartMeterWebServer start'
 
 	# test the webServer
 	echo "==============================="

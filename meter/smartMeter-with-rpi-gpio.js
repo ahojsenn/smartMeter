@@ -17,13 +17,11 @@
 
 
 
-var fs = require('fs'),
-	gpio_input_pin = 3,
-	LOG_DEBUG = true,
-	gpio_path = '/sys/class/gpio/',
+var gpio = require('rpi-gpio'),
 	timers = require('timers'),
 	events = require('events'),
 	eventEmitter = new events.EventEmitter(),
+	gpio_input_pin = 3,
 	polling_intervall = 20,
 	lastValue = "start",
 	logFile = "data/gotResults.json",
@@ -36,20 +34,28 @@ var fs = require('fs'),
 // some startup logging on the console...
 //
 console.log('Startup the meter on pin ' + gpio_input_pin);
-
 //
 // GPIO setup
 //
-console.log ('setting up gpio on gpio_input_pin ' +gpio_input_pin + ' direction in' );
+console.log ('setting up gpio on gpio_input_pin ' +gpio_input_pin + ' direction gpio.DIR_IN ' );
+gpio.setup(gpio_input_pin, gpio.DIR_IN, readInput );
 
-fs.writeFileSync(gpio_path+'export', gpio_input_pin);
-console.log ('written \"'+gpio_input_pin+'\" to '+gpio_path+'export');
 
-fs.writeFileSync(gpio_path+'gpio'+gpio_input_pin+'/direction', 'in');
-console.log ('written \"in\" to '+gpio_path+'gpio'+gpio_input_pin+'/direction');
+//
+// just listen on gpio exports...
+//
+gpio.on('export', function(channel) {
+    console.log('Channel set: '  + channel);
+});
 
-readInput();
+//
+// just listen on gpio changes...
+// 20131229: I think this does not work in input direction, lets just output a message on change
+//
+gpio.on('change', function(channel) {
 
+    console.log('==> got change event on Channel ' + channel + ' value is now ' + value);
+});
 
 
 
@@ -59,16 +65,14 @@ readInput();
 //
 function readInput() {
 
-    //gpio.read(gpio_input_pin, function(err, inputValue) {
-	fs.readFile (gpio_path+'gpio'+gpio_input_pin+'/value', function(err, inputValue) {
+    gpio.read(gpio_input_pin, function(err, inputValue) {
 		if(err) {
 	        console.log(err);
 	    } else {
-			if (lastValue+0 != inputValue+0) {
-	        	if (LOG_DEBUG) console.log('gpio_input_pin was '+lastValue+' and changed to: ' + inputValue +': now=' + new Date().getTime());
-				lastValue = inputValue;
+			if (lastValue != inputValue) {
 				var timestamp = new Date().getTime(),
 					message = "";
+	        	if (LOG_DEBUG) console.log('gpio_input_pin changed to: ' + inputValue +': now=' + new Date().getTime());
 				message += '{';
 				message += '"term":"v39.powerConsumption.'+ gpio_input_pin+'"'
 				message += ', "Watt":'+powerConsumption (timestamp, secondLastTimestamp, inputValue);
@@ -81,6 +85,7 @@ function readInput() {
 				lastTimestamp = timestamp;
 			}
 		}
+		lastValue = inputValue;
 	});
 		
 	timers.setTimeout (readInput, polling_intervall);

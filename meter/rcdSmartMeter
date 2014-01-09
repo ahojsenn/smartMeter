@@ -28,7 +28,7 @@ fi
 ;;
  
 'stop')
-echo "Stoping smartMeterWebServer ..."
+echo "Stoping smartMeter ..."
 for ps in `ps -ef | grep $SERVER | grep -v grep | awk '{print $2}'`
 do
 	echo 'found $SERVER in process '$ps'. Now kill it...'
