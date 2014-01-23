@@ -14,6 +14,7 @@ echo "setting pin #"$1" to input"
 
 # Set up GPIO $1 and set to input
 # mkdir -p /sys/class/gpio/gpio$1
+echo $1 > /sys/class/gpio/unexport
 echo $1 > /sys/class/gpio/export
 echo "in" > /sys/class/gpio/gpio$1/direction
 

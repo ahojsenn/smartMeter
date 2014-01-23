@@ -11,96 +11,165 @@
 	The signal input on the raspberry is GPIO PIN gpio_input_pin, the polling intervall is defined by 
 	polling_intervall.
 	
-	The resuting timestamps are logges in "logfile"
+	The resuting timestamps are logges in the logfile...
 
 */
+var GLOBAL = {
+	debug: true,
+	daisyChainNumber: 0,
+	log: function (data) {if (this.debug) console.log(data)},
+}	
 
-
-
-var fs = require('fs'),
-	gpio_input_pin = 3,
-	LOG_DEBUG = true,
-	gpio_path = '/sys/class/gpio/',
-	timers = require('timers'),
 	events = require('events'),
-	eventEmitter = new events.EventEmitter(),
-	polling_intervall = 20,
-	lastValue = "start",
-	logFile = "data/gotResults.json",
-	lastTimestamp = 0,
-	secondLastTimestamp = 0,
-	LOG_DEBUG = true,
-	LOG_WARN = true;
+	eventEmitter = new events.EventEmitter()
+	;
 
-//
-// some startup logging on the console...
-//
-console.log('Startup the meter on pin ' + gpio_input_pin);
+var smr = {
+	timers: require('timers'),
+	gpio_input_pin: 3,
+	lastValue: "start",
+	lastTimestamp: 0,
+	secondLastTimestamp: 0,
+	
+	init: smr_Init,
+	setupGPIO: smr_setupGPIO,
+	startReader: smr_startReader,
+	writeLog: smr_writeLog,
+	powerConsumption: powerConsumption
+}
 
-//
-// GPIO setup
-//
-console.log ('setting up gpio on gpio_input_pin ' +gpio_input_pin + ' direction in' );
+/*
+ * initialize function for the smr 
+ */
+function smr_Init (params) {
+	var objref = this,
+		fs =  require('fs');
+		
+	// Simple constructor, links all parameters in params object to >>this<<
+	if (params && Object.keys && Object.keys(params).length >= 1) {
+		GLOBAL.log ("initializing this smr with params");
+		Object.keys(params).forEach( function(param) {
+			objref[param] = params[param];
+			GLOBAL.log ("setting this."+param+"="+ params[param]);
+		})
+	}
 
-fs.writeFileSync(gpio_path+'export', gpio_input_pin);
-console.log ('written \"'+gpio_input_pin+'\" to '+gpio_path+'export');
+	// create logPath and logFile if it does not exist
+	if (process.platform == 'darwin') this.logPath = "/tmp/"+this.logPath;
+	if (!fs.existsSync(this.logPath)) {
+		fs.mkdirSync(this.logPath);
+	}
+	if (!fs.existsSync(this.logPath + this.logFile)) {
+		fs.openSync(this.logPath+this.logFile, 'a');
+	}
+	return this; 
+}
 
-fs.writeFileSync(gpio_path+'gpio'+gpio_input_pin+'/direction', 'in');
-console.log ('written \"in\" to '+gpio_path+'gpio'+gpio_input_pin+'/direction');
-
-readInput();
 
 
+/*
+ * GPIO setup function for the smr
+ */
+function smr_setupGPIO (emitEventWhenFinished) {
+	var exec = require('child_process').exec,
+		commands = new Array(),
+		cmdNr = 0;
+
+	// create gpio device and moch it on non raspi hardware //
+	if (process.platform == 'darwin') {
+		this.gpio_path="/tmp/gpio/"
+		commands = [
+			"clear",
+			"rm -rf " + this.gpio_path,
+			"mkdir -p " + this.gpio_path+"gpio"+this.gpio_input_pin,
+			"ls -al " + this.gpio_path+"gpio"+this.gpio_input_pin,
+			"touch " + this.gpio_path+"gpio"+this.gpio_input_pin+"/direction",
+			"ls -al " + this.gpio_path+"gpio"+this.gpio_input_pin,
+			"echo in > " + this.gpio_path+"gpio"+this.gpio_input_pin+"/direction",
+			"cat " + this.gpio_path+"gpio"+this.gpio_input_pin+"/direction",
+			"echo 0 > " + this.gpio_path+"gpio"+this.gpio_input_pin+"/value",
+			"cat " + this.gpio_path+"gpio"+this.gpio_input_pin+"/value",
+			"date; echo done"
+			];			
+	}
+	else
+		commands = [
+			"touch " + this.gpio_path+"gpio"+this.gpio_input_pin+"/direction",
+			"echo in > " + this.gpio_path+"gpio"+this.gpio_input_pin+"/direction",
+			"date; echo done"
+			];
+
+	// daisy chaining the commands to set up the gpio
+	( function execCmdInADaisyChain (commands, cmdNr) {
+		if (commands.length > ++cmdNr) {
+			exec ( commands[cmdNr], function (error, stdout, stderr) { 
+				GLOBAL.log ("Step " +cmdNr+": executing: " + commands[cmdNr]);
+				GLOBAL.log('stdout: ' + stdout);
+    			GLOBAL.log('stderr: ' + stderr);
+    			if (error !== null) {
+      				console.log('exec error: ' + error);
+      			}
+				execCmdInADaisyChain (commands, cmdNr);
+			});
+		}
+		else {
+			/* start the smr */
+			GLOBAL.log('I think setup is done, emitting '+emitEventWhenFinished+' event...');
+			eventEmitter.emit(emitEventWhenFinished);
+		}
+	})(commands, cmdNr);
+
+	return this; 
+}
 
 
 //
 // reads the inpup of the GPIO by polling
 // since I didn't get the onchange to run...
 //
-function readInput() {
+function smr_startReader() {
+	var fs = require('fs');
 
-    //gpio.read(gpio_input_pin, function(err, inputValue) {
-	fs.readFile (gpio_path+'gpio'+gpio_input_pin+'/value', function(err, inputValue) {
+	fs.readFile (smr.gpio_path+'gpio'+smr.gpio_input_pin+'/value', function(err, inputValue) {
 		if(err) {
 	        console.log(err);
 	    } else {
-			if (lastValue+0 != inputValue+0) {
-	        	if (LOG_DEBUG) console.log('gpio_input_pin was '+lastValue+' and changed to: ' + inputValue +': now=' + new Date().getTime());
-				lastValue = inputValue;
+			if (smr.lastValue+0 != inputValue+0) {
+	        	GLOBAL.log('gpio_input_pin was '+smr.lastValue+' and changed to: ' + inputValue +': now=' + new Date().getTime());
+				smr.lastValue = inputValue;
 				var timestamp = new Date().getTime(),
 					message = "";
 				message += '{';
-				message += '"term":"v39.powerConsumption.'+ gpio_input_pin+'"'
-				message += ', "Watt":'+powerConsumption (timestamp, secondLastTimestamp, inputValue);
+				message += '"term":"v39.powerConsumption.'+ smr.gpio_input_pin+'"'
+				message += ', "Watt":'+powerConsumption (timestamp, smr.secondLastTimestamp, inputValue);
 				message += ', "timestamp":' + timestamp;
 				message += '}';
 			
 				eventEmitter.emit('pinChange', message);
 
-				secondLastTimestamp = lastTimestamp;
-				lastTimestamp = timestamp;
+				smr.secondLastTimestamp = smr.lastTimestamp;
+				smr.lastTimestamp = timestamp;
 			}
 		}
 	});
 		
-	timers.setTimeout (readInput, polling_intervall);
+	smr.timers.setTimeout (smr_startReader, smr.polling_intervall);
+	return this;
 }
 
-//
-// register an event 'pinChange'
-//
-eventEmitter.on('pinChange', function(message){
+
+function smr_writeLog (message) {
 	var	fs = require('fs');
     
 	//Now make sure, the values are logged somewhere, namely in logFile...
-	fs.appendFile (logFile,  message +'\n', function(err) {
+	fs.appendFile (smr.logPath+smr.logFile,  message +'\n', function(err) {
 	    if(err) {
 	        console.log(err);
 	    } else {
-	        if (LOG_DEBUG) console.log(logFile + " was appended: " + message);
+	        GLOBAL.log(smr.logPath+smr.logFile + " was appended: " + message);
 		}
 	});
-});
+}
 
 
 //
@@ -113,11 +182,39 @@ function powerConsumption (t1, t2, inputValue) {
 	
 	if (t2 > 0 )
 		myWatt = 1000* UmdrehungenProh / UmdrehungenProKWh ;
-	if (LOG_WARN) 
-		console.log("in powerConsumption (" 
-			+ (t1-t2)/1000 +"s passed, "+ inputValue + "), "
-			+"UmdrehungenProh="+Math.round(1000*UmdrehungenProh)/1000 +", "
-			+"Watt="+myWatt);
+	
+	GLOBAL.log("in powerConsumption (" 
+		+ (t1-t2)/1000 +"s passed, "+ inputValue + "), "
+		+"UmdrehungenProh="+Math.round(1000*UmdrehungenProh)/1000 +", "
+		+"Watt="+myWatt);
 	return myWatt;
 }
+module.exports = smr;
+
+
+
+/*
+ * The main bit...
+ */
+GLOBAL.log("\u001b[2J\u001b[0;0H"); /* clear sonsole log screen */ 
+
+smr
+	.init ({
+		gpio_path: '/sys/class/gpio/',
+		gpio_input_pin: 3,
+		polling_intervall: 20,
+		logPath: "data/",
+		logFile: "gotResults.json"
+	})
+	.setupGPIO ('readyForMeasurement');
+
+
+//
+// register an event 'pinChange' and an event on initDone
+//
+eventEmitter.on('readyForMeasurement', smr.startReader);
+eventEmitter.on('pinChange', smr.writeLog);
+
+
+
 

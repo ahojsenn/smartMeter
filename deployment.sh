@@ -54,6 +54,9 @@ case "$1" in
 	# the smartMeter
 	echo "killing any running smartMeters"
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/meter/rcdSmartMeter stop'
+	echo "testing with mocha and stopping on error"
+	set -e
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'cd production/smartMeter/meter; mocha'	
 	echo "move away any existing smartMeter.log files"
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'if [ -f smartMeter.log ]; then cp smartMeter.log smartMeter.log.last; fi'
     echo "starting the smartMeter"
