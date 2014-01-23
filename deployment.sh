@@ -56,7 +56,7 @@ case "$1" in
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/meter/rcdSmartMeter stop'
 	echo "testing with mocha and stopping on error"
 	set -e
-	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'cd production/smartMeter/meter; mocha'	
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'cd production/smartMeter/meter; sudo mocha'	
 	echo "move away any existing smartMeter.log files"
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'if [ -f smartMeter.log ]; then cp smartMeter.log smartMeter.log.last; fi'
     echo "starting the smartMeter"
@@ -65,13 +65,13 @@ case "$1" in
 	# the webServer
 	# kill any running server	
 	echo "killing the currently running server..."
-	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'production/smartMeter/webServer/rcdSmartMeterWebServer stop'
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/webServer/rcdSmartMeterWebServer stop'
 	# start the server
 	echo "set the server file to executable..."
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'chmod +x production/smartMeter/webServer/djserver_eenergy.js'
 	###ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'cd production/smartMeter; ./server/djserver_eenergy.js serverport=42080 &'
 	echo "start the server..."
-	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'production/smartMeter/webServer/rcdSmartMeterWebServer start'
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/webServer/rcdSmartMeterWebServer start'
 
 	# test the webServer
 	echo "==============================="

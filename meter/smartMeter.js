@@ -94,7 +94,8 @@ function smr_setupGPIO (emitEventWhenFinished) {
 	}
 	else
 		commands = [
-			"touch " + this.gpio_path+"gpio"+this.gpio_input_pin+"/direction",
+			"echo "+this.gpio_input_pin+" > /sys/class/gpio/unexport",
+			"echo "+this.gpio_input_pin+" > /sys/class/gpio/export",
 			"echo in > " + this.gpio_path+"gpio"+this.gpio_input_pin+"/direction",
 			"date; echo done"
 			];
