@@ -1,11 +1,14 @@
 var assert = require("assert"),
 	smr = require ("../smartMeter.js"),
-	fs = require("fs");
+	fs = require("fs"),
+	events = require('events'),
+	eventEmitter = new events.EventEmitter()
+	;
 	
 /* init the smartMeter */ 
 before(function(done){
 	// wait for the smr initialization to be done...
-	eventEmitter.on('readyForMeasurement', function() {
+	smr.eventEmitter.on('readyForMeasurement', function() {
 		done();
 	});
 })
@@ -13,23 +16,23 @@ before(function(done){
 describe ('smartMeter', function () {	
 	
 	/* init */
-	it ('should  init() without error', function (done){
-		assert.equal (smr.gpio_input_pin, 3);
-		done();
+	it ('should  init() without error', function (){
+		assert(smr.gpio_input_pin>0);
 	})
 
 	/* logfile is there */
-	it ('should create logfile ', function (done) {
+	it ('should create logfile ', function () {
 		assert (fs.existsSync(smr.logPath + smr.logFile));
-		done();
 	})
 
 	/* GPIO is set up */
-	it ('should create gpio device at **/direction', function (done) {
+	it ('should create gpio device at **/direction', function () {
 		assert (
 			fs.existsSync(smr.gpio_path+"gpio"+smr.gpio_input_pin+"/direction")
 		);
-		done();
+		assert.equal (
+			fs.readFileSync(smr.gpio_path+"gpio"+smr.gpio_input_pin+"/direction")
+			, "in\n");
 	})
 
 	/* it should calculate correct Watts */
