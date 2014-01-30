@@ -1,0 +1,10 @@
+    - name: get hostinfo of a server
+      action: shell /bin/hostname
+      register: myHostname
+
+    - name: get mac adress of server
+      action: shell /sbin/ifconfig eth0 | /bin/grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'
+      register: myMacAddress
+      
+    - name: lookup {{ myMacAddress.stdout }}
+      action: debug msg="{{ myMacAddress.stdout }} is the mac address of {{ myHostname.stdout }}"

@@ -1,0 +1,6 @@
+    - name: ensure .ssh directory exists
+      file: path=/home/pi/.ssh state=directory
+
+    - name: copy id_rsa.pub(s) to known_hosts
+      copy: src=public_keys dest=/home/pi/.ssh/authorized_keys mode=0644
+

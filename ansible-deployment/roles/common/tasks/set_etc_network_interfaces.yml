@@ -1,0 +1,8 @@
+    - action: debug msg="network interfaces will be installed with ssid={{ dj_ssid }}"
+
+    - name: copy /etc/network/interfaces on $dj_group_name 
+      template: src=interfaces dest=/etc/network/interfaces mode=0644
+ #     copy: src=roles/common/templates/interfaces dest=/etc#/network/interfaces
+
+ #   - name: restart the networking
+ #     shell: ifdown wlan0 && ifup wlan0

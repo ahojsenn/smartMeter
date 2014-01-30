@@ -1,0 +1,3 @@
+    - name: expand the root fs like in raspi-config
+      script: roles/common/files/expand_rootfs.sh
+            

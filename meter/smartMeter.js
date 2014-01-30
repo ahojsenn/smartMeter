@@ -14,14 +14,14 @@
 	The resuting timestamps are logges in the logfile...
 
 */
-var events = require('events');
+//var events = require('events');
 
-var smr = {
+smr = {
 	timers: require('timers'),
 	lastValue: "start",
 	lastTimestamp: 0,
 	secondLastTimestamp: 0,
-	eventEmitter: new events.EventEmitter(),
+	eventEmitter: new (require('events').EventEmitter),
 	
 	init: smr_Init,
 	setupGPIO: smr_setupGPIO,
@@ -31,12 +31,14 @@ var smr = {
 	log: function (data) {if (this.debug) console.log(data)}
 }
 
+module.exports = smr;
+
 /*
  * initialize function for the smr 
  */
 function smr_Init () {
 	var objref = this,
-		params = require ('./smr.json'),
+		params = require ('./smartMeter.json'),
 		fs =  require('fs');
 
 	// Simple constructor, links all parameters in params object to >>this<<
@@ -183,7 +185,6 @@ function powerConsumption (t1, t2, inputValue) {
 		+"Watt="+myWatt);
 	return myWatt;
 }
-module.exports = smr;
 
 
 

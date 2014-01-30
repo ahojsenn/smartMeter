@@ -1,0 +1,6 @@
+    - name: set locale
+      shell: sed 's/# de_DE.UTF-8/de_DE.UTF-8/' /etc/locale.gen > del.me &&
+             mv del.me /etc/locale.gen &&
+             locale-gen &&
+             update-locale LANG=de_DE.UTF-8 
+              

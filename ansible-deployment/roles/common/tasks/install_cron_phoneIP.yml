@@ -1,0 +1,17 @@
+    - name: copy phoneIP.sh to /home/pi/phoneIP.sh
+      copy: src=phoneIP.sh dest=/home/pi/phoneIP.sh mode=0744
+
+    - cron: name="phone to freundluis" 
+        minute="*/5" 
+        user="pi"
+        job="/home/pi/phoneIP.sh > /dev/null 2>&1 "
+
+    - cron: name="phone to freundluis at startup" 
+        reboot=yes 
+        user="pi"
+        job="/home/pi/phoneIP.sh > /dev/null 2>&1 "
+
+    - cron: name="do a 1 times a day daily reboot" 
+        minute="*/5" 
+        job="( UP=$(cat /proc/uptime | cut -d '.' -f1); if [ $UP -gt 86400 ]; then /sbin/reboot; fi )"
+

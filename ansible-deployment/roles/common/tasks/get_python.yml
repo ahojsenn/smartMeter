@@ -1,0 +1,8 @@
+    - name: apt-get update 
+      shell: dpkg --configure -a
+      shell: apt-get update
+
+    - name: apt-get install python
+      shell: apt-get install -y -f python
+      shell: apt-get install -y -f --force-yes --fix-missing python-apt
+

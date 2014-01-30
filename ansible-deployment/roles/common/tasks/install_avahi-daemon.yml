@@ -1,0 +1,3 @@
+    - name: apt-get install avahi-daemon
+      shell: apt-get install -y -f avahi-daemon
+

@@ -1,0 +1,27 @@
+deleted some files
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# Committer: parallels <parallels@ansible01.(none)>
+#
+# On branch master
+# Changes to be committed:
+#   (use "git reset HEAD <file>..." to unstage)
+#
+#	deleted:    ottoPiSetup-step1.yml
+#	deleted:    ottoPiSetup.yml
+#	deleted:    pibook.yml
+#	deleted:    ping.yml
+#	deleted:    roles/V39/files/dataCollector
+#	deleted:    roles/V39/tasks/get_node.yml
+#	deleted:    roles/V39/vars/main.yml
+#	deleted:    roles/common/tasks/get_rsync.yml
+#	deleted:    roles/common/tasks/update_apt_get.yml
+#	deleted:    roles/common/templates/hosts
+#	deleted:    rpis.yml
+#	deleted:    test.yml
+#
+# Untracked files:
+#   (use "git add <file>..." to include in what will be committed)
+#
+#	.DS_Store

@@ -1,0 +1,2 @@
+    - name: copy xinitrc to /etc/X11/xinit/xinitrc
+      copy: src=xinitrc dest=/etc/X11/xinit/xinitrc mode=0644

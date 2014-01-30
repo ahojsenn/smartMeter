@@ -1,0 +1,3 @@
+    - action: debug msg="PLAYBOOK DJ"
+    - action: debug msg="{{ lookup('env','HOME') }} is an environment variable"
+

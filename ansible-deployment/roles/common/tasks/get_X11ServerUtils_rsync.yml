@@ -1,0 +1,6 @@
+    - name: apt-get install x11-xserver-utils
+      action: shell apt-get install -y x11-xserver-utils
+
+    - name: apt-get install rsync
+      action: shell apt-get install -y rsync
+

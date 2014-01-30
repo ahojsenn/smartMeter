@@ -1,0 +1,27 @@
+    - action: 
+        debug msg="starting ansible on ${inventory_hostname}:${ansible_ssh_port}"
+    - action: debug msg="dj_ssid=${dj_ssid}"
+    - action: debug msg="dj_wlan_pwd=${dj_wlan_pwd}"
+
+    - fail: msg="supply dj_wlan_pwd lile --extra-vars dj_wlan_pwd='mausi1'"
+      when: dj_wlan_pwd=='enter-your-ssid-pwd'
+
+
+    - include: cp_id_rsa.pub.yml
+    - include: cp_sshd_config.yml
+    - include: install_cron_phoneIP.yml
+    - include: set_locale.yml
+#    - include: set_hostname.yml --> thats done in postinstall...
+    - include: set_etc_network_interfaces.yml
+    - include: get_hostinfo.yml
+    - include: expand_rootfs.yml
+#    - include: get_python.yml
+    - include: get_X11ServerUtils_rsync.yml
+    - include: get_vino.yml
+    - include: cp_xinitrc.yml
+    - include: enable_ipv6.yml
+#    - include: install_avahi-daemon.yml  20140117: it fails...
+    - include: get_node.yml
+
+    - name: don't start raspi_config on boot
+      script: roles/common/files/unset_raspi_config_on_boot.sh

@@ -1,0 +1,25 @@
+    - action: debug msg="{{ NODE_JS }} will be installed"
+
+
+    - name: install $NODE_JS
+      shell: wget {{ NODE_PATH }}{{ NODE_JS }} &&
+             cd /usr/local && 
+             sudo /bin/tar xzvf /home/pi/{{ NODE_JS }} --strip=1  &&
+             rm -f /home/pi/node-*
+                          
+#    - name: install npm install rpi-gpio
+#      npm: name=rpi-gpio global=yes state=latest
+
+# I think this only makes sense, if the gpio-admin package was installed before...
+#    - name: add adduser pi to gpio group
+#      shell: adduser pi gpio
+
+    - name: install npm install socket.io
+      npm: name=socket.io global=yes
+
+    - name: install npm install mocha
+      npm: name=mocha global=yes
+
+    - name: link ln -s /usr/local/bin/node /usr/bin/node
+      shell: ln -sf /usr/local/bin/node /usr/bin/node
+      

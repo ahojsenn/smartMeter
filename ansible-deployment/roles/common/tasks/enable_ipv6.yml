@@ -1,0 +1,5 @@
+    - name: add ipv6 on a line by itself at the end of /etc/modules.
+      shell: 
+             sed -i '/ipv6/d' /etc/modules &&
+             echo "ipv6"  >>  /etc/modules
+

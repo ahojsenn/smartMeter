@@ -1,0 +1,10 @@
+    - name: "echo {{ hostname }}"
+      debug: msg="Target system is $ansible_host_name"
+      delegate_to: 127.0.0.2
+
+    - name: "set /etc/hostname"
+      #shell: /bin/echo {{ ansible_host_name }} > /etc/hostname
+      action: lineinfile dest=/etc/hostname backup=true state=present regexp=^ line={{ ansible_host_name }}
+
+    - name: "copy /etc/hosts"
+      template: src=hosts dest=/etc/hosts

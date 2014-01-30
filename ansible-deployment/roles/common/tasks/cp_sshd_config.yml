@@ -1,0 +1,7 @@
+    - name: copy sshd_config to rpi to prevent interactive login...
+      copy: src=sshd_config dest=/etc/ssh/. mode=0644
+
+    - name: set user passwd to something random
+      shell: sudo passwd -d pi
+      tags:
+      - debug
