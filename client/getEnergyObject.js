@@ -10,6 +10,8 @@ function energyObject(params) {
 	    $el,
 	    mouseDown = 0;
 
+	console.log ("in energyObject definition");
+
 	// check if mouse is down to lock refresh
 	document.body.onmousedown = function() { 
 		++mouseDown;
@@ -145,6 +147,7 @@ function energyObject(params) {
 
 	// call append only once on DOM for better performance
 	$('body').append($el);
+
 
 	return this;
 }

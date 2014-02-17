@@ -14,44 +14,60 @@
 	The resuting timestamps are logges in the logfile...
 
 */
-//var events = require('events');
+var events = require('events'),
+	eventEmitter = new events.EventEmitter;
 
-smr = {
+var smarty = {
 	timers: require('timers'),
 	lastValue: "start",
 	lastTimestamp: 0,
 	secondLastTimestamp: 0,
 	eventEmitter: new (require('events').EventEmitter),
-	
-	init: smr_Init,
-	setupGPIO: smr_setupGPIO,
-	startReader: smr_startReader,
-	writeLog: smr_writeLog,
-	powerConsumption: powerConsumption,
-	log: function (data) {if (this.debug) console.log(data)}
-}
+	//          diese ^ Klammern versteh ich  nicht  ^
+	// util.inspect ansehen
 
-module.exports = smr;
+	init: smarty_Init,
+	setupGPIO: smarty_setupGPIO,
+	startReader: smarty_startReader,
+	writeLog: smarty_writeLog,
+	powerConsumption: powerConsumption,
+	log: function (data) {
+		if (this.debug) {
+			console.log(data);
+		}
+		return this;
+	}
+}
+	
+util = require('util');
+console.log('START');
+console.log(util.inspect(smarty.eventEmitter, { showHidden: true, depth: null }));
+
+
+module.exports = smarty;
 
 /*
- * initialize function for the smr 
+ * initialize function for the smarty 
  */
-function smr_Init () {
+function smarty_Init () {
 	var objref = this,
 		params = require ('./smartMeter.json'),
 		fs =  require('fs');
 
 	// Simple constructor, links all parameters in params object to >>this<<
 	if (params && Object.keys && Object.keys(params).length >= 1) {
-		smr.log ("initializing this smr with params");
+		smarty.log ("initializing this smarty with params");
 		Object.keys(params).forEach( function(param) {
 			objref[param] = params[param];
-			smr.log ("setting this."+param+"="+ params[param]);
+			smarty.log ("setting this."+param+"="+ params[param]);
 		})
 	}
 
+	if (process.platform == 'darwin') {
+			this.logPath = "/tmp/"+this.logPath;
+		}
+
 	// create logPath and logFile if it does not exist
-	if (process.platform == 'darwin') this.logPath = "/tmp/"+this.logPath;
 	if (!fs.existsSync(this.logPath)) {
 		fs.mkdirSync(this.logPath);
 	}
@@ -64,9 +80,9 @@ function smr_Init () {
 
 
 /*
- * GPIO setup function for the smr
+ * GPIO setup function for the smarty
  */
-function smr_setupGPIO (emitEventWhenFinished) {
+function smarty_setupGPIO (emitEventWhenFinished) {
 	var exec = require('child_process').exec,
 		commands = new Array(),
 		cmdNr = 0;
@@ -100,9 +116,9 @@ function smr_setupGPIO (emitEventWhenFinished) {
 	( function execCmdInADaisyChain (commands, cmdNr) {
 		if (commands.length > ++cmdNr) {
 			exec ( commands[cmdNr], function (error, stdout, stderr) { 
-				smr.log ("Step " +cmdNr+": executing: " + commands[cmdNr]);
-				smr.log('stdout: ' + stdout);
-    			smr.log('stderr: ' + stderr);
+				smarty.log ("Step " +cmdNr+": executing: " + commands[cmdNr]);
+				smarty.log('stdout: ' + stdout);
+    			smarty.log('stderr: ' + stderr);
     			if (error !== null) {
       				console.log('exec error: ' + error);
       			}
@@ -110,9 +126,9 @@ function smr_setupGPIO (emitEventWhenFinished) {
 			});
 		}
 		else {
-			/* start the smr */
-			smr.log('I think setup is done, emitting '+emitEventWhenFinished+' event...');
-			smr.eventEmitter.emit(emitEventWhenFinished);
+			/* start the smarty */
+			smarty.log('I think setup is done, emitting '+emitEventWhenFinished+' event...');
+			smarty.eventEmitter.emit(emitEventWhenFinished);
 		}
 	})(commands, cmdNr);
 
@@ -124,46 +140,46 @@ function smr_setupGPIO (emitEventWhenFinished) {
 // reads the inpup of the GPIO by polling
 // since I didn't get the onchange to run...
 //
-function smr_startReader() {
+function smarty_startReader() {
 	var fs = require('fs');
 
-	fs.readFile (smr.gpio_path+'gpio'+smr.gpio_input_pin+'/value', function(err, inputValue) {
+	fs.readFile (smarty.gpio_path+'gpio'+smarty.gpio_input_pin+'/value', function(err, inputValue) {
 		if(err) {
 	        console.log(err);
 	    } else {
-			if (smr.lastValue+0 != inputValue+0) {
-	        	smr.log('gpio_input_pin was '+smr.lastValue+' and changed to: ' + inputValue +': now=' + new Date().getTime());
-				smr.lastValue = inputValue;
+			if (smarty.lastValue+0 != inputValue+0) {
+	        	smarty.log('gpio_input_pin was '+smarty.lastValue+' and changed to: ' + inputValue +': now=' + new Date().getTime());
+				smarty.lastValue = inputValue;
 				var timestamp = new Date().getTime(),
 					message = "";
 				message += '{';
-				message += '"term":"v39.powerConsumption.'+ smr.gpio_input_pin+'"'
-				message += ', "Watt":'+powerConsumption (timestamp, smr.secondLastTimestamp, inputValue);
+				message += '"term":"v39.powerConsumption.'+ smarty.gpio_input_pin+'"'
+				message += ', "Watt":'+powerConsumption (timestamp, smarty.secondLastTimestamp, inputValue);
 				message += ', "timestamp":' + timestamp;
 				message += '}';
 			
-				smr.eventEmitter.emit('pinChange', message);
+				smarty.eventEmitter.emit('pinChange', message);
 
-				smr.secondLastTimestamp = smr.lastTimestamp;
-				smr.lastTimestamp = timestamp;
+				smarty.secondLastTimestamp = smarty.lastTimestamp;
+				smarty.lastTimestamp = timestamp;
 			}
 		}
 	});
 		
-	smr.timers.setTimeout (smr_startReader, smr.polling_intervall);
+	smarty.timers.setTimeout (smarty_startReader, smarty.polling_intervall);
 	return this;
 }
 
 
-function smr_writeLog (message) {
+function smarty_writeLog (message) {
 	var	fs = require('fs');
     
 	//Now make sure, the values are logged somewhere, namely in logFile...
-	fs.appendFile (smr.logPath+smr.logFile,  message +'\n', function(err) {
+	fs.appendFile (smarty.logPath+smarty.logFile,  message +'\n', function(err) {
 	    if(err) {
 	        console.log(err);
 	    } else {
-	        smr.log(smr.logPath+smr.logFile + " was appended: " + message);
+	        smarty.log(smarty.logPath+smarty.logFile + " was appended: " + message);
 		}
 	});
 }
@@ -177,9 +193,9 @@ function powerConsumption (t1, t2, inputValue) {
 		UmdrehungenProh = 1000 * 60 * 60 / (t1 - t2);
 	
 	if (t2 > 0 )
-		myWatt = 1000* UmdrehungenProh / smr.UmdrehungenProKWh ;
+		myWatt = 1000* UmdrehungenProh / smarty.UmdrehungenProKWh ;
 	
-	smr.log("in powerConsumption (" 
+	smarty.log("in powerConsumption (" 
 		+ (t1-t2)/1000 +"s passed, "+ inputValue + "), "
 		+"UmdrehungenProh="+Math.round(1000*UmdrehungenProh)/1000 +", "
 		+"Watt="+myWatt);
@@ -187,22 +203,64 @@ function powerConsumption (t1, t2, inputValue) {
 }
 
 
+/*
+ * a random data generator which may be used in dev-mode
+ *
+ */
+function simulator () {
+	// set timer intervall
+	var exec = require('child_process').exec;
+
+	// create an entry in the datafile at random time between 0-10s intervalls
+	this.createRandomData = function  () {
+		var randomTime = Math.round(1000*Math.random()), // something between 0 and 10 seconds
+			objref = this;
+
+		setTimeout(function () {
+			var watt=Math.round(86400/(75*randomTime/1000)),
+				cmd = "echo {'\"'test1'\"' : '\"'huhuh'\"', '\"'Watt'\"' : "+watt+", '\"'timestamp'\"': `date +%s000`} >> "+ smarty.logPath+smarty.logFile;
+			console.log('createRandomData created 1/75 KW/h after '+ randomTime/1000 + 's. Watt= ' + watt);
+			exec (cmd);
+			objref.createRandomData();
+		}, randomTime);
+	};
+}
+
+// in dev mode I will start a process that fills the 
+// data file in n seconds intervall to test the Web-Socket...
+function start_testmode (callback) {
+	console.log('start_testmode');
+	var mysimulator = new simulator ();
+	mysimulator.createRandomData();
+
+	if (typeof callback == 'function') { // make sure the callback is a function
+        callback.call(this); // brings the scope to the callback
+    }
+	return this;
+}
+
+
+
+
+
 
 /*
- * The main bit...
+ * The main bit... smarty is a nice name for smatrmeter...
  */
-smr.log("\u001b[2J\u001b[0;0H"); /* clear sonsole log screen */ 
-
-smr
+smarty
+	.log("\u001b[2J\u001b[0;0H") /* clear sonsole log screen */ 
 	.init ()
 	.setupGPIO ('readyForMeasurement');
+	//
+	// register an event 'pinChange' and an event on initDone
+	//
+smarty.eventEmitter.on('readyForMeasurement', smarty.startReader);
+smarty.eventEmitter.on('pinChange', smarty.writeLog);
 
-
-//
-// register an event 'pinChange' and an event on initDone
-//
-smr.eventEmitter.on('readyForMeasurement', smr.startReader);
-smr.eventEmitter.on('pinChange', smr.writeLog);
+// start test mode on darwin systems, i.e. this is now not a rpi...
+if (process.platform == 'darwin') {
+	smarty.eventEmitter.on('readyForMeasurement', start_testmode );
+}
 
 
 

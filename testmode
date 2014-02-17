@@ -1,0 +1,26 @@
+#!/bin/bash
+#
+clear
+
+case "$#" in
+	0 )
+		echo "usage: testmode [start | stop]"
+	;;
+esac
+
+
+case "$1" in
+	'start' )
+   		echo "Starting local webServer and smartMeter in test mode..."
+		./webServer/webServer.js > /dev/null 2>&1 &
+		./meter/smartMeter.js  > /dev/null 2>&1 &
+		exit 0
+	;;
+
+	'stop' )
+		clear
+		echo killing all node procs
+		killall node
+		exit 0
+	;;
+esac

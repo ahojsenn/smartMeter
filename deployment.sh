@@ -1,7 +1,6 @@
 # deployment of $1 to pi@192.168.2.42:production/. and remote execution...
 #
 
-TARGET_HTTP_PORT=42080
 
 case "$#" in
 	0 )
@@ -56,7 +55,7 @@ case "$1" in
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/meter/rcdSmartMeter stop'
 	echo "testing with mocha and stopping on error"
 	set -e
-	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'cd production/smartMeter/meter; sudo mocha'	
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'cd production/smartMeter; sudo mocha --recursive'	
 	echo "move away any existing smartMeter.log files"
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'if [ -f smartMeter.log ]; then cp smartMeter.log smartMeter.log.last; fi'
     echo "starting the smartMeter"
@@ -73,21 +72,8 @@ case "$1" in
 	echo "start the server..."
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/webServer/rcdSmartMeterWebServer start'
 
-	# test the webServer
-	echo "==============================="
-	echo "testing the server..."
-	echo "curl http://$TARGETSERVER:42080/smartMeter/getnolines"
-	sleep 1
-	curl http://$TARGETSERVER:$TARGET_HTTP_PORT/smartMeter/getnolines
-	sleep 1
-	curl http://$TARGETSERVER:$TARGET_HTTP_PORT/smartMeter/getnolines
-	sleep 1
-	curl http://$TARGETSERVER:$TARGET_HTTP_PORT/smartMeter/getnolines
-	echo "done with testing the server..."
-	echo "==============================="
-	echo " "
 	
-	# edit the contag entry that limits the number of datasets...
+	# edit the crontab entry that limits the number of datasets...
 	# 59 23 * * 0  (tail -50000 /home/pi/myMeter.log > test; mv test /home/pi/myMeter.log) > /dev/null 2&>1
 
 	exit 0

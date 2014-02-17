@@ -6,5 +6,4 @@
 	"logFile": "gotResults.json",
 	"UmdrehungenProKWh": 75,
 	"debug": true
-
 }
