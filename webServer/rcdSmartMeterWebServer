@@ -10,7 +10,7 @@
 
 WPATH=/home/pi/production/smartMeter/
 RCPATH=/home/pi/production/smartMeter/webServer/
-SERVER=webServer/djserver_eenergy.js
+SERVER=webServer/webServer.js
 SERVERPARAMS="serverport=42080"
 SERVERPATH=$WPATH$SERVER
 RCDSERVER=rcdSmartMeterWebServer
@@ -23,7 +23,7 @@ then
 	echo there is $mypids $SERVER running 
 	echo `ps -ef | grep $SERVER | grep -v grep`
 else
-	(cd $WPATH; $SERVER $SERVERPARAMS ) > /tmp/djserver_eenergy.log 2>&1 &
+	(cd $WPATH; $SERVER $SERVERPARAMS ) > /tmp/webServer.log 2>&1 &
 	echo started $SERVER $SERVERPARAMS
 fi
 ;;

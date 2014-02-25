@@ -16,7 +16,7 @@ var ws = {
 		init: initWebServer,
 		start: startWebServer,
 		log: function log (s) { 
-			if (ws.DEBUG==true)  console.log("webServer: "+s);
+			if (ws.DEBUG==true)  ws.log("webServer: "+s);
 			return this;
 			}
 	};
@@ -109,7 +109,7 @@ function server_response (request, response) {
 	ws.log ('in server_response, pathname: ' + path );
 	if (path == ws.url+'/get') get (request, response, ws.datafilename);		
 
-	// get gets the last 100 or so entries in the datafile
+	// get gets the last 100 or so entries in the datail
 	else if (path == ws.url+'/getnolines') getnolines (request, response, ws.datafilename);		
 
 	// getfirst gets the first entry in the dta file
@@ -188,7 +188,7 @@ function getnolines (request, response, filename) {
 	var params = require('url').parse(request.url, true),
 		cmd = "cat " + filename,
 		exec = require('child_process').exec,
-		responseData=params.query.callback+"([";
+		responseData="[";
 		
 
 		if (params.query.hasOwnProperty('filter') === true && typeof params.query.filter === 'string' ) 
@@ -198,15 +198,19 @@ function getnolines (request, response, filename) {
 
 		exec(cmd, function (error, data) {
 			ws.log('callback in getnolines, cmd: ' + cmd + "\n" +data);
-			responseData += data+"])";
+			responseData += data;
+//			responseData.replace(/\n$/,']');	
+
+			// wrap data with wrapWithCallback if there is a callback parameter...
+			if (params.query.hasOwnProperty('callback') === true && typeof params.query.callback === 'string' ) {
+				responseData = wrapWithCallback (responseData, params.query.callback);
+			}	
 			response.end( responseData );
 		});
 }
 
 
 /**
-   	read and return the tweets from ./gotTweets.json
-   	and return as jsonp
 	This function takes parameters like filter to 'grep filter'
 	and nolines to 'tail -nolines'...
 */
@@ -215,7 +219,7 @@ function get (request, response, filename) {
 		spawn = require('child_process').spawn,
 		tail,
 		nolines = "-100",
-		responseData=params.query.callback+"([";
+		responseData="[";
 		
 	ws.log ('in get, pathname= ' + params.pathname);
     response.writeHead(200, {'Content-Type': 'application/json'});
@@ -223,6 +227,7 @@ function get (request, response, filename) {
 	if (params.query.hasOwnProperty('nolines') === true && typeof params.query.nolines === 'string' ) {
 		nolines="-"+params.query.nolines;
 	}
+
 	tail 	= spawn('tail', [nolines, filename]);
 	
 	tail.stdout.on ('data', function (data) {
@@ -237,11 +242,24 @@ function get (request, response, filename) {
 	// the raspberry likes close here instead of exit...
 	//	tail.on('close', function (code) {
 	tail.on(ws.exitEventString, function (code) {
-		responseData = responseData.replace(/,\n$/, '\n');		// removed the last ,
-        responseData += "])";
-	  	console.log('child process exited with code ' + code + "\nresponseData: + responseData");
+		responseData = responseData.replace(/,\n$/, ']');		// removed the last ,
+
+		// wrap data with wrapWithCallback if there is a callback parameter...
+		if (params.query.hasOwnProperty('callback') === true && typeof params.query.callback === 'string' ) {
+			responseData = wrapWithCallback (responseData, params.query.callback);
+		}		
+
+	  	ws.log('child process exited with code ' + code + "\nresponseData: + responseData");
       	response.end(responseData);	
 	});	
+}
+
+
+/**
+	wrap the data with a callback
+ */
+function wrapWithCallback (data, callback) {
+	return callback + "("+data+")";
 }
 
 

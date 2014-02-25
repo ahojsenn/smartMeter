@@ -14,11 +14,9 @@
 	The resuting timestamps are logges in the logfile...
 
 */
-var events = require('events'),
-	eventEmitter = new events.EventEmitter;
+var global = require ('./global.js');
 
 var smarty = {
-	timers: require('timers'),
 	lastValue: "start",
 	lastTimestamp: 0,
 	secondLastTimestamp: 0,
@@ -30,19 +28,8 @@ var smarty = {
 	setupGPIO: smarty_setupGPIO,
 	startReader: smarty_startReader,
 	writeLog: smarty_writeLog,
-	powerConsumption: powerConsumption,
-	log: function (data) {
-		if (this.debug) {
-			console.log(data);
-		}
-		return this;
-	}
+	powerConsumption: powerConsumption
 }
-	
-util = require('util');
-console.log('START');
-console.log(util.inspect(smarty.eventEmitter, { showHidden: true, depth: null }));
-
 
 module.exports = smarty;
 
@@ -51,28 +38,31 @@ module.exports = smarty;
  */
 function smarty_Init () {
 	var objref = this,
-		params = require ('./smartMeter.json'),
-		fs =  require('fs');
+		params = (process.platform == 'darwin') ? 
+			require ('./smartMeterDarwin.json') 
+		   :require ('./smartMeter.json') ,
+		fs =  require('fs'),
+		path = require('path'),
+		logP;
+
 
 	// Simple constructor, links all parameters in params object to >>this<<
 	if (params && Object.keys && Object.keys(params).length >= 1) {
-		smarty.log ("initializing this smarty with params");
+		global.log ("initializing this smarty with params");
 		Object.keys(params).forEach( function(param) {
 			objref[param] = params[param];
-			smarty.log ("setting this."+param+"="+ params[param]);
+			global.log ("setting this."+param+"="+ params[param]);
 		})
 	}
 
-	if (process.platform == 'darwin') {
-			this.logPath = "/tmp/"+this.logPath;
-		}
+	logP = path.dirname(smarty.datafilename);
 
 	// create logPath and logFile if it does not exist
-	if (!fs.existsSync(this.logPath)) {
-		fs.mkdirSync(this.logPath);
+	if (!fs.existsSync(logP)) {
+		fs.mkdirSync(logP);
 	}
-	if (!fs.existsSync(this.logPath + this.logFile)) {
-		fs.openSync(this.logPath+this.logFile, 'a');
+	if (!fs.existsSync(smarty.datafilename)) {
+		fs.openSync(smarty.datafilename, 'a');
 	}
 	return this; 
 }
@@ -116,9 +106,9 @@ function smarty_setupGPIO (emitEventWhenFinished) {
 	( function execCmdInADaisyChain (commands, cmdNr) {
 		if (commands.length > ++cmdNr) {
 			exec ( commands[cmdNr], function (error, stdout, stderr) { 
-				smarty.log ("Step " +cmdNr+": executing: " + commands[cmdNr]);
-				smarty.log('stdout: ' + stdout);
-    			smarty.log('stderr: ' + stderr);
+				global.log ("Step " +cmdNr+": executing: " + commands[cmdNr]);
+				global.log('stdout: ' + stdout);
+    			global.log('stderr: ' + stderr);
     			if (error !== null) {
       				console.log('exec error: ' + error);
       			}
@@ -127,8 +117,8 @@ function smarty_setupGPIO (emitEventWhenFinished) {
 		}
 		else {
 			/* start the smarty */
-			smarty.log('I think setup is done, emitting '+emitEventWhenFinished+' event...');
-			smarty.eventEmitter.emit(emitEventWhenFinished);
+			global.log('I think setup is done, emitting '+emitEventWhenFinished+' event...');
+			global.eventEmitter.emit(emitEventWhenFinished);
 		}
 	})(commands, cmdNr);
 
@@ -148,7 +138,7 @@ function smarty_startReader() {
 	        console.log(err);
 	    } else {
 			if (smarty.lastValue+0 != inputValue+0) {
-	        	smarty.log('gpio_input_pin was '+smarty.lastValue+' and changed to: ' + inputValue +': now=' + new Date().getTime());
+	        	global.log('gpio_input_pin was '+smarty.lastValue+' and changed to: ' + inputValue +': now=' + new Date().getTime());
 				smarty.lastValue = inputValue;
 				var timestamp = new Date().getTime(),
 					message = "";
@@ -158,7 +148,7 @@ function smarty_startReader() {
 				message += ', "timestamp":' + timestamp;
 				message += '}';
 			
-				smarty.eventEmitter.emit('pinChange', message);
+				global.eventEmitter.emit('pinChange', message);
 
 				smarty.secondLastTimestamp = smarty.lastTimestamp;
 				smarty.lastTimestamp = timestamp;
@@ -166,7 +156,7 @@ function smarty_startReader() {
 		}
 	});
 		
-	smarty.timers.setTimeout (smarty_startReader, smarty.polling_intervall);
+	global.timers.setTimeout (smarty_startReader, smarty.polling_intervall);
 	return this;
 }
 
@@ -175,11 +165,11 @@ function smarty_writeLog (message) {
 	var	fs = require('fs');
     
 	//Now make sure, the values are logged somewhere, namely in logFile...
-	fs.appendFile (smarty.logPath+smarty.logFile,  message +'\n', function(err) {
+	fs.appendFile (smarty.datafilename,  message +'\n', function(err) {
 	    if(err) {
 	        console.log(err);
 	    } else {
-	        smarty.log(smarty.logPath+smarty.logFile + " was appended: " + message);
+	        global.log(smarty.datafilename + " was appended: " + message);
 		}
 	});
 }
@@ -195,7 +185,7 @@ function powerConsumption (t1, t2, inputValue) {
 	if (t2 > 0 )
 		myWatt = 1000* UmdrehungenProh / smarty.UmdrehungenProKWh ;
 	
-	smarty.log("in powerConsumption (" 
+	global.log("in powerConsumption (" 
 		+ (t1-t2)/1000 +"s passed, "+ inputValue + "), "
 		+"UmdrehungenProh="+Math.round(1000*UmdrehungenProh)/1000 +", "
 		+"Watt="+myWatt);
@@ -204,63 +194,20 @@ function powerConsumption (t1, t2, inputValue) {
 
 
 /*
- * a random data generator which may be used in dev-mode
- *
- */
-function simulator () {
-	// set timer intervall
-	var exec = require('child_process').exec;
-
-	// create an entry in the datafile at random time between 0-10s intervalls
-	this.createRandomData = function  () {
-		var randomTime = Math.round(1000*Math.random()), // something between 0 and 10 seconds
-			objref = this;
-
-		setTimeout(function () {
-			var watt=Math.round(86400/(75*randomTime/1000)),
-				cmd = "echo {'\"'test1'\"' : '\"'huhuh'\"', '\"'Watt'\"' : "+watt+", '\"'timestamp'\"': `date +%s000`} >> "+ smarty.logPath+smarty.logFile;
-			console.log('createRandomData created 1/75 KW/h after '+ randomTime/1000 + 's. Watt= ' + watt);
-			exec (cmd);
-			objref.createRandomData();
-		}, randomTime);
-	};
-}
-
-// in dev mode I will start a process that fills the 
-// data file in n seconds intervall to test the Web-Socket...
-function start_testmode (callback) {
-	console.log('start_testmode');
-	var mysimulator = new simulator ();
-	mysimulator.createRandomData();
-
-	if (typeof callback == 'function') { // make sure the callback is a function
-        callback.call(this); // brings the scope to the callback
-    }
-	return this;
-}
-
-
-
-
-
-
-/*
  * The main bit... smarty is a nice name for smatrmeter...
  */
 smarty
-	.log("\u001b[2J\u001b[0;0H") /* clear sonsole log screen */ 
 	.init ()
-	.setupGPIO ('readyForMeasurement');
+	.setupGPIO ('readyForMeasurement')
+
 	//
 	// register an event 'pinChange' and an event on initDone
 	//
-smarty.eventEmitter.on('readyForMeasurement', smarty.startReader);
-smarty.eventEmitter.on('pinChange', smarty.writeLog);
+global.eventEmitter
+		.on('readyForMeasurement', smarty.startReader)
+		.on('pinChange', smarty.writeLog)	;
 
-// start test mode on darwin systems, i.e. this is now not a rpi...
-if (process.platform == 'darwin') {
-	smarty.eventEmitter.on('readyForMeasurement', start_testmode );
-}
+
 
 
 

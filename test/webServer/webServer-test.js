@@ -15,7 +15,7 @@ before(function(done){
 })
 
 
-describe ('webServer', function () {		
+describe ('the webServer', function () {		
 	/* initializes */
   describe('has a property called serverPort with a positive value', function () {
     it ('should return a postive integer 1025 < serverPort < 65536', function () {
@@ -23,46 +23,111 @@ describe ('webServer', function () {
       assert (ws.serverPort < 65536);
     })
   })
+});
 
-  /* the log function logs on DEBUG to the console */
-
-  /* start */
-	describe('/listens on port '+ ws.serverPort, function () {
-    it('should return 200', function (done) {
-     	http.get('http://localhost:'+ws.serverPort+'/smartMeter/get', function (res) {
-        assert.equal(200, res.statusCode);
-      	done();
-     	});
+/* start */
+describe('listens on port '+ ws.serverPort + " and...", function () {
+  it('should return 200', function (done) {
+    http.get('http://localhost:'+ws.serverPort+'/smartMeter/get', function (res) {
+      assert.equal(200, res.statusCode);
+      done();
     });
-
-    /* a webserver is also started on ipv6 */
-    it('should return 200', function (done) {
-      http.get('http://[::1]:'+ws.serverPort+'/smartMeter/get', function (res) {
-        done();
-      });
-    });
-
-    /* and there is a websocket sending stuff */
-    it ('broadcasts new energy value to client', function (done) {
-      var      
-        socketURL = 'http://localhost:'+ws.serverPort,
-        options ={
-          transports: ['websocket'],
-          'force new connection': true
-          },
-        io = require('socket.io-client'),
-        client = io.connect(socketURL, options);
-
-      console.log("...waiting for new data ");
-      client.on('got new data', function (data) {
-        console.log("got new data "+data);
-        done();
-        });
-    })
-
-
   });
 
+  /* a webserver is also started on ipv6 */
+  it('should return 200', function (done) {
+    http.get('http://[::1]:'+ws.serverPort+'/smartMeter/get', function (res) {
+      done();
+    });
+  });
+
+  /* and there is a websocket sending stuff */
+  it ('broadcasts new energy value to client', function (done) {
+    var      
+      socketURL = 'http://localhost:'+ws.serverPort,
+      options ={
+        transports: ['websocket'],
+        'force new connection': true
+        },
+      io = require('socket.io-client'),
+      client = io.connect(socketURL, options);
+
+    //this.timeout(2000);
+    console.log ("-----> need data, waiting...");
+    client.on('got new data', function (data) {
+      console.log ("-----> got data, done...");
+      done();
+      });
+  })
+  
+  // now test the get method of my webServer
+  it ('has a /get method implemented that lists some datafile entries', function (done) { 
+    var url = 'http://localhost:'+ws.serverPort+'/smartMeter/get?nolines=20';
+
+    http.get( url, function (res) {
+      assert.equal(200, res.statusCode);
+      res.on ('data', function (chunk) {
+        assert (chunk.length > 0);
+        done();
+      });
+    })      
+  });
+
+  // now test the get method of my webServer
+  it ('has a /getnolines method implemented...', function (done) { 
+    var url = 'http://localhost:'+ws.serverPort+'/smartMeter/getnolines';
+    http.get( url, function (res) {
+      assert.equal(200, res.statusCode);
+      res.on ('data', function (chunk) {
+        assert (chunk.length > 0);
+        done();
+      });
+    })      
+  });
+
+  // now test the get method of my webServer
+  it ('has a /getfirst method implemented...', function (done) { 
+    var url = 'http://localhost:'+ws.serverPort+'/smartMeter/getfirst';
+    http.get( url, function (res) {
+      assert.equal(200, res.statusCode);
+      res.on ('data', function (chunk) {
+        assert (chunk.length > 0);
+        done();
+      });
+    })      
+  });
+
+  // now test the get method of my webServer
+  it ('has a /getlast method implemented...', function (done) { 
+    var url = 'http://localhost:'+ws.serverPort+'/smartMeter/getlast  ';
+    http.get( url, function (res) {
+      assert.equal(200, res.statusCode);
+      res.on ('data', function (chunk) {
+        assert (chunk.length > 0);
+        done();
+      });
+    })      
+  });
+
+  // now test the getnolines method of my webServer with callback parameter
+  it ('works with callback parameter', function (done) { 
+    var url = 'http://localhost:'+ws.serverPort+'/smartMeter/getnolines?callback=blubberblubber';
+
+    http.get( url, function (res) {
+      assert.equal(200, res.statusCode);
+      res.on ('data', function (chunk) {
+        assert ( chunk.toString().indexOf("blubberblubber") == 0);
+        done ();
+        });
+      })      
+    });
 
 
 });
+
+
+
+
+
+
+  

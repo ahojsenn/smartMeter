@@ -34,6 +34,8 @@ case "$1" in
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/meter/rcdSmartMeter stop'
 	echo "move away any existing smartMeter.log files"
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'if [ -f smartMeter.log ]; then cp smartMeter.log smartMeter.log.last; fi'
+    echo "installing the smartMeter bootstrap"
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/meter/rcdSmartMeter rcinstall'
     echo "starting the smartMeter"
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/meter/rcdSmartMeter start'
 	;;
@@ -58,6 +60,8 @@ case "$1" in
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'cd production/smartMeter; sudo mocha --recursive'	
 	echo "move away any existing smartMeter.log files"
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'if [ -f smartMeter.log ]; then cp smartMeter.log smartMeter.log.last; fi'
+    echo "installing the smartMeter bootstrap"
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/meter/rcdSmartMeter rcinstall'
     echo "starting the smartMeter"
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/meter/rcdSmartMeter start'
 
@@ -69,6 +73,8 @@ case "$1" in
 	echo "set the server file to executable..."
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'chmod +x production/smartMeter/webServer/djserver_eenergy.js'
 	###ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'cd production/smartMeter; ./server/djserver_eenergy.js serverport=42080 &'
+	echo "rcinstall the server bootstrap..."
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/webServer/rcdSmartMeterWebServer rcinstall'
 	echo "start the server..."
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/webServer/rcdSmartMeterWebServer start'
 
