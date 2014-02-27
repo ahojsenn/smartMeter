@@ -1,7 +1,7 @@
 var assert = require("assert"),
-	smr = require ("../../meter/smartMeter.js"),
-	simulator = require ("../../meter/smartMeterSimulator.js"),
-	global = require ("../../meter/global.js"),
+	smr = require ("../../src/meter/smartMeter.js"),
+	simulator = require ("../../src/meter/smartMeterSimulator.js"),
+	global = require ("../../src/global/global.js"),
 	fs = require("fs")
 	;
 	

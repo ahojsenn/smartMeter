@@ -1,0 +1,10 @@
+{
+	"gpio_path": "/sys/class/gpio/",
+	"gpio_input_pin": 3,
+	"polling_intervall": 20,
+	"logPath": "data/",
+	"logFile": "gotResults.json",
+	"UmdrehungenProKWh": 75,
+	"debug": true,
+	"datafilename": "/tmp/data/gotResults.json"
+}
