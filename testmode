@@ -12,9 +12,9 @@ esac
 case "$1" in
 	'start' )
    		echo "Starting local webServer and smartMeter in test mode..."
-		./src/webServer/webServer.js > /dev/null 2>&1 &
-		./src/meter/smartMeter.js  > /dev/null 2>&1 &
-		./src/meter/smartMeterSimulator.js  > /dev/null 2>&1 &
+		./src/main/webServer/webServer.js > /dev/null 2>&1 &
+		./src/main/meter/smartMeter.js  > /dev/null 2>&1 &
+		./src/main/meter/smartMeterSimulator.js  > /dev/null 2>&1 &
 		exit 0
 	;;
 

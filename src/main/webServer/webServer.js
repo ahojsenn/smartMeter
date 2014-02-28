@@ -8,6 +8,7 @@
 	The server serves data in json format from files
 	The Data is in the file 'datafilename'	
 */
+var global = require ('../global/global.js');
 
 // the webServer Object
 var ws = {
@@ -15,21 +16,17 @@ var ws = {
 
 		init: initWebServer,
 		start: startWebServer,
-		log: function log (s) { 
-			if (ws.DEBUG==true)  ws.log("webServer: "+s);
-			return this;
-			}
 	};
 
 
 
 // initialize the webserver
-ws.eventEmitter.on('init', function () {ws.log ('...webserver init done'); });
+ws.eventEmitter.on('init', function () {global.log ('...webserver init done'); });
 
 // if $1 option is testmode, then start the simulator...
 ws.eventEmitter.on('init', function() {
-	ws.datafilename = '/tmp/data/gotResults.json';
-	ws.exitEventString = 'exit';	
+	global.datafilename = '/tmp/data/gotResults.json';
+	global.exitEventString = 'exit';	
 });
 
 
@@ -59,11 +56,11 @@ function initWebServer (callback) {
 
 	// Simple constructor, links all parameters in params object to >>this<<
 	if (params && Object.keys && Object.keys(params).length >= 1) {
-		ws.log ("initializing with params");
+		global.log ("initializing with params");
 		
 		Object.keys(params).forEach( function(param) {
 			objref[param] = params[param];
-			ws.log ("setting this."+param+"="+ params[param]);
+			global.log ("setting this."+param+"="+ params[param]);
 
 			if (++i == Object.keys(params).length ) {
 				ws.eventEmitter.emit('init');
@@ -88,13 +85,13 @@ function startWebServer() {
 		//  response.end( server_response (request) );
 	}).listen(ws.serverPort,  '::');
 	
-	ws.log('Server is running at http://127.0.0.1:'+ws.serverPort);
+	global.log('Server is running at http://127.0.0.1:'+ws.serverPort);
 
 	// start a Web-Socket
 	var webSocket = new myWebSocket ();
 	webSocket
 		.startSocket (app)
-		.startDataListener (ws.datafilename);
+		.startDataListener (global.datafilename);
 }
 
 
@@ -102,21 +99,21 @@ function startWebServer() {
 	parse the request and construct the server response
 */
 function server_response (request, response) {
-	ws.log ('in server_response, request: ' + request.url);
+	global.log ('in server_response, request: ' + request.url);
 	var path = require('url').parse(request.url, true).pathname;
 	
 	// parse the request
-	ws.log ('in server_response, pathname: ' + path );
-	if (path == ws.url+'/get') get (request, response, ws.datafilename);		
+	global.log ('in server_response, pathname: ' + path );
+	if (path == ws.url+'/get') get (request, response, global.datafilename);		
 
 	// get gets the last 100 or so entries in the datail
-	else if (path == ws.url+'/getnolines') getnolines (request, response, ws.datafilename);		
+	else if (path == ws.url+'/getnolines') getnolines (request, response, global.datafilename);		
 
 	// getfirst gets the first entry in the dta file
-	else if (path == ws.url+'/getfirst') executethis (request, response, ws.datafilename, 'head -1 ');		
+	else if (path == ws.url+'/getfirst') executethis (request, response, global.datafilename, 'head -1 ');		
 	
 	// getlast gets the last entry
-	else if (path == ws.url+'/getlast') executethis (request, response, ws.datafilename, 'tail -1 ');		
+	else if (path == ws.url+'/getlast') executethis (request, response, global.datafilename, 'tail -1 ');		
 	
 	// server static files under url "+/client/"
 	else if ( (path.indexOf(ws.url+'/client/') == 0 ) ){
@@ -136,25 +133,25 @@ function server_response (request, response) {
 				break;
 			}
 
-		ws.log ('serving static file: ' + myfilename + "myFileending:" + myFileending + "  mimeType: " + myMimeType);
+		global.log ('serving static file: ' + myfilename + ", myFileending:" + myFileending + "  mimeType: " + myMimeType);
 		
 		var fs = require('fs');
-		fs.readFile('./client/' + myfilename, "binary", function (err, file) {
-			ws.log ('readFile: ' + './client/' + myfilename);
+		fs.readFile(global.srcPath+'src/main/client/' + myfilename, "binary", function (err, file) {
+			global.log ('readFile: ' + './client/' + myfilename);
 			
 		            if (err) {
-						ws.log ('ERROR readFile: ' + './client/' + myfilename);
+						global.log ('ERROR readFile: ' + './client/' + myfilename);
 		                response.writeHead(500, {"Content-Type": "text/plain"});
 		                response.write(err + "\n");
 		                response.end();
 		                return;
 		            }
 					
-					ws.log ('response.write: ' + './client/' + myfilename);
+					global.log ('response.write: ' + './client/' + myfilename);
 		            response.writeHead(200, {"Content-Type": myMimeType});
 		            response.write(file, "binary");
 		            response.end();	
-					ws.log ('response.end: ' + './client/' + myfilename);
+					global.log ('response.end: ' + './client/' + myfilename);
 			});
 
 	}
@@ -164,7 +161,7 @@ function server_response (request, response) {
 	getfirst will return the first entry
 */
 function executethis (request, response, filename, cmd) {
-	ws.log ('in executethis');	
+	global.log ('in executethis');	
 	var params = require('url').parse(request.url, true),
 		exec = require('child_process').exec,
 		data;
@@ -175,7 +172,7 @@ function executethis (request, response, filename, cmd) {
 		cmd = cmd + filename;
 			
 	exec(cmd, function (error, data) {
-		ws.log('callback in executethis, cmd: ' + cmd + "\n" +data);
+		global.log('callback in executethis, cmd: ' + cmd + "\n" +data);
 		response.end( data );
 	});
 }
@@ -184,7 +181,7 @@ function executethis (request, response, filename, cmd) {
 	getnolines will return the number of lines in the file
 */
 function getnolines (request, response, filename) {
-	ws.log ('in getnolines');	
+	global.log ('in getnolines');	
 	var params = require('url').parse(request.url, true),
 		cmd = "cat " + filename,
 		exec = require('child_process').exec,
@@ -197,7 +194,7 @@ function getnolines (request, response, filename) {
 		cmd += " | wc -l | awk '{print $1}'";
 
 		exec(cmd, function (error, data) {
-			ws.log('callback in getnolines, cmd: ' + cmd + "\n" +data);
+			global.log('callback in getnolines, cmd: ' + cmd + "\n" +data);
 			responseData += data;
 //			responseData.replace(/\n$/,']');	
 
@@ -221,7 +218,7 @@ function get (request, response, filename) {
 		nolines = "-100",
 		responseData="[";
 		
-	ws.log ('in get, pathname= ' + params.pathname);
+	global.log ('in get, pathname= ' + params.pathname);
     response.writeHead(200, {'Content-Type': 'application/json'});
 	
 	if (params.query.hasOwnProperty('nolines') === true && typeof params.query.nolines === 'string' ) {
@@ -231,17 +228,17 @@ function get (request, response, filename) {
 	tail 	= spawn('tail', [nolines, filename]);
 	
 	tail.stdout.on ('data', function (data) {
-	  	ws.log('in get, tail stdout: + data.len=' + data.length);
+	  	global.log('in get, tail stdout: + data.len=' + data.length);
         responseData += String(data).replace(/\n/g, ',\n');		// replace newlines by ',\n'
 	});
 	
 	tail.stderr.on('data', function (data) {
-	  	ws.log('tail stderr: ' + data);
+	  	global.log('tail stderr: ' + data);
 	});
 
 	// the raspberry likes close here instead of exit...
 	//	tail.on('close', function (code) {
-	tail.on(ws.exitEventString, function (code) {
+	tail.on(global.exitEventString, function (code) {
 		responseData = responseData.replace(/,\n$/, ']');		// removed the last ,
 
 		// wrap data with wrapWithCallback if there is a callback parameter...
@@ -249,7 +246,7 @@ function get (request, response, filename) {
 			responseData = wrapWithCallback (responseData, params.query.callback);
 		}		
 
-	  	ws.log('child process exited with code ' + code + "\nresponseData: + responseData");
+	  	global.log('child process exited with code ' + code + "\nresponseData: + responseData");
       	response.end(responseData);	
 	});	
 }
@@ -269,20 +266,20 @@ function wrapWithCallback (data, callback) {
 */
 function myWebSocket () {
 	
-	ws.log('in myWebSocket');
+	global.log('in myWebSocket');
 	var objref = this;	
 	
 	this.setSocket = function (socket) { this.socket = socket; return this; };
 
 	this.startDataListener = function (filename) {
-		ws.log ('started dataListener on file: '+ filename);
+		global.log ('started dataListener on file: '+ filename);
 		var tail  = require('child_process')
 			.spawn('tail', ['-f', '-n1', filename])
 			.stdout.on ('data', 
 				function (data) {
-		  			ws.log('in dataListener, data: '+  data );
+		  			global.log('in dataListener, data: '+  data );
 					if ( (typeof objref.socket === 'object') ) {
-						ws.log('objref.socket.emit (news, data):' + data);
+						global.log('objref.socket.emit (news, data):' + data);
 						// Trigger the web socket now
 						objref.socket.emit ('got new data', JSON.parse (data) );
 					}

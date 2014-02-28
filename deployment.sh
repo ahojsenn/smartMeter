@@ -17,28 +17,6 @@ case "$#" in
 esac
 
 case "$1" in
-	'-devServer' )
-	clear
-	echo "starting dev environment"
-	sudo apachectl stop
-	sudo apachectl start
-
-	$NODEJS /Volumes/docdata/johannes.mainusch/docjoe/development/smartMeter/server/djserver_eenergy.js 
-	exit 0
-	;;
-
-	'-deploySmartMeter' | '-sm' )
-	# the smartMeter
-    clear
-	echo "killing any running smartMeters"
-	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/meter/rcdSmartMeter stop'
-	echo "move away any existing smartMeter.log files"
-	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'if [ -f smartMeter.log ]; then cp smartMeter.log smartMeter.log.last; fi'
-    echo "installing the smartMeter bootstrap"
-	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/meter/rcdSmartMeter rcinstall'
-    echo "starting the smartMeter"
-	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/meter/rcdSmartMeter start'
-	;;
 	
 	'-deploy2pi' | * )
 	clear

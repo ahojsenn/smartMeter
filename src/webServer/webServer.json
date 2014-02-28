@@ -1,8 +1,0 @@
-{
-  	"DEBUG": true,
-	"mode": "prod",
-	"serverPort": 42080,
-	"url": "/smartMeter",
-	"exitEventString": "close",
-	"datafilename": "/home/pi/production/smartMeter/data/gotResults.json"
-}

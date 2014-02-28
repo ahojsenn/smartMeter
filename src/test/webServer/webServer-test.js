@@ -1,5 +1,5 @@
 var assert = require("assert"),
-	ws = require ("../../src/webServer/webServer.js"),
+	ws = require ("../../main/webServer/webServer.js"),
 	http = require ("http")
 	;
 

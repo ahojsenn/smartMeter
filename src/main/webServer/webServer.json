@@ -1,0 +1,6 @@
+{
+  	"DEBUG": true,
+	"mode": "prod",
+	"serverPort": 42080,
+	"url": "/smartMeter"
+}
