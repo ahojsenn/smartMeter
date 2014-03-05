@@ -38,12 +38,7 @@ module.exports = smarty;
  */
 function smarty_Init () {
 	var objref = this,
-		params = (process.platform == 'darwin') ? 
-			require ('./smartMeterDarwin.json') 
-		   :require ('./smartMeter.json') ,
-		fs =  require('fs'),
-		path = require('path'),
-		logP;
+		params = require ('./smartMeter.json');
 
 
 	// Simple constructor, links all parameters in params object to >>this<<
@@ -55,15 +50,7 @@ function smarty_Init () {
 		})
 	}
 
-	logP = path.dirname(smarty.datafilename);
 
-	// create logPath and logFile if it does not exist
-	if (!fs.existsSync(logP)) {
-		fs.mkdirSync(logP);
-	}
-	if (!fs.existsSync(smarty.datafilename)) {
-		fs.openSync(smarty.datafilename, 'a');
-	}
 	return this; 
 }
 
@@ -78,6 +65,7 @@ function smarty_setupGPIO (emitEventWhenFinished) {
 		cmdNr = 0;
 
 	// create gpio device and moch it on non raspi hardware //
+	global.log ("in smarty_setupGPIO");
 	if (process.platform == 'darwin') {
 		this.gpio_path="/tmp/gpio/"
 		commands = [
@@ -103,12 +91,15 @@ function smarty_setupGPIO (emitEventWhenFinished) {
 			];
 
 	// daisy chaining the commands to set up the gpio
+	global.log ("in smarty_setupGPIO, starting the command daisy chain...");
 	( function execCmdInADaisyChain (commands, cmdNr) {
+		global.log ("  ... in execCmdInADaisyChain..." + cmdNr + " " + commands.length);
 		if (commands.length > ++cmdNr) {
+			global.log ("  ... " + commands[cmdNr]);
 			exec ( commands[cmdNr], function (error, stdout, stderr) { 
-				global.log ("Step " +cmdNr+": executing: " + commands[cmdNr]);
-				global.log('stdout: ' + stdout);
-    			global.log('stderr: ' + stderr);
+				global.log ("  Step " +cmdNr+": executing: " + commands[cmdNr]);
+				global.log('  stdout: ' + stdout);
+    			global.log('  stderr: ' + stderr);
     			if (error !== null) {
       				console.log('exec error: ' + error);
       			}
@@ -118,7 +109,7 @@ function smarty_setupGPIO (emitEventWhenFinished) {
 		else {
 			/* start the smarty */
 			global.log('I think setup is done, emitting '+emitEventWhenFinished+' event...');
-			global.eventEmitter.emit(emitEventWhenFinished);
+			global.eE.emit(emitEventWhenFinished);
 		}
 	})(commands, cmdNr);
 
@@ -137,7 +128,7 @@ function smarty_startReader() {
 		if(err) {
 	        console.log(err);
 	    } else {
-			if (smarty.lastValue+0 != inputValue+0) {
+			if (smarty.lastValue+0 != inputValue+0 ) {
 	        	global.log('gpio_input_pin was '+smarty.lastValue+' and changed to: ' + inputValue +': now=' + new Date().getTime());
 				smarty.lastValue = inputValue;
 				var timestamp = new Date().getTime(),
@@ -148,7 +139,7 @@ function smarty_startReader() {
 				message += ', "timestamp":' + timestamp;
 				message += '}';
 			
-				global.eventEmitter.emit('pinChange', message);
+				global.eE.emit('pinChange', message);
 
 				smarty.secondLastTimestamp = smarty.lastTimestamp;
 				smarty.lastTimestamp = timestamp;
@@ -165,11 +156,11 @@ function smarty_writeLog (message) {
 	var	fs = require('fs');
     
 	//Now make sure, the values are logged somewhere, namely in logFile...
-	fs.appendFile (smarty.datafilename,  message +'\n', function(err) {
+	fs.appendFile (global.datafilename,  message +'\n', function(err) {
 	    if(err) {
 	        console.log(err);
 	    } else {
-	        global.log(smarty.datafilename + " was appended: " + message);
+	        global.log(global.datafilename + " was appended: " + message);
 		}
 	});
 }
@@ -203,7 +194,7 @@ smarty
 	//
 	// register an event 'pinChange' and an event on initDone
 	//
-global.eventEmitter
+global.eE
 		.on('readyForMeasurement', smarty.startReader)
 		.on('pinChange', smarty.writeLog)	;
 

@@ -1,13 +1,18 @@
 var assert = require("assert"),
-	ws = require ("../../main/webServer/webServer.js"),
+  global = require ('../../main/global/global.js'),
+  ws,
 	http = require ("http")
 	;
 
 
 /* init and start the webServer */ 
 before(function(done){
-	// wait for the ws initialization and start to be done...
+  this.timeout(5000);
+  console.log ("in webServer-test.js ...");
+  global.datafilename = "/tmp/testData.json";
 
+  ws =  require ("../../main/webServer/webServer.js");
+	// wait for the ws initialization and start to be done...
 	http.get('http://localhost:42080/smartMeter/client/index.html', function (res) {
     assert.equal(200, res.statusCode);
     done();
@@ -26,7 +31,7 @@ describe ('the webServer', function () {
 });
 
 /* start */
-describe('listens on port '+ ws.serverPort + " and...", function () {
+describe('runs and...', function () {
   it('should return 200', function (done) {
     http.get('http://localhost:'+ws.serverPort+'/smartMeter/get', function (res) {
       assert.equal(200, res.statusCode);
@@ -52,10 +57,10 @@ describe('listens on port '+ ws.serverPort + " and...", function () {
       io = require('socket.io-client'),
       client = io.connect(socketURL, options);
 
-    //this.timeout(2000);
+    this.timeout(5000);
     console.log ("-----> need data, waiting...");
     client.on('got new data', function (data) {
-      console.log ("-----> got data, done...");
+      console.log ("-----> got data, done...");      
       done();
       });
   })

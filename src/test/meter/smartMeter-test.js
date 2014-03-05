@@ -1,14 +1,16 @@
 var assert = require("assert"),
 	smr = require ("../../main/meter/smartMeter.js"),
-	simulator = require ("../../main/meter/smartMeterSimulator.js"),
+	simulator,
 	global = require ("../../main/global/global.js"),
 	fs = require("fs")
 	;
 	
 /* init the smartMeter */ 
 before(function(done){
+	global.datafilename = "/tmp/testData.json";
 	// wait for the smr initialization to be done...
-	global.eventEmitter.on('readyForMeasurement', function() {
+	global.eE.on('readyForMeasurement', function() {
+		simulator = require ("../../main/meter/smartMeterSimulator.js");
 		done();
 	});
 })
@@ -16,13 +18,14 @@ before(function(done){
 describe ('smartMeter', function () {	
 	
 	/* init */
-	it ('should  init() without error', function (){
+	it ('should init() without error', function (){
+		console.log (smr.gpio_input_pin	);
 		assert(smr.gpio_input_pin>0);
 	})
 
-	/* logfile is there */
-	it ('should create logfile ', function () {
-		assert (fs.existsSync(smr.datafilename));
+	/* datafile is there */
+	it ('should have datafilename ', function () {
+		assert (fs.existsSync(global.datafilename));
 	})
 
 	/* GPIO is set up */

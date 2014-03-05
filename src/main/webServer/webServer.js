@@ -23,14 +23,6 @@ var ws = {
 // initialize the webserver
 ws.eventEmitter.on('init', function () {global.log ('...webserver init done'); });
 
-// if $1 option is testmode, then start the simulator...
-ws.eventEmitter.on('init', function() {
-	global.datafilename = '/tmp/data/gotResults.json';
-	global.exitEventString = 'exit';	
-});
-
-
-
 // start the webserver after ws.init()
 ws.eventEmitter.on('init', ws.start );
 
@@ -104,6 +96,7 @@ function server_response (request, response) {
 	
 	// parse the request
 	global.log ('in server_response, pathname: ' + path );
+	global.log ('in server_response, global.datafilename: ' + global.datafilename );
 	if (path == ws.url+'/get') get (request, response, global.datafilename);		
 
 	// get gets the last 100 or so entries in the datail
@@ -136,7 +129,7 @@ function server_response (request, response) {
 		global.log ('serving static file: ' + myfilename + ", myFileending:" + myFileending + "  mimeType: " + myMimeType);
 		
 		var fs = require('fs');
-		fs.readFile(global.srcPath+'src/main/client/' + myfilename, "binary", function (err, file) {
+		fs.readFile(global.srcPath+'main/client/' + myfilename, "binary", function (err, file) {
 			global.log ('readFile: ' + './client/' + myfilename);
 			
 		            if (err) {
@@ -191,12 +184,12 @@ function getnolines (request, response, filename) {
 		if (params.query.hasOwnProperty('filter') === true && typeof params.query.filter === 'string' ) 
 			cmd += ' | grep ' + params.query.filter;
 		 
-		cmd += " | wc -l | awk '{print $1}'";
+		cmd += " | wc -l | tr -d ' '";
 
-		exec(cmd, function (error, data) {
-			global.log('callback in getnolines, cmd: ' + cmd + "\n" +data);
-			responseData += data;
-//			responseData.replace(/\n$/,']');	
+		exec(cmd, function (error, stdout) {
+			// get rid of newlines in data
+			var data = stdout.slice(0, stdout.length-1);
+			responseData += data+"]";
 
 			// wrap data with wrapWithCallback if there is a callback parameter...
 			if (params.query.hasOwnProperty('callback') === true && typeof params.query.callback === 'string' ) {
@@ -238,11 +231,15 @@ function get (request, response, filename) {
 
 	// the raspberry likes close here instead of exit...
 	//	tail.on('close', function (code) {
-	tail.on(global.exitEventString, function (code) {
-		responseData = responseData.replace(/,\n$/, ']');		// removed the last ,
+	var exitEventString = (process.platform == 'darwin')  ? "exit" : "close";
+
+	tail.on(exitEventString, function (code) {
+		responseData = responseData.replace(/,\n$/, '');		// removed the last ,
+		responseData += "]";
 
 		// wrap data with wrapWithCallback if there is a callback parameter...
-		if (params.query.hasOwnProperty('callback') === true && typeof params.query.callback === 'string' ) {
+		if (params.query.hasOwnProperty('callback') === true 
+			&& typeof params.query.callback === 'string' ) {
 			responseData = wrapWithCallback (responseData, params.query.callback);
 		}		
 

@@ -18,7 +18,7 @@ var global = require ('./global.js');
 
 var global = {
 	timers: require('timers'),
-	eventEmitter: new (require('events').EventEmitter),
+	eE: new (require('events').EventEmitter),
 	//          diese ^ Klammern versteh ich  nicht  ^
 	// util.inspect ansehen
 
@@ -38,8 +38,12 @@ function _Init () {
 	var objref = this,
 		params = (process.platform == 'darwin') ? 
 			require ('./globalDarwin.json') 
-		   :require ('./global.json');
+		   :require ('./global.json'),
+		fs =  require('fs'),
+		path = require('path'),
+		logP;
 
+	console.log ("----> this platform is "+ process.platform); 
 	// Simple constructor, links all parameters in params object to >>this<<
 	if (params && Object.keys && Object.keys(params).length >= 1) {
 		global.log ("initializing this smarty with params");
@@ -49,6 +53,18 @@ function _Init () {
 		})
 	}
 	console.log ("initialized global object...");
+
+	logP = path.dirname(global.datafilename);
+
+	// create logPath and logFile if it does not exist
+	if (!fs.existsSync(logP)) {
+		fs.mkdirSync(logP);
+	}
+	if (!fs.existsSync(global.datafilename)) {
+		fs.openSync(global.datafilename, 'a');
+	}
+
+	global.eE.emit('initializedGlobalObject');
 	return this; 
 }
 

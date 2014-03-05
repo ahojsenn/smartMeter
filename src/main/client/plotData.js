@@ -29,6 +29,7 @@ var plotN = function (data, targetdiv, title) {
 	var nesteddata = pv.nest(data)
 	    .key(function(d) {return d.term;})
 	    .entries();
+	console.log ('in plotN ...');
 
 
 

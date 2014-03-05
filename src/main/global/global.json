@@ -1,12 +1,8 @@
 {
-	"gpio_path": "/sys/class/gpio/",
-	"gpio_input_pin": 3,
-	"polling_intervall": 20,
 	"logPath": "data/",
 	"logFile": "gotResults.json",
 	"UmdrehungenProKWh": 75,
 	"debug": true,
-	"exitEventString": "close",
-	"srcPath": "/home/pi/production/smartMeter/",
+	"srcPath": "/home/pi/production/smartMeter/src/",
 	"datafilename": "/home/pi/production/smartMeter/data/gotResults.json"
 }

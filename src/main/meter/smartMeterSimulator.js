@@ -12,12 +12,8 @@ var global = require ('../global/global.js');
  */
 function _Init () {
 	var objref = this,
-		params = (process.platform == 'darwin') ? 
-			require ('./smartMeterDarwin.json') 
-		   :require ('./smartMeter.json') ,
-		fs =  require('fs'),
-		path = require('path'),
-		logP;
+		params = require ('./smartMeter.json') ,
+		fs =  require('fs');
 
 
 	// Simple constructor, links all parameters in params object to >>this<<
@@ -50,7 +46,8 @@ function simulator () {
 		setTimeout(function () {
 			var watt=Math.round(86400/(75*randomTime/1000)),
 				cmd = "echo {'\"'test1'\"' : '\"'huhuh'\"', '\"'Watt'\"' : "+watt+", '\"'timestamp'\"': `date +%s000`} >> "+ global.datafilename;
-			global.log('createRandomData created 1/75 KW/h after '+ randomTime/1000 + 's. Watt= ' + watt);
+			global.log('  createRandomData created 1/75 KW/h after '+ randomTime/1000 + 's. Watt= ' + watt);
+			global.log('  logged it to: '+ global.datafilename);
 			exec (cmd);
 			objref.createRandomData();
 		}, randomTime);

@@ -9,8 +9,8 @@
 
 
 WPATH=/home/pi/production/smartMeter/
-RCPATH=/home/pi/production/smartMeter/meter/
-SERVER=meter/smartMeter.js
+RCPATH=/home/pi/production/smartMeter/src/main/meter/
+SERVER=src/main/meter/smartMeter.js
 SERVERPATH=$WPATH$SERVER
 RCDSERVER=rcdSmartMeter
 
