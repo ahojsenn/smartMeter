@@ -4,9 +4,11 @@ var assert = require("assert"),
 	global = require ("../../main/global/global.js"),
 	fs = require("fs")
 	;
-	
+
+
 /* init the smartMeter */ 
 before(function(done){
+	this.timeout(5000);
 	global.datafilename = "/tmp/testData.json";
 	// wait for the smr initialization to be done...
 	global.eE.on('readyForMeasurement', function() {

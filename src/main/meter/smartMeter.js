@@ -84,9 +84,12 @@ function smarty_setupGPIO (emitEventWhenFinished) {
 	}
 	else
 		commands = [
-			"echo "+this.gpio_input_pin+" > /sys/class/gpio/unexport",
-			"echo "+this.gpio_input_pin+" > /sys/class/gpio/export",
-			"echo 'in' > " + this.gpio_path+"gpio"+this.gpio_input_pin+"/direction",
+			"sudo echo "+this.gpio_input_pin+" > /sys/class/gpio/unexport",
+			"sleep 1",
+			"sudo echo "+this.gpio_input_pin+" > /sys/class/gpio/export",
+			"sleep 1",
+			"sudo echo 'in' > " + this.gpio_path+"gpio"+this.gpio_input_pin+"/direction",
+			"sleep 1",
 			"date; echo done"
 			];
 
@@ -122,19 +125,25 @@ function smarty_setupGPIO (emitEventWhenFinished) {
 // since I didn't get the onchange to run...
 //
 function smarty_startReader() {
-	var fs = require('fs');
+	var fs = require('fs'),
+		date = new Date(),
+		timestamp,
+		gpioFileName = smarty.gpio_path+'gpio'+smarty.gpio_input_pin+'/value',
+		message="";
 
-	fs.readFile (smarty.gpio_path+'gpio'+smarty.gpio_input_pin+'/value', function(err, inputValue) {
+	message += '{';
+	message += '"term":"v39.powerConsumption.'+ smarty.gpio_input_pin+'"';
+
+
+	fs.readFile (gpioFileName, function(err, inputValue) {
 		if(err) {
 	        console.log(err);
 	    } else {
 			if (smarty.lastValue+0 != inputValue+0 ) {
-	        	global.log('gpio_input_pin was '+smarty.lastValue+' and changed to: ' + inputValue +': now=' + new Date().getTime());
+	        	//global.log('gpio_input_pin was '+smarty.lastValue+' and changed to: ' + inputValue +': now=' + new Date().getTime());
 				smarty.lastValue = inputValue;
-				var timestamp = new Date().getTime(),
-					message = "";
-				message += '{';
-				message += '"term":"v39.powerConsumption.'+ smarty.gpio_input_pin+'"'
+				timestamp = date.getTime();
+
 				message += ', "Watt":'+powerConsumption (timestamp, smarty.secondLastTimestamp, inputValue);
 				message += ', "timestamp":' + timestamp;
 				message += '}';
@@ -171,7 +180,7 @@ function smarty_writeLog (message) {
 //
 function powerConsumption (t1, t2, inputValue) {
 	var myWatt = 1,  // set myWatt to 1 rather than 0, that will allow me to have a log scale later...
-		UmdrehungenProh = 1000 * 60 * 60 / (t1 - t2);
+		UmdrehungenProh = 1000 * 3600	 / (t1 - t2);
 	
 	if (t2 > 0 )
 		myWatt = 1000* UmdrehungenProh / smarty.UmdrehungenProKWh ;

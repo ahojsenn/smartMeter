@@ -2,7 +2,7 @@
 	"logPath": "data/",
 	"logFile": "gotResults.json",
 	"UmdrehungenProKWh": 75,
-	"debug": true,
+	"debug": false,
 	"srcPath": "/home/pi/production/smartMeter/src/",
 	"datafilename": "/home/pi/production/smartMeter/data/gotResults.json"
 }

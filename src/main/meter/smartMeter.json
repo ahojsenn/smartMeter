@@ -1,6 +1,6 @@
 {
 	"gpio_path": "/sys/class/gpio/",
-	"gpio_input_pin": 2,
-	"polling_intervall": 20,
+	"gpio_input_pin": 2, 
+	"polling_intervall": 50,
 	"UmdrehungenProKWh": 75
 }
