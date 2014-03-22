@@ -21,8 +21,8 @@ describe ('smartMeter', function () {
 	
 	/* init */
 	it ('should init() without error', function (){
-		console.log (smr.gpio_input_pin	);
-		assert(smr.gpio_input_pin>0);
+		console.log (global.gpio_input_pin	);
+		assert(global.gpio_input_pin>0);
 	})
 
 	/* datafile is there */
@@ -33,10 +33,10 @@ describe ('smartMeter', function () {
 	/* GPIO is set up */
 	it ('should create gpio device at **/direction', function () {
 		assert (
-			fs.existsSync(smr.gpio_path+"gpio"+smr.gpio_input_pin+"/direction")
+			fs.existsSync(global.gpio_path+"gpio"+global.gpio_input_pin+"/direction")
 		);
 		assert.equal (
-			fs.readFileSync(smr.gpio_path+"gpio"+smr.gpio_input_pin+"/direction")
+			fs.readFileSync(global.gpio_path+"gpio"+global.gpio_input_pin+"/direction")
 			, "in\n");
 	})
 

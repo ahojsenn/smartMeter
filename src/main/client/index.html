@@ -25,6 +25,7 @@
 
      	if (!document.URL.indexOf("file://")) {
      		console.log ("this is a dev system on "+document.URL);
+     		baseURL="http://entrance.leichsenring.net:42080/";     		
      		baseURL="http://krukas.no-ip.org:42080";     		
      	}
 	</script>
@@ -33,19 +34,54 @@
 	<script src="plotData.js" type="text/javascript"></script>
 	<script src="/socket.io/socket.io.js" type="text/javascript"></script>
 	<script src="http://mbostock.github.io/protovis/protovis-r3.2.js" type="text/javascript"></script>
-	<script src="http://127.0.0.1/~docjoe/jquery-1.7.1.min.js" type="text/javascript"></script>
+	<script src="http://code.jquery.com/jquery-1.11.0.min.js" type="text/javascript"></script>
 </head>
 
 
 <body>
-	<h1>Energy Meter</h1>
+
+	<div id="rad">
+		<div id="elem-background"></div>
+		<div id="elem-window"></div>
+		<div id="elem3"></div>
+		<div id="line"></div>
+	</div>
 
 	<script type="text/javascript">
-		var eo = new energyObject({
-			title: "smart meter",
-			webSocketDomain: baseURL,  // for the webSocket, on which new data will be listened on
-			URL: baseURL + '/smartMeter' // for the get data request
-		}).listenOnGotDataEvent().getData(1000);		
+
+var eo = new energyObject({
+	title: "smart meter",
+	webSocketDomain: baseURL,  // for the webSocket, on which new data will be listened on
+	URL: baseURL + '/smartMeter' // for the get data request
+}).listenOnGotDataEvent().getData(1000);		
+
+var xpos = 50,
+ 	xstart = xpos,
+ 	screenWidth = $(window).width(),
+ 	step = 1,
+ 	height = 5,
+ 	ypos = 0,
+ 	speed = screenWidth
+ 	;
+
+$('#rad').css({'width':screenWidth-2*xstart, 'height':height, 'background-color':'#cccccc', 'left':xstart, 'top':ypos, 'position':'absolute'});
+$('#elem-background').css({'width':(screenWidth-3*xstart), 'height':height, 'background-color':'rgb(212,212,212)', 'left':xstart, 'top':ypos, 'position':'absolute'});
+$('#elem-window').css({'width':(3*xstart), 'height':height, 'background-color':'rgb(212,212,212)', 'left':xstart, 'top':ypos, 'position':'absolute'});
+
+//Function to draw a vertical line
+function draw_vertical_line(width, height, linecolor, xpos, ypos) {
+    $('#line').css({'width':width, 'height':height, 'background-color':linecolor, 'left':xpos, 'top':ypos, 'position':'absolute'});
+		}
+
+setInterval(
+ 	function() {
+      	draw_vertical_line(42, 5, 'rgb(255,0,0)', xpos, 0);
+      	xpos += step;
+      	if ( xpos > screenWidth - 3*xstart) xpos = 0;
+		}, 
+	1000);
+	
+
 	</script>
 
 </body>

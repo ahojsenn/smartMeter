@@ -8,7 +8,9 @@ function energyObject(params) {
 	var objref = this,
 	    gotDataEvent = "gotData",
 	    $el,
-	    mouseDown = 0;
+	    mouseDown = 0,
+	    UpKWH = 75,
+	    scaleFactor = 1;
 
 	console.log ("in energyObject definition");
 
@@ -30,10 +32,14 @@ function energyObject(params) {
 
 	this.summaryTableDiv = "summaryTableDiv1234";
 	this.meterPlotDiv = "meterPlotDiv1234";
+	this.titleDiv = "titleDiv1234";
+	this.UpKWH = UpKWH;
+	this.scaleFactor = scaleFactor;
 
 	// Introduce a wrapper div to match jQuery style
 	this.$el = $el = $([
 		'<div>',
+			'<div id="'+this.titleDiv+'"></div>',
 			'<div id="'+this.summaryTableDiv+'"></div>',
 			'<div id="'+this.meterPlotDiv+'"></div>',
 		'</div>'
@@ -41,10 +47,7 @@ function energyObject(params) {
 
 	this.setDomain = function (URL) { this.webSocketDomain = URL; return this; };
 	this.setURL = function (URL) { this.URL = URL; return this; };
-	this.setTitle = function (title) { this.title = title; return this; };
 	this.setMyData = function (d) { this.myData = d; return this; };
-	this.setMeterPlotDiv = function (d) { this.meterPlotDiv = d; return this; }
-	this.setSummaryTableDiv = function (d) { this.summaryTableDiv = d; return this; }
 
 	this.listenOnGotDataEvent = function () {
 		$(objref).on (gotDataEvent, this.GotDataEventCallback);
@@ -53,6 +56,7 @@ function energyObject(params) {
 
 	this.GotDataEventCallback = function (event) {
 		console.log( 'gotData!!!, #datapoints=' , event);
+		this.myTitle (this.title);		
 		this.calculate (this.myData);
 		this.tableSummary(this.myData);
 		plotN (this.myData, this.meterPlotDiv, this.title);
@@ -61,6 +65,9 @@ function energyObject(params) {
 
 		return this;
 	};
+
+
+	// some more refactoring needed here...
 
 	this.getData = function (nolines) {
 		$.ajax ({
@@ -107,8 +114,8 @@ function energyObject(params) {
 		console.log ("in calculate, mydata:" + new Date (data[0].timestamp));
 		console.log ("in calculate, mydata:" + new Date (data[data.length-1].timestamp) );
 		console.log ("in calculate, tdiff[s]=" + tdiff/1000);
-		console.log ("in calculate, KW/h per day=" + (data.length/75) * (86400*1000)/tdiff );
-		console.log ("in calculate, KW/h per year=" + 365*(data.length/75) * (86400*1000)/tdiff );
+		console.log ("in calculate, KW/h per day=" + (data.length*scaleFactor/UpKWH) * (86400*1000)/tdiff );
+		console.log ("in calculate, KW/h per year=" + 365*(data.length*scaleFactor/UpKWH) * (86400*1000)/tdiff );
 		return this;
 	};
 
@@ -134,16 +141,27 @@ function energyObject(params) {
 			)
 			.append( $('<tr/>')
 				.append( $('<td/>').append('KW/h per day: ') )
-				.append( $('<td/>').append( Math.round( 100*(data.length/75) * (86400*1000)/tdiff) /100) )
+				.append( $('<td/>').append( Math.round( 100*(data.length*scaleFactor/UpKWH) * (86400*1000)/tdiff) /100) )
 			)
 			.append( $('<tr/>')
 				.append( $('<td/>').append('KW/h per year: ') )
-				.append( $('<td/>').append( Math.round( 10*365*(data.length/75) * (86400*1000)/tdiff) /10 ) )
+				.append( $('<td/>').append( Math.round( 10*365*(data.length*scaleFactor/UpKWH) * (86400*1000)/tdiff) /10 ) )
 			);
 
 		$('#'+this.summaryTableDiv, $el).html($summaryTable);
 
 	};
+
+	// render a title
+	this.myTitle = function (title) {
+		console.log ("in myTitle..." );
+
+		$myTitle = $('<h1/>')
+			.append(title);
+
+		$('#'+this.titleDiv, $el).html($myTitle);
+	};
+
 
 	// call append only once on DOM for better performance
 	$('body').append($el);

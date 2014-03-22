@@ -108,6 +108,11 @@ function server_response (request, response) {
 	// getlast gets the last entry
 	else if (path == ws.url+'/getlast') executethis (request, response, global.datafilename, 'tail -1 ');		
 	
+	// getglobal returns the global object to the client to transport server info
+	else if (path == ws.url+'/getglobals') {
+		response.write (JSON.stringify(global));
+		response.end();
+	}
 	// server static files under url "+/client/"
 	else if ( (path.indexOf(ws.url+'/client/') == 0 ) ){
 		var myfilename = path.substring (path.lastIndexOf('/')+1),

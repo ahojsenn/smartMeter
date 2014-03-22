@@ -1,6 +1,13 @@
 {
+	"location": "V39MacBookTest",
 	"logPath": "data/",
 	"logFile": "gotResults.json",
+
+	"gpio_path": "/sys/class/gpio/",
+	"gpio_input_pin": 2, 
+	"polling_intervall": 50,
+	"UmdrehungenProKWh": 75,
+
 	"debug": true,
 	"srcPath": "/Users/johannes.mainusch/docjoe/development/smartMeter/src/",
 	"datafilename": "/tmp/data/gotResults.json"

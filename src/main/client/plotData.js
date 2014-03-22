@@ -16,7 +16,8 @@ var plotN = function (data, targetdiv, title) {
 		fminhou = pv.Format.date("%H:%M:%S"),
 		y_value = function (d) {return d.Watt = (d.Watt == 0) ? 0.01 : d.Watt; },
 		date = new Date()
-		mousedown = 0;
+		mousedown = 0,
+		ymin = 50;
 
 		/** the data looks like this...
 		{"term":"v39.powerConsumption.3", 	"Watt":204.72226013375186, "timestamp":1362413445121}
@@ -41,7 +42,7 @@ var plotN = function (data, targetdiv, title) {
 		t_min = pv.min(data, function(d) {return new Date(d.timestamp).getTime()}),
 		t_max = pv.max(data, function(d) {return new Date(d.timestamp).getTime()}),
 		x = pv.Scale.linear( new Date(t_min), new Date(t_max) ).range(0, w),
-		y = pv.Scale.log(1, pv.max(data, function(d) {return d.Watt+0.01}) ).range(0, h2),
+		y = pv.Scale.log(ymin, pv.max(data, function(d) {return d.Watt+0.01}) ).range(0, h2),
 		ycolor = pv.Scale.linear(0, pv.max(data, y_value ) ).range("#1f77b4", "#ff7f0e");
 		ii = new Array;
 
@@ -91,19 +92,21 @@ var plotN = function (data, targetdiv, title) {
 			  */
 			var d1 = x.invert(i.x),
 		       	d2 = x.invert(i.x + i.dx),
-				maxy= 0;
+				maxy= 0,
+				miny = 1000;
 			$.each(nesteddata, function (key, data) {
 				var dd = data.values.slice(
 					Math.max(0, pv.search.index(data.values, d1, function(d) {return new Date(d.timestamp)} ) - 1),
 					pv.search.index(data.values, d2, function(d) {return new Date(d.timestamp)} ) + 1);
 
 			    maxy = maxy > pv.max(dd, y_value ) ? maxy : pv.max(dd, y_value );
+			    miny = miny < pv.min(dd, y_value ) ? miny : pv.min(dd, y_value );
 
 			})
 
 			fx.domain(d1, d2);
 			// now get the y.domain. y.domain returns the lower and upper boundary of the input domain.
-		    fy.domain( [10, maxy*1.1] );
+		    fy.domain( [miny*0.8, maxy*1.1] );
 			return nesteddata;
 	});
 

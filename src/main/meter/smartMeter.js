@@ -67,28 +67,28 @@ function smarty_setupGPIO (emitEventWhenFinished) {
 	// create gpio device and moch it on non raspi hardware //
 	global.log ("in smarty_setupGPIO");
 	if (process.platform == 'darwin') {
-		this.gpio_path="/tmp/gpio/"
+		global.gpio_path="/tmp/gpio/"
 		commands = [
 			"clear",
-			"rm -rf " + this.gpio_path,
-			"mkdir -p " + this.gpio_path+"gpio"+this.gpio_input_pin,
-			"ls -al " + this.gpio_path+"gpio"+this.gpio_input_pin,
-			"touch " + this.gpio_path+"gpio"+this.gpio_input_pin+"/direction",
-			"ls -al " + this.gpio_path+"gpio"+this.gpio_input_pin,
-			"echo 'in' > " + this.gpio_path+"gpio"+this.gpio_input_pin+"/direction",
-			"cat " + this.gpio_path+"gpio"+this.gpio_input_pin+"/direction",
-			"echo 0 > " + this.gpio_path+"gpio"+this.gpio_input_pin+"/value",
-			"cat " + this.gpio_path+"gpio"+this.gpio_input_pin+"/value",
+			"rm -rf " + global.gpio_path,
+			"mkdir -p " + global.gpio_path+"gpio"+global.gpio_input_pin,
+			"ls -al " + global.gpio_path+"gpio"+global.gpio_input_pin,
+			"touch " + global.gpio_path+"gpio"+global.gpio_input_pin+"/direction",
+			"ls -al " + global.gpio_path+"gpio"+global.gpio_input_pin,
+			"echo 'in' > " + global.gpio_path+"gpio"+global.gpio_input_pin+"/direction",
+			"cat " + global.gpio_path+"gpio"+global.gpio_input_pin+"/direction",
+			"echo 0 > " + global.gpio_path+"gpio"+global.gpio_input_pin+"/value",
+			"cat " + global.gpio_path+"gpio"+global.gpio_input_pin+"/value",
 			"date; echo done"
 			];			
 	}
 	else
 		commands = [
-			"sudo echo "+this.gpio_input_pin+" > /sys/class/gpio/unexport",
+			"sudo echo "+global.gpio_input_pin+" > /sys/class/gpio/unexport",
 			"sleep 1",
-			"sudo echo "+this.gpio_input_pin+" > /sys/class/gpio/export",
+			"sudo echo "+global.gpio_input_pin+" > /sys/class/gpio/export",
 			"sleep 1",
-			"sudo echo 'in' > " + this.gpio_path+"gpio"+this.gpio_input_pin+"/direction",
+			"sudo echo 'in' > " + global.gpio_path+"gpio"+global.gpio_input_pin+"/direction",
 			"sleep 1",
 			"date; echo done"
 			];

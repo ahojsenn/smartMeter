@@ -1,0 +1,8 @@
+todo
+- use the server global object on the client side... e.g. to distinguish between v39 and entrance.leichsenring.net...
+
+
+done
+- put global values from smartmeter.json to global.json
+- repair the title div in getEnergyObject.js
+
