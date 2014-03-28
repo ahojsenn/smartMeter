@@ -50,10 +50,13 @@
 	<script type="text/javascript">
 
 var eo = new energyObject({
-	title: "smart meter",
-	webSocketDomain: baseURL,  // for the webSocket, on which new data will be listened on
-	URL: baseURL + '/smartMeter' // for the get data request
-}).listenOnGotDataEvent().getData(1000);		
+		title: "smart meter",
+		webSocketDomain: baseURL,  // for the webSocket, on which new data will be listened on
+		URL: baseURL + '/smartMeter' // for the get data request
+	})
+	.listenOnGotDataEvent()
+	.getGlobalData()
+	.getData(1000);		
 
 var xpos = 50,
  	xstart = xpos,

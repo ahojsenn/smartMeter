@@ -48,14 +48,20 @@ function energyObject(params) {
 	this.setDomain = function (URL) { this.webSocketDomain = URL; return this; };
 	this.setURL = function (URL) { this.URL = URL; return this; };
 	this.setMyData = function (d) { this.myData = d; return this; };
+	this.setMyGlobalData = function (d) { this.myGlobalData = d; return this; };
 
 	this.listenOnGotDataEvent = function () {
 		$(objref).on (gotDataEvent, this.GotDataEventCallback);
 		return objref;
 	};
 
-	this.GotDataEventCallback = function (event) {
-		console.log( 'gotData!!!, #datapoints=' , event);
+	this.getGlobalsCallback = function (globaldata) {
+		console.log( 'gotGlobalData!!!, #datapoints=' , globaldata);
+
+	}
+
+	this.GotDataEventCallback = function (data) {
+		console.log( 'gotData!!!, #datapoints=' , data);
 		this.myTitle (this.title);		
 		this.calculate (this.myData);
 		this.tableSummary(this.myData);
@@ -66,8 +72,27 @@ function energyObject(params) {
 		return this;
 	};
 
+	// get the global object from the server
+	// it it we'll find things like the name of the energy meter and some specs
+	// concerning the number of red flashed per Kw/h and so on...
+	this.getGlobalData = function () {
+		console.log ("in getGlobalData...");
+		$.ajax ({
+			url: this.URL+'/getglobals',
+			cache : false,
+			dataType: 'jsonp',
+			crossDomain: true,
+			success:
+				function (data) { // this little closure will preserve the object reference of this (energyObject)
+					console.log ("got called back with globalData ...", data[data.length-1] );
+					objref.setMyGlobalData( data );
+					$(objref).trigger( gotGlobalDataEvent, [data]);
+					return objref;
+				}
+		});
+		return this;
 
-	// some more refactoring needed here...
+	}
 
 	this.getData = function (nolines) {
 		$.ajax ({

@@ -11,6 +11,13 @@ esac
 
 case "$1" in
 	'start' )
+		echo killing all node procs
+		killall node
+
+		set -e;
+		cd src;
+		mocha --recursive;
+		cd ..
    		echo "Starting local webServer and smartMeter in test mode..."
 		./src/main/webServer/webServer.js > /dev/null 2>&1 &
 		./src/main/meter/smartMeter.js  > /dev/null 2>&1 &

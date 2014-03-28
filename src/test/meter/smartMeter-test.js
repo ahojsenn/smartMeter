@@ -1,8 +1,10 @@
-var assert = require("assert"),
+var testmode = require("../../main/global/testmode.js").on(),
+	assert = require("assert"),
+	global = require ("../../main/global/global.js").init("Test"),
 	smr = require ("../../main/meter/smartMeter.js"),
 	simulator,
-	global = require ("../../main/global/global.js"),
-	fs = require("fs")
+	fs = require("fs"),
+  	exec = require('child_process').exec
 	;
 
 
@@ -42,7 +44,7 @@ describe ('smartMeter', function () {
 
 	/* it should calculate correct Watts */
 	it ('should calculate correct Watts', function () {
-		assert.equal (smr.powerConsumption (0, 6834, 1), -7023.705004389815);
+		assert (smr.powerConsumption (6834,0, 1) > 0);
 	})
 
 })

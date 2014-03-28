@@ -1,8 +1,29 @@
 todo
 - use the server global object on the client side... e.g. to distinguish between v39 and entrance.leichsenring.net...
+- the smartmeter Simulator should not write values to the datafile but rather just flip gpio-pins from time to time
+- therefore the smartmeter.js should not need to distinguish between darwin and rpi...
+- therefore the test setup for darwin should be part of the simulator...
+
+--> next: initialize the global object depending on weather the caller id war someting testy or production...
+	I think, i just discovered that I have at least 4 Systems.
+	1. Development System
+	2. Dev- Test
+	3. Prod- Test
+	4. Production 
+
+
+
+
+
+
+
+?!? Problem: on an rpi I want to test and yet not write to an input gpio...?!?
+Idea: I I leave it as it is for rpi and only on darwin the simulator will write to the simulated gpio device. ...
 
 
 done
 - put global values from smartmeter.json to global.json
 - repair the title div in getEnergyObject.js
-
+- only log data values > 1 Watt, i.e. remove the enty at startup time... and maybe reboot 
+- acslogo von S. Tilkov ansehen...
+- find out, why the global object is initialized so early and by whom... --> there was an uneccesary init() call in global.js

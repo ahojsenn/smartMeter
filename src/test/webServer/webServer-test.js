@@ -1,8 +1,10 @@
-var assert = require("assert"),
-  global = require ('../../main/global/global.js'),
-  ws,
-	http = require ("http")
-	;
+var testmode = require("../../main/global/testmode.js").on(),
+    assert = require("assert"),
+    global = (typeof global != 'undefined' ) ? global : require ("../../main/global/global.js").init("Test"),
+    ws,
+	  http = require ("http"),
+    exec = require('child_process').exec
+	  ;
 
 
 /* init and start the webServer */ 
@@ -17,6 +19,15 @@ before(function(done){
     assert.equal(200, res.statusCode);
     done();
 	})
+})
+
+
+// after all...
+after( function(done) {
+  // now remove the 'Testmode' file
+  exec ("rm Testmode");
+  console.log ('Test cleaned up, sugar'); 
+  done ();  
 })
 
 
@@ -127,6 +138,21 @@ describe('runs and...', function () {
       })      
     });
 
+  // 
+  it ('serves the global object under the url /smartMeter/getglobals', function (done) {
+    var url = 'http://localhost:'+ws.serverPort+'/smartMeter/getglobals';
+    http.get( url, function (res) {
+      assert.equal(200, res.statusCode);
+      res.on ('data', function (chunk) {
+        assert (chunk.length > 0);
+        assert (JSON.parse(chunk).location == 'TestLocation')
+
+        console.log ("----xxx>> " + chunk );
+        console.log ("----xxx>> " + JSON.parse(chunk).location );
+        done();
+      });
+    })      
+  })
 
 });
 

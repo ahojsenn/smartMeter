@@ -14,9 +14,10 @@
 	The resuting timestamps are logges in the logfile...
 
 */
-var global = require ('./global.js');
 
-var global = {
+var testmode = require("../../main/global/testmode.js"),
+	global = (typeof global != 'undefined' ) ? global : 
+	{
 	timers: require('timers'),
 	eE: new (require('events').EventEmitter),
 	//          diese ^ Klammern versteh ich  nicht  ^
@@ -34,25 +35,25 @@ module.exports = global;
 /*
  * initialize function for the smarty 
  */
-function _Init () {
+function _Init (gotCalledWith) {
 	var objref = this,
-		params = (process.platform == 'darwin') ? 
-			require ('./globalDarwin.json') 
+		params = ( testmode.isSwitchedOn() ) ? 
+			require ('./globalTest.json') 
 		   :require ('./global.json'),
 		fs =  require('fs'),
 		path = require('path'),
 		logP;
 
-	console.log ("----> this platform is "+ process.platform); 
+	console.log ("----> in global.init, this platform is "+ process.platform + "  got called with: " + gotCalledWith); 
 	// Simple constructor, links all parameters in params object to >>this<<
 	if (params && Object.keys && Object.keys(params).length >= 1) {
-		global.log ("initializing this smarty with params");
+		global.log ("initializing this smarty with params: " );
 		Object.keys(params).forEach( function(param) {
 			objref[param] = params[param];
 			global.log ("setting this."+param+"="+ params[param]);
 		})
 	}
-	console.log ("initialized global object...");
+	global.log ("initialized global object with: "+ gotCalledWith);
 
 	logP = path.dirname(global.datafilename);
 
@@ -67,9 +68,6 @@ function _Init () {
 	global.eE.emit('initializedGlobalObject');
 	return this; 
 }
-
-global.init();
-
 
 
 

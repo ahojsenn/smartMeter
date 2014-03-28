@@ -8,7 +8,7 @@
 	The server serves data in json format from files
 	The Data is in the file 'datafilename'	
 */
-var global = require ('../global/global.js');
+var	global = (typeof global != 'undefined' ) ? global : require ("../../main/global/global.js").init("from webServer");
 
 // the webServer Object
 var ws = {
@@ -110,9 +110,17 @@ function server_response (request, response) {
 	
 	// getglobal returns the global object to the client to transport server info
 	else if (path == ws.url+'/getglobals') {
-		response.write (JSON.stringify(global));
+		var params = require('url').parse(request.url, true),
+			responseData = JSON.stringify(global);
+
+			// if the request has a callback parameter, use it to wrap the json oblject with it for jsonp
+			if (typeof params.query.callback != 'undefined') 
+				responseData = wrapWithCallback (responseData, params.query.callback);
+
+		response.write (responseData);
 		response.end();
 	}
+	
 	// server static files under url "+/client/"
 	else if ( (path.indexOf(ws.url+'/client/') == 0 ) ){
 		var myfilename = path.substring (path.lastIndexOf('/')+1),

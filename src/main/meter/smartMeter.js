@@ -14,7 +14,7 @@
 	The resuting timestamps are logges in the logfile...
 
 */
-var global = require ('../global/global.js');
+var global = require ('../global/global.js').init("from smartMeter");
 
 var smarty = {
 	lastValue: "start",
@@ -24,8 +24,7 @@ var smarty = {
 	//          diese ^ Klammern versteh ich  nicht  ^
 	// util.inspect ansehen
 
-	init: smarty_Init,
-	setupGPIO: smarty_setupGPIO,
+	setupGPIO: require ('./setupGPIO.js'),
 	startReader: smarty_startReader,
 	writeLog: smarty_writeLog,
 	powerConsumption: powerConsumption
@@ -33,91 +32,6 @@ var smarty = {
 
 module.exports = smarty;
 
-/*
- * initialize function for the smarty 
- */
-function smarty_Init () {
-	var objref = this,
-		params = require ('./smartMeter.json');
-
-
-	// Simple constructor, links all parameters in params object to >>this<<
-	if (params && Object.keys && Object.keys(params).length >= 1) {
-		global.log ("initializing this smarty with params");
-		Object.keys(params).forEach( function(param) {
-			objref[param] = params[param];
-			global.log ("setting this."+param+"="+ params[param]);
-		})
-	}
-
-
-	return this; 
-}
-
-
-
-/*
- * GPIO setup function for the smarty
- */
-function smarty_setupGPIO (emitEventWhenFinished) {
-	var exec = require('child_process').exec,
-		commands = new Array(),
-		cmdNr = 0;
-
-	// create gpio device and moch it on non raspi hardware //
-	global.log ("in smarty_setupGPIO");
-	if (process.platform == 'darwin') {
-		global.gpio_path="/tmp/gpio/"
-		commands = [
-			"clear",
-			"rm -rf " + global.gpio_path,
-			"mkdir -p " + global.gpio_path+"gpio"+global.gpio_input_pin,
-			"ls -al " + global.gpio_path+"gpio"+global.gpio_input_pin,
-			"touch " + global.gpio_path+"gpio"+global.gpio_input_pin+"/direction",
-			"ls -al " + global.gpio_path+"gpio"+global.gpio_input_pin,
-			"echo 'in' > " + global.gpio_path+"gpio"+global.gpio_input_pin+"/direction",
-			"cat " + global.gpio_path+"gpio"+global.gpio_input_pin+"/direction",
-			"echo 0 > " + global.gpio_path+"gpio"+global.gpio_input_pin+"/value",
-			"cat " + global.gpio_path+"gpio"+global.gpio_input_pin+"/value",
-			"date; echo done"
-			];			
-	}
-	else
-		commands = [
-			"sudo echo "+global.gpio_input_pin+" > /sys/class/gpio/unexport",
-			"sleep 1",
-			"sudo echo "+global.gpio_input_pin+" > /sys/class/gpio/export",
-			"sleep 1",
-			"sudo echo 'in' > " + global.gpio_path+"gpio"+global.gpio_input_pin+"/direction",
-			"sleep 1",
-			"date; echo done"
-			];
-
-	// daisy chaining the commands to set up the gpio
-	global.log ("in smarty_setupGPIO, starting the command daisy chain...");
-	( function execCmdInADaisyChain (commands, cmdNr) {
-		global.log ("  ... in execCmdInADaisyChain..." + cmdNr + " " + commands.length);
-		if (commands.length > ++cmdNr) {
-			global.log ("  ... " + commands[cmdNr]);
-			exec ( commands[cmdNr], function (error, stdout, stderr) { 
-				global.log ("  Step " +cmdNr+": executing: " + commands[cmdNr]);
-				global.log('  stdout: ' + stdout);
-    			global.log('  stderr: ' + stderr);
-    			if (error !== null) {
-      				console.log('exec error: ' + error);
-      			}
-				execCmdInADaisyChain (commands, cmdNr);
-			});
-		}
-		else {
-			/* start the smarty */
-			global.log('I think setup is done, emitting '+emitEventWhenFinished+' event...');
-			global.eE.emit(emitEventWhenFinished);
-		}
-	})(commands, cmdNr);
-
-	return this; 
-}
 
 
 //
@@ -128,11 +42,12 @@ function smarty_startReader() {
 	var fs = require('fs'),
 		date = new Date(),
 		timestamp,
-		gpioFileName = smarty.gpio_path+'gpio'+smarty.gpio_input_pin+'/value',
-		message="";
+		gpioFileName = global.gpio_path+'gpio'+global.gpio_input_pin+'/value',
+		message="",
+		watts = 0;
 
 	message += '{';
-	message += '"term":"v39.powerConsumption.'+ smarty.gpio_input_pin+'"';
+	message += '"term":"'+global.location+'.powerConsumption.'+ global.gpio_input_pin+'"';
 
 
 	fs.readFile (gpioFileName, function(err, inputValue) {
@@ -143,12 +58,16 @@ function smarty_startReader() {
 	        	//global.log('gpio_input_pin was '+smarty.lastValue+' and changed to: ' + inputValue +': now=' + new Date().getTime());
 				smarty.lastValue = inputValue;
 				timestamp = date.getTime();
+				watts = powerConsumption (timestamp, smarty.secondLastTimestamp, inputValue);
 
-				message += ', "Watt":'+powerConsumption (timestamp, smarty.secondLastTimestamp, inputValue);
+				message += ', "Watt":'+watts;
 				message += ', "timestamp":' + timestamp;
 				message += '}';
 			
-				global.eE.emit('pinChange', message);
+				// only l trigger to og stuff, if there is a significant power consumption, 
+				// i.e. not at startup or reboot time
+				if (watts > 1)
+					global.eE.emit('pinChange', message);
 
 				smarty.secondLastTimestamp = smarty.lastTimestamp;
 				smarty.lastTimestamp = timestamp;
@@ -183,7 +102,7 @@ function powerConsumption (t1, t2, inputValue) {
 		UmdrehungenProh = 1000 * 3600	 / (t1 - t2);
 	
 	if (t2 > 0 )
-		myWatt = 1000* UmdrehungenProh / smarty.UmdrehungenProKWh ;
+		myWatt = 1000* UmdrehungenProh / global.UmdrehungenProKWh ;
 	
 	global.log("in powerConsumption (" 
 		+ (t1-t2)/1000 +"s passed, "+ inputValue + "), "
@@ -193,22 +112,15 @@ function powerConsumption (t1, t2, inputValue) {
 }
 
 
-/*
- * The main bit... smarty is a nice name for smatrmeter...
- */
-smarty
-	.init ()
-	.setupGPIO ('readyForMeasurement')
 
-	//
-	// register an event 'pinChange' and an event on initDone
-	//
+/*
+ * register an event 'pinChange' and an event on initDone
+ */
 global.eE
 		.on('readyForMeasurement', smarty.startReader)
 		.on('pinChange', smarty.writeLog)	;
 
-
-
-
-
-
+/*
+ * The main bit... smarty is a nice name for smatrmeter...
+ */
+smarty.setupGPIO ('readyForMeasurement')
