@@ -37,7 +37,7 @@ module.exports = global;
  */
 function _Init (gotCalledWith) {
 	var objref = this,
-		params = ( testmode.isSwitchedOn() ) ? 
+		params = ( testmode.isSwitchedOn() || process.platform == 'darwin') ? 
 			require ('./globalTest.json') 
 		   :require ('./global.json'),
 		fs =  require('fs'),

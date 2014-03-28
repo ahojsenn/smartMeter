@@ -4,6 +4,21 @@ todo
 - therefore the smartmeter.js should not need to distinguish between darwin and rpi...
 - therefore the test setup for darwin should be part of the simulator...
 
+
+
+
+
+
+
+
+
+
+
+done
+2040328:
+?!? Problem: on an rpi I want to test and yet not write to an input gpio...?!?
+Idea: I I leave it as it is for rpi and only on darwin the simulator will write to the simulated gpio device. ...
+- solved by introducing the testmode object in the global directory
 --> next: initialize the global object depending on weather the caller id war someting testy or production...
 	I think, i just discovered that I have at least 4 Systems.
 	1. Development System
@@ -11,17 +26,6 @@ todo
 	3. Prod- Test
 	4. Production 
 
-
-
-
-
-
-
-?!? Problem: on an rpi I want to test and yet not write to an input gpio...?!?
-Idea: I I leave it as it is for rpi and only on darwin the simulator will write to the simulated gpio device. ...
-
-
-done
 - put global values from smartmeter.json to global.json
 - repair the title div in getEnergyObject.js
 - only log data values > 1 Watt, i.e. remove the enty at startup time... and maybe reboot 
