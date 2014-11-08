@@ -120,7 +120,7 @@ function server_response (request, response) {
 		response.write (responseData);
 		response.end();
 	}
-	
+
 	// server static files under url "+/client/"
 	else if ( (path.indexOf(ws.url+'/client/') == 0 ) ){
 		var myfilename = path.substring (path.lastIndexOf('/')+1),
@@ -143,7 +143,7 @@ function server_response (request, response) {
 		
 		var fs = require('fs');
 		fs.readFile(global.srcPath+'main/client/' + myfilename, "binary", function (err, file) {
-			global.log ('readFile: ' + './client/' + myfilename);
+			global.log ('readFile: ' +global.srcPath+ './client/' + myfilename);
 			
 		            if (err) {
 						global.log ('ERROR readFile: ' + './client/' + myfilename);

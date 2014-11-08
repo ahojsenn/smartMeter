@@ -1,7 +1,10 @@
 [V39]
-192.168.178.21:22			ansible_host_name=freundluis	purpose='dataServer and static Webserver...'
-192.168.178.38:22			ansible_host_name=joliwo		purpose='smartMeter V39'
-192.168.178.23:22 			ansible_host_name=freundulf		purpose='smartMeter Ulf Leichsenring'
+# 192.168.178.21:22			ansible_host_name=freundluis	purpose='dataServer and static Webserver...'
+# 192.168.178.38:22			ansible_host_name=joliwo		purpose='smartMeter V39'
+# 192.168.178.23:22 			ansible_host_name=freundulf		purpose='smartMeter Ulf Leichsenring'
+192.168.2.3:22 			ansible_host_name=freundkieran		purpose='testmachine'
+
+
 
 [V39:vars]
 dj_group_name=V39
@@ -9,12 +12,13 @@ dj_ssid=V39...
 dj_wlan_pwd="set this yourself"
 
 [smartMeter]
-192.168.2.6:22				ansible_host_name=joliwo		purpose='new V39 smartMeter'
+192.168.2.5:22 		ansible_host_name=marvin		purpose='testmachine'
+#192.168.178.58:22		ansible_host_name=tomatoesAndEggs	purpose='tomatoesAndEggs'
 
 [smartMeter:vars]
 dj_group_name=smartMeter
 dj_ssid=V39...
-dj_wlan_pwd="enter-your-ssid-pwd"
+dj_wlan_pwd="set your wlan pw"
 
 # usage:
 # ansible-playbook -vvvvk smartMeterSetup.yml --extra-vars dj_wlan_pwd='thepwd'

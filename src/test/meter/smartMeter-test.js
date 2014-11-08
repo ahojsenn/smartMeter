@@ -1,5 +1,4 @@
-var testmode = require("../../main/global/testmode.js").on(),
-	assert = require("assert"),
+var assert = require("assert"),
 	global = require ("../../main/global/global.js").init("Test"),
 	smr = require ("../../main/meter/smartMeter.js"),
 	simulator,
@@ -18,6 +17,7 @@ before(function(done){
 		done();
 	});
 })
+
 
 describe ('smartMeter', function () {	
 	

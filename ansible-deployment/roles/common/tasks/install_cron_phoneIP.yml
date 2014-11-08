@@ -12,6 +12,6 @@
         job="/home/pi/phoneIP.sh > /dev/null 2>&1 "
 
     - cron: name="do a 1 times a day daily reboot" 
-        minute="*/5" 
-        job="( UP=$(cat /proc/uptime | cut -d '.' -f1); if [ $UP -gt 86400 ]; then /sbin/reboot; fi )"
+        hour="1" 
+        job="( UP=$(cat /proc/uptime | cut -d '.' -f1); if [ $UP -gt 1000 ]; then /sbin/reboot; fi )"
 

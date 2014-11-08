@@ -16,8 +16,8 @@
     - include: get_hostinfo.yml
     - include: expand_rootfs.yml
 #    - include: get_python.yml
-    - include: get_X11ServerUtils_rsync.yml
-    - include: get_vino.yml
+#    - include: get_X11ServerUtils_rsync.yml
+#    - include: get_vino.yml
     - include: cp_xinitrc.yml
     - include: enable_ipv6.yml
 #    - include: install_avahi-daemon.yml  20140117: it fails...

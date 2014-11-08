@@ -1,13 +1,12 @@
 	# deployment of $1 to pi@192.168.2.42:production/. and remote execution...
 #
 
-TARGETSERVER=entrance.leichsenring.net
-TARGETSERVER=krukas.no-ip.org
+TARGETSERVER=192.168.178.23
 TARGET_SSH_PORT=42022
 
 case "$#" in
 	0 )
-    	TARGETSERVER=krukas.no-ip.org
+    	TARGETSERVER=myserver.no-ip.org
 		TARGET_SSH_PORT=42022
 	;;
 
@@ -51,9 +50,14 @@ case "$1" in
 	# kill any running server	
 	echo "killing the currently running server..."
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/src/main/webServer/rcdSmartMeterWebServer stop'
+
 	echo "testing with mocha..."
-#	echo "...and stopping on error"; set -e
+	echo "...and stopping on error"; set -e
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'cd production/smartMeter/src; sudo mocha --recursive'	
+	# and removing the /tmp/smartMeterTestModeIsOn if necessary
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo rm -f /tmp/smartMeterTestModeIsOn'	
+
+
     echo "installing the smartMeter bootstrap"
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/src/main/meter/rcdSmartMeter rcinstall'
     echo "starting the smartMeter"

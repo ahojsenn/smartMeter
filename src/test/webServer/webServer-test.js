@@ -1,5 +1,4 @@
-var testmode = require("../../main/global/testmode.js").on(),
-    assert = require("assert"),
+var assert = require("assert"),
     global = (typeof global != 'undefined' ) ? global : require ("../../main/global/global.js").init("Test"),
     ws,
 	  http = require ("http"),
@@ -10,7 +9,6 @@ var testmode = require("../../main/global/testmode.js").on(),
 /* init and start the webServer */ 
 before(function(done){
   this.timeout(5000);
-  console.log ("in webServer-test.js ...");
   global.datafilename = "/tmp/testData.json";
 
   ws =  require ("../../main/webServer/webServer.js");
@@ -22,15 +20,7 @@ before(function(done){
 })
 
 
-// after all...
-after( function(done) {
-  // now remove the 'Testmode' file
-  exec ("rm Testmode");
-  console.log ('Test cleaned up, sugar'); 
-  done ();  
-})
-
-
+/* swith on the webserver */
 describe ('the webServer', function () {		
 	/* initializes */
   describe('has a property called serverPort with a positive value', function () {
@@ -69,10 +59,10 @@ describe('runs and...', function () {
       client = io.connect(socketURL, options);
 
     this.timeout(5000);
-    console.log ("-----> need data, waiting...");
+    var firstTime = true;
     client.on('got new data', function (data) {
-      console.log ("-----> got data, done...");      
-      done();
+      if (firstTime) done();
+      firstTime = false;
       });
   })
   
@@ -146,9 +136,6 @@ describe('runs and...', function () {
       res.on ('data', function (chunk) {
         assert (chunk.length > 0);
         assert (JSON.parse(chunk).location == 'TestLocation')
-
-        console.log ("----xxx>> " + chunk );
-        console.log ("----xxx>> " + JSON.parse(chunk).location );
         done();
       });
     })      

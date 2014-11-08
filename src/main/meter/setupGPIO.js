@@ -2,7 +2,8 @@
 // 20140324: sets up the GPIO for raspberry pi and mocks it for darwin and testpurpose
 // Johannes Mainusch
 //
-var global = require ('../global/global.js');
+var global = require ('../global/global.js'),
+	testmode = require ('../global/testmode.js');
 
 
 function setupGPIO (emitEventWhenFinished) {
@@ -12,7 +13,7 @@ function setupGPIO (emitEventWhenFinished) {
 
 	// create gpio device and moch it on non raspi hardware //
 	global.log ("in smarty_setupGPIO");
-	if (process.platform == 'darwin') {
+	if (process.platform == 'darwin' || testmode.isSwitchedOn() ) {
 		global.gpio_path="/tmp/gpio/"
 		commands = [
 			"clear",

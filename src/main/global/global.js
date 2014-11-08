@@ -12,7 +12,6 @@
 	polling_intervall.
 	
 	The resuting timestamps are logges in the logfile...
-
 */
 
 var testmode = require("../../main/global/testmode.js"),
@@ -21,7 +20,6 @@ var testmode = require("../../main/global/testmode.js"),
 	timers: require('timers'),
 	eE: new (require('events').EventEmitter),
 	//          diese ^ Klammern versteh ich  nicht  ^
-	// util.inspect ansehen
 
 	init: _Init,
 	log: function log (s) { 
@@ -37,23 +35,23 @@ module.exports = global;
  */
 function _Init (gotCalledWith) {
 	var objref = this,
-		params = ( testmode.isSwitchedOn() || process.platform == 'darwin') ? 
-			require ('./globalTest.json') 
-		   :require ('./global.json'),
+		params = require ('./config.json'),
 		fs =  require('fs'),
 		path = require('path'),
 		logP;
 
-	console.log ("----> in global.init, this platform is "+ process.platform + "  got called with: " + gotCalledWith); 
+	if (process.platform == 'darwin')
+		params = require ('./configTestDarwin.json');
+	else if  ( testmode.isSwitchedOn() )
+		params = require ('./configTest.json');
+
 	// Simple constructor, links all parameters in params object to >>this<<
 	if (params && Object.keys && Object.keys(params).length >= 1) {
 		global.log ("initializing this smarty with params: " );
 		Object.keys(params).forEach( function(param) {
 			objref[param] = params[param];
-			global.log ("setting this."+param+"="+ params[param]);
 		})
 	}
-	global.log ("initialized global object with: "+ gotCalledWith);
 
 	logP = path.dirname(global.datafilename);
 

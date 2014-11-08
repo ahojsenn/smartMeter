@@ -1,0 +1,19 @@
+---
+- hosts: smartMeter
+  sudo: True
+  connection: ssh # or paramiko
+  gather_facts: no  
+  user: pi
+  roles:
+      - common
+      - V39
+      - postinstall
+
+  tasks:
+    - action: debug msg="operating on $inventory_hostname:$ansible_ssh_port"
+
+
+    - name: reboot the servers
+      command: /sbin/reboot -t now
+
+

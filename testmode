@@ -13,6 +13,7 @@ case "$1" in
 	'start' )
 		echo killing all node procs
 		killall node
+		rm /tmp/data/gotResults.json
 
 		set -e;
 		cd src;
