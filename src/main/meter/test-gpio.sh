@@ -20,14 +20,14 @@ echo "in" > /sys/class/gpio/gpio$1/direction
 
 
 # Read from input
-cat /sys/class/gpio/gpio$1/value 
+cat /sys/class/gpio/gpio$1/value
 
 done=0
 while [ "x${done}" = x0 ]; do
-  echo "gpio $1 has value: " `cat /sys/class/gpio/gpio$1/value` 
+  echo "gpio $1 has value: " `cat /sys/class/gpio/gpio$1/value`
 
-  echo -n "Would you like to quit? [q/Q]: "  
-  read  answer 
+  echo -n "Would you like to quit? [q/Q]: "
+  read  answer
   if [ "x${answer}" = xq ] || [ "x${answer}" = xQ ]; then
     done=1
   else

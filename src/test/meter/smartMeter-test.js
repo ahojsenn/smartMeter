@@ -7,20 +7,20 @@ var assert = require("assert"),
 	;
 
 
-/* init the smartMeter */ 
+/* init the smartMeter */
 before(function(done){
-	this.timeout(5000);
+	this.timeout(20000);
 	global.datafilename = "/tmp/testData.json";
 	// wait for the smr initialization to be done...
-	global.eE.on('readyForMeasurement', function() {
+	global.eventEmitter.on('readyForMeasurement', function() {
 		simulator = require ("../../main/meter/smartMeterSimulator.js");
 		done();
 	});
 })
 
 
-describe ('smartMeter', function () {	
-	
+describe ('smartMeter', function () {
+
 	/* init */
 	it ('should init() without error', function (){
 		console.log (global.gpio_input_pin	);

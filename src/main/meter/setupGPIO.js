@@ -27,7 +27,7 @@ function setupGPIO (emitEventWhenFinished) {
 			"echo 0 > " + global.gpio_path+"gpio"+global.gpio_input_pin+"/value",
 			"cat " + global.gpio_path+"gpio"+global.gpio_input_pin+"/value",
 			"date; echo done"
-			];			
+			];
 	}
 	else
 		commands = [
@@ -46,7 +46,7 @@ function setupGPIO (emitEventWhenFinished) {
 		global.log ("  ... in execCmdInADaisyChain..." + cmdNr + " " + commands.length);
 		if (commands.length > ++cmdNr) {
 			global.log ("  ... " + commands[cmdNr]);
-			exec ( commands[cmdNr], function (error, stdout, stderr) { 
+			exec ( commands[cmdNr], function (error, stdout, stderr) {
 				global.log ("  Step " +cmdNr+": executing: " + commands[cmdNr]);
 				global.log('  stdout: ' + stdout);
     			global.log('  stderr: ' + stderr);
@@ -59,11 +59,11 @@ function setupGPIO (emitEventWhenFinished) {
 		else {
 			/* start the smarty */
 			global.log('I think setup is done, emitting '+emitEventWhenFinished+' event...');
-			global.eE.emit(emitEventWhenFinished);
+			global.eventEmitter.emit(emitEventWhenFinished);
 		}
 	})(commands, cmdNr);
 
-	return this; 
+	return this;
 }
 
 module.exports = setupGPIO;

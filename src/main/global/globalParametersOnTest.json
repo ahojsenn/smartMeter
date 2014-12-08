@@ -1,0 +1,16 @@
+{
+	"location": "TestLocation",
+
+	"gpio_path": "/tmp/gpio/",
+	"gpio_input_pin": 2,
+	"polling_intervall": 50,
+	"UmdrehungenProKWh": 10000,
+	"EuroCentProKWh": 23,
+
+	"debug": true,
+	"srcPath": "/home/pi/production/smartMeter/src/",
+	"datafilename": "/tmp/data/gotResults.json",
+
+	"serverPort": 42080,
+	"url": "/smartMeter"
+}

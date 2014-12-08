@@ -1,0 +1,16 @@
+{
+	"location": "V39",
+
+	"gpio_path": "/sys/class/gpio/",
+	"gpio_input_pin": 2,
+	"polling_intervall": 50,
+	"UmdrehungenProKWh": 75,
+	"EuroCentProKWh": 26.44,
+
+	"debug": false,
+	"srcPath": "/home/pi/production/smartMeter/src/",
+	"datafilename": "/home/pi/production/smartMeter/data/gotResults.json",
+
+	"serverPort": 42080,
+	"url": "/smartMeter"
+}

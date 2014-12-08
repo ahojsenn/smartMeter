@@ -3,20 +3,20 @@
 // Johannes Mainusch
 //
 
-var testFileName = '/tmp/smartMeterTestModeIsOn',
+var testSemaphoreFileName = '/tmp/smartMeterTestModeIsOn',
 	fs = require("fs");
 
 var testmode = {
-	setOn: function (callback) { 
-		fs.writeFileSync(testFileName, '');
-		return (typeof callback == 'undefined') ? this : callback ();
-	},	
-	setOff: function (callback) {
-		fs.unlinkSync(testFileName);
+	setOn: function (callback) {
+		fs.writeFileSync(testSemaphoreFileName, '');
 		return (typeof callback == 'undefined') ? this : callback ();
 	},
-	isSwitchedOn: function () {		
-		return fs.existsSync(testFileName);
+	setOff: function (callback) {
+		fs.unlinkSync(testSemaphoreFileName);
+		return (typeof callback == 'undefined') ? this : callback ();
+	},
+	isSwitchedOn: function () {
+		return fs.existsSync(testSemaphoreFileName);
 	}
 }
 

@@ -1,12 +1,18 @@
+/*
+  this set of tests mark my first and incredible experience with test driven development
+  Thanks to Christian Stamm, who inspired me to do so.
+  Actually I  think, this is really Behaviour Driven Development...
+
+*/
 var testmode = require("../../main/global/testmode.js").setOn(),
     assert = require("assert"),
     fs = require("fs");
 
 
 
-describe ('the testmode object...', function () {		
+describe ('the testmode object, the switch between test and production, ...', function () {		
 	/* initializes */
-  it ('it is invoked', function (done) {
+  it ('should be invoked', function (done) {
     assert (typeof testmode == "object")
     done ();
   })
@@ -40,9 +46,3 @@ describe ('the testmode object...', function () {
 
 
 });
-
-
-
-
-
-  

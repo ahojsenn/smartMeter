@@ -1,0 +1,37 @@
+## Synopsis
+
+This is my smartMeter Project.
+This is contains some documentation on how to build your own smartmeter and contains the code to run it. Its based on node.js and raspberry pi.
+
+## Code Example
+
+1. Reads energy consumption in meter and stores the readings on local file. 
+2. Has a little webServer in 'WebServer' that renders the results
+3. some HTML client software for a nice graph, done with protovis (d3 is still a plan)
+
+## Motivation
+
+The smartMeter project will help you, to build your own smart energy meter based on raspberry pi and some electronics. This here contains the software to run the thing and in the doc directory some information on how to build the hardware. 
+
+Why? Because I love to measure things and I like to improve my IT-skills and also, because I like to share things.
+:-)
+
+## Installation
+
+Provide code examples and explanations of how to get the project.
+
+## API Reference
+I use the following libraries:
+jquery
+protovis (I plan to do that wich d3 later)
+node.js with modules mocha
+
+## Tests
+Still very scetchy, but checkout and run 
+cd src; mocha --recursive
+
+## Contributors
+Johannes Mainusch
+
+## License
+(The MIT License), see LICENSE file.

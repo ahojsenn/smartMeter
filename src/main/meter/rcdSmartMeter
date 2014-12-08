@@ -17,16 +17,16 @@ RCDSERVER=rcdSmartMeter
 case "$1" in
 'start')
 mypids=$(ps -ef | grep $SERVER | grep -v "grep" | wc -l)
-if [ $mypids -gt 0 ] 
+if [ $mypids -gt 0 ]
 then
-	echo there is $mypids $SERVER running 
+	echo there is $mypids $SERVER running
 	echo `ps -ef | grep $SERVER | grep -v grep`
 else
 	(cd $WPATH; node $SERVER ) > /tmp/smartMeter.log 2>&1 &
 	echo started $SERVER
 fi
 ;;
- 
+
 'stop')
 echo "Stoping smartMeter ..."
 for ps in `ps -ef | grep $SERVER | grep -v grep | awk '{print $2}'`
@@ -36,7 +36,7 @@ do
 	echo done
 done
 ;;
- 
+
 'restart')
 $0 stop
 $0 start
@@ -57,9 +57,9 @@ $0 start
 
 'status')
     mypids=$(ps -ef | grep $SERVER | grep -v "grep" | wc -l)
-    echo there is $mypids $SERVER running 
+    echo there is $mypids $SERVER running
     ;;
 
 esac
- 
+
 exit 0
