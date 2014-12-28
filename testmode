@@ -14,11 +14,13 @@ case "$1" in
 	'start' | 'on')
 		echo killing all node procs
 		killall node
-		rm /tmp/data/gotResults.json
+		rm -f /tmp/data/gotResults.json
 
 		set -e;
 		cd src;
 		mocha --recursive;
+		echo "now deleting the testdata..."
+		rm -f /tmp/data/gotResults.json
 		cd ..
    		echo "Starting local webServer and smartMeter in test mode..."
 		./src/main/webServer/webServer.js > /tmp/webServer.log 2>&1 &

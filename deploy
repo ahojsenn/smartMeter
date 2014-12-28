@@ -1,4 +1,6 @@
-	# deployment of $1 to pi@192.168.2.42:production/. and remote execution...
+#!/bin/bash
+#
+# deployment of $1 to pi@192.168.2.42:production/. and remote execution...
 #
 
 TARGETSERVER=192.168.178.23
@@ -14,17 +16,17 @@ case "$#" in
 	    TARGETSERVER=$1
 		TARGET_SSH_PORT=$2
 	;;
-	*) 
+	*)
 	echo "Usage: ./deploy TARGETSERVER [TARGET_SSH_PORT | default port is 22]"
 	exit 1;
 esac
 
 clear
 case "$1" in
-	
+
 	'-clean' )
 	echo "clean deploy now first removes the directory production/smartmeter on the target server...";
-	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'rm -rf production/smartMeter';	
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'rm -rf production/smartMeter';
 	;;
 
 	'-deploy2pi' | * )
@@ -33,25 +35,25 @@ case "$1" in
 
 
 	# copy the files to the pi
-	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'mkdir -p production/smartMeter';	
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'mkdir -p production/smartMeter';
 	rsync --exclude ".git" -R -ave 'ssh -p '$TARGET_SSH_PORT . pi@$TARGETSERVER:production/smartMeter/.
-#	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'mkdir -p public_html/smartMeter';	
+#	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'mkdir -p public_html/smartMeter';
 #	rsync -R -ave 'ssh -p '$TARGET_SSH_PORT src/main/client pi@$TARGETSERVER:public_html/smartMeter/.
 
-	
+
 	# the smartMeter
 	echo "killing any running smartMeters"
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/src/main/meter/rcdSmartMeter stop'
 	# the webServer
-	# kill any running server	
+	# kill any running server
 	echo "killing the currently running server..."
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo production/smartMeter/src/main/webServer/rcdSmartMeterWebServer stop'
 
 	echo "testing with mocha..."
 	echo "...and stopping on error"; set -e
-	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'cd production/smartMeter/src; sudo mocha --recursive'	
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'cd production/smartMeter/src; sudo mocha --recursive'
 	# and removing the /tmp/smartMeterTestModeIsOn if necessary
-	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo rm -f /tmp/smartMeterTestModeIsOn'	
+	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER 'sudo rm -f /tmp/smartMeterTestModeIsOn'
 
 
 	# install the server
@@ -65,12 +67,12 @@ case "$1" in
     echo "starting the smartMeter and the server..."
 	ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER '(
 		sudo killall node;
-		cd production/smartMeter/src/main; 
+		cd production/smartMeter/src/main;
 		sudo meter/rcdSmartMeter start
 		sudo webServer/rcdSmartMeterWebServer start
 		)'
 
-	
+
 	# edit the crontab entry that limits the number of datasets...
 	# 59 23 * * 0  (tail -50000 /home/pi/myMeter.log > test; mv test /home/pi/myMeter.log) > /dev/null 2&>1
 

@@ -3,8 +3,8 @@
 	20141201
 */
 
-function renderSummaryTable(EnergyObject) {
-	console.log ("in renderSummaryTable...");
+function renderDataInTable(EnergyObject) {
+	console.log ("in renderDataInTable...");
 	var data = EnergyObject.myData,
 		t1 = data[0].timestamp,
 		t2 = data[data.length-1].timestamp,
@@ -20,11 +20,11 @@ function renderSummaryTable(EnergyObject) {
 
 	$summaryTable
 		.append( $('<tr/>')
-			.append( $('<th colspan="2"/>').append("localhost " + global.location) )
+			.append( $('<th colspan="2"/>').append("localhost " + global.location ) )
 		)
 		.append( $('<tr/>')
 			.append( $('<td/>').append('data:') )
-			.append( $('<td/>').append(data.length + " entries") )
+			.append( $('<td/>').append(data.length + " entries" ))
 		)
 		.append( $('<tr/>')
 			.append( $('<td/>').append('last at:') )

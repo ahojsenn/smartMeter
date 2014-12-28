@@ -8,11 +8,15 @@
 	The server serves data in json format from files
 	The Data is in the file 'global.datafilename'
 */
-var	global = (typeof global != 'undefined' ) ? global : require ("../../main/global/global.js").init("from webServer");
+var	global = (typeof global != 'undefined' ) 
+		? global 
+		: require ("../../main/global/global.js").init("from webServer"),
+	dataReader = require ("../../main/dataReader/dataReader.js");
 
 // the webServer Object
 var ws = {
-		start: startWebServer
+		start: startWebServer,
+		dataReader: require ("../../main/dataReader/dataReader.js")
 	};
 
 // now start the webServer
@@ -31,7 +35,6 @@ function startWebServer() {
 	var app = require('http').createServer(function (request, response) {
   		response.writeHead(200, {'Content-Type':'text/plain'});
   		parseRequestAndRespond (request, response);
-		//  response.end( parseRequestAndRespond (request) );
 	}).listen(global.serverPort,  '::');
 
 	global.log('Server is running at http://127.0.0.1:'+global.serverPort);
@@ -48,82 +51,57 @@ function startWebServer() {
 	parse the request and construct the server response
 */
 function parseRequestAndRespond (request, response) {
-	global.log ('in parseRequestAndRespond, request: ' + request.url);
-	var requestPath = require('url').parse(request.url, true).pathname;
+	var requestPath = require('url').parse(request.url, true).pathname,
+		params = require('url').parse(request.url, true),
+		filter  = getUrlParameter (request, 'filter'),
+		callback = getUrlParameter (request, 'callback'),
+		noLines = getUrlParameter (request, 'nolines') 
+					? getUrlParameter (request, 'nolines') :23,
+		column = getUrlParameter (request, 'column'),
+		mapRequestToMethod = {  // I do not use this yet, but keep followin g the idea
+			"/getData" 		: "getData",
+			"/getnolines" 	: "getNoLines"
+		};
+	global.log ('in parseRequestAndRespond..., requestPath='+requestPath);
 
-	// parse the request
-	global.log ('in parseRequestAndRespond, requestPath: ' + requestPath );
-	global.log ('in parseRequestAndRespond, global.datafilename: ' + global.datafilename );
-	global.log ('in parseRequestAndRespond, global.url: ' + global.url );
 
-	if (requestPath == global.url+'/getData')
-		tailFile (request, response, global.datafilename);
 
-	// get gets the last 100 or so entries in the datail
+	if (requestPath == global.url+'/getXref')
+		dataReader.getXref (noLines, column, function (data) {
+			response.end(wrapWithCallback(data, callback) );
+		});
+
+	else if (requestPath == global.url+'/getData')
+		dataReader.getData (noLines, filter, function (data) {
+			response.end(wrapWithCallback(data, callback) );
+		});
+
+	// get nolines returns the number of lines in the data
 	else if (requestPath == global.url+'/getnolines')
-		getnolines (request, response, global.datafilename);
+		dataReader.getNoLines (filter, function (data) {
+			response.end(wrapWithCallback(data, callback) );
+		});
 
 	// getfirst gets the first entry in the dta file
 	else if (requestPath == global.url+'/getfirst')
-		execInShell (request, response, global.datafilename, 'head -1 ');
+		dataReader.getFirst ( function (data) {
+			response.end(wrapWithCallback(data, callback) );
+		});
 
 	// getlast gets the last entry
 	else if (requestPath == global.url+'/getlast')
-		execInShell (request, response, global.datafilename, 'tail -1 ');
+		dataReader.getLast ( function (data) {
+			response.end(wrapWithCallback(data, callback) );
+		});
 
 	// getglobal returns the global object to the client to transport server info
 	else if (requestPath == global.url+'/getglobals') {
-		var params = require('url').parse(request.url, true),
-			responseData = JSON.stringify(global);
-
-			// if the request has a callback parameter, use it to wrap the json object with it for jsonp
-			if (typeof params.query.callback != 'undefined')
-				responseData = wrapWithCallback (responseData, params.query.callback);
-
-//		response.write (responseData);
-		response.end(responseData);
+		response.end( wrapWithCallback( JSON.stringify(global), callback));
 	}
 
 	// server static files under url "+/client/"
 	else if ( (requestPath.indexOf(global.url+'/client/') == 0 ) ){
-		var myfilename = requestPath.substring (requestPath.lastIndexOf('/')+1),
-			myMimeType = "text/plain",
-			myFileending = requestPath.substring (requestPath.lastIndexOf('.')+1);
-
-		switch (myFileending) {
-			case "js":
-				myMimeType = "text/javascript";
-				break;
-			case "css":
-				myMimeType = "text/css";
-				break;
-			case "html":
-				myMimeType = "text/html";
-				break;
-			}
-
-		global.log ('serving static file: ' + myfilename + ", myFileending:" + myFileending + "  mimeType: " + myMimeType);
-
-		var fs = require('fs');
-		fs.readFile(global.srcPath+'main/client/' + myfilename, "binary", function (err, file) {
-			global.log ('readFile: ' +global.srcPath+ './client/' + myfilename);
-
-		            if (err) {
-						global.log ('ERROR readFile: ' + './client/' + myfilename);
-		                response.writeHead(500, {"Content-Type": "text/plain"});
-		                response.write(err + "\n");
-		                response.end();
-		                return;
-		            }
-
-					global.log ('response.write: ' + './client/' + myfilename);
-		            response.writeHead(200, {"Content-Type": myMimeType});
-		            response.write(file, "binary");
-		            response.end();
-					global.log ('response.end: ' + './client/' + myfilename);
-			});
-
-
+		serveStaticFile (request, response);
 	}
 	else {// the last catch, if it comes here it aint good...
 		global.log ('ERROR in parseRequestAndRespond, last else..., requestPath='+requestPath);
@@ -132,113 +110,15 @@ function parseRequestAndRespond (request, response) {
 	}
 }
 
-/**
-	execInShell will do a 'cat' on filename and pipe the results on 'cmd'
-*/
-function execInShell (request, response, filename, cmd) {
-	var params = require('url').parse(request.url, true),
-		exec = require('child_process').exec,
-		data,
-		nolines=100;
-
-	if (params.query.hasOwnProperty('filter') === true && typeof params.query.filter === 'string' )
-		cmd = 'cat ' + filename + ' | grep ' + params.query.filter + " | " + cmd;
-	else
-		cmd = cmd + filename;
-
-	global.log ('in execInShell, cmd='+cmd);
-
-	exec(cmd, function (error, data) {
-		global.log('callback in execInShell, cmd: ' + cmd + "\n" +data);
-		response.end( data );
-	});
-}
-
-/**
-	getnolines will return the number of lines in the file
-*/
-function getnolines (request, response, filename) {
-	global.log ('in getnolines');
-	var params = require('url').parse(request.url, true),
-		cmd = "cat " + filename,
-		exec = require('child_process').exec,
-		responseData="[";
-
-
-	if (params.query.hasOwnProperty('filter') === true && typeof params.query.filter === 'string' )
-		cmd += ' | grep ' + params.query.filter;
-
-	cmd += " | wc -l | tr -d ' '";
-
-	exec(cmd, function (error, stdout) {
-		// get rid of newlines in data
-		var data = stdout.slice(0, stdout.length-1);
-		responseData += data+"]";
-
-		// wrap data with wrapWithCallback if there is a callback parameter...
-		if (params.query.hasOwnProperty('callback') === true && typeof params.query.callback === 'string' ) {
-			responseData = wrapWithCallback (responseData, params.query.callback);
-		}
-		response.end( responseData );
-	});
-}
-
-
-/**
-	This function takes parameters like filter to 'grep filter'
-	and nolines to 'tail -nolines'...
-*/
-function tailFile (request, response, filename) {
-	var params = require('url').parse(request.url, true),
-		spawn = require('child_process').spawn,
-		tail,
-		nolines = "-23",
-		responseData="[";
-
-	global.log ('in tailFile, pathname=' + params.pathname);
-    response.writeHead(200, {'Content-Type': 'application/json'});
-
-	if (params.query.hasOwnProperty('nolines') === true && typeof params.query.nolines === 'string' ) {
-		nolines="-"+params.query.nolines;
-	}
-
-	tail = spawn('tail', [nolines, filename]);
-
-	tail.stdout.on ('data', function (data) {
-	  	global.log('in tailFile, tail stdout: + data.len=' + data.length);
-        responseData += String(data).replace(/\n/g, ',\n');		// replace newlines by ',\n'
-	});
-
-	tail.stderr.on('data', function (data) {
-	  	global.log('in tailFile, tail stderr: ' + data);
-	});
-
-	// 2013: the raspberry likes 'close' here instead of 'exit'...
-	//		tail.on('close', function (code) {
-	//
-	var exitEventString = (process.platform == 'darwin')  ? "exit" : "close";
-
-	tail.on(exitEventString, function (code) {
-		responseData = responseData.replace(/,\n$/, '');		// removed the last ,
-		responseData += "]";
-
-		// wrap data with wrapWithCallback if there is a callback parameter...
-		if (params.query.hasOwnProperty('callback') === true
-			&& typeof params.query.callback === 'string' ) {
-			responseData = wrapWithCallback (responseData, params.query.callback);
-		}
-
-	  	global.log('in tailFile, ...exit with code ' + code + "\n    responseData:" + responseData);
-      	response.end(responseData);
-	});
-}
-
 
 /**
 	wrap the data with a callback
  */
 function wrapWithCallback (data, callback) {
-	return callback + "("+data+")";
+	if (typeof callback === 'string')
+		return callback + "("+data+")";
+	else
+		return data;
 }
 
 
@@ -281,3 +161,72 @@ function myWebSocket () {
 	return this;
 }
 
+/**
+	getFilename parses the request and gets the filename
+*/
+function getFilename (request) {
+	var requestPath = require('url').parse(request.url, true).pathname,
+		myfilename = requestPath.substring (requestPath.lastIndexOf('/')+1);
+	return myfilename;
+}
+
+/**
+	getMimetype parses the request and determines the mimetype
+*/
+function getMimetype (request) {
+	var requestPath = require('url').parse(request.url, true).pathname,
+		myMimeType = "text/plain",
+		myFileending = requestPath.substring (requestPath.lastIndexOf('.')+1);
+
+		switch (myFileending) {
+			case "js":
+				myMimeType = "text/javascript";
+				break;
+			case "css":
+				myMimeType = "text/css";
+				break;
+			case "html":
+				myMimeType = "text/html";
+				break;
+			}
+	return myMimeType;
+}
+
+/**
+	serveStaticFile parses the request and gets the filename and responds
+*/
+function serveStaticFile (request, response) {
+	var myfilename = getFilename (request),
+		myMimeType = getMimetype (request),
+		fs = require('fs');
+	fs.readFile(global.srcPath+'main/client/' + myfilename, "binary", function (err, file) {
+		global.log ('readFile: ' +global.srcPath+ './client/' + myfilename);
+		if (err) {
+			global.log ('ERROR readFile: ' + './client/' + myfilename);
+		    response.writeHead(500, {"Content-Type": "text/plain"});
+		    response.write(err + "\n");
+		    response.end();
+		    return;
+		}
+		global.log ('response.write: ' + './client/' + myfilename);
+		response.writeHead(200, {"Content-Type": myMimeType});
+		response.write(file, "binary");
+		response.end();
+		global.log ('response.end: ' + './client/' + myfilename);
+	});
+}
+
+
+/**
+	getUrlParameter will parse the selector parameter from the request if present
+*/
+function getUrlParameter (request, selector) {
+	var params = require('url').parse(request.url, true),
+		urlParameter = false;
+
+	if (params.query.hasOwnProperty(selector) === true
+		&& typeof params.query[selector] === 'string' )
+		urlParameter = params.query[selector];
+
+	return urlParameter;
+}

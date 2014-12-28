@@ -1,6 +1,7 @@
 var assert = require("assert"),
     global = (typeof global != 'undefined' ) ? global : require ("../../main/global/global.js").init("Test"),
     ws,
+    fs = require("fs"),
 	  http = require ("http"),
     exec = require('child_process').exec
 	  ;
@@ -8,10 +9,18 @@ var assert = require("assert"),
 
 /* init and start the webServer */
 before(function(done){
-  this.timeout(5000);
-  global.datafilename = "/tmp/testData.json";
-
+  this.timeout(12042);
   ws =  require ("../../main/webServer/webServer.js");
+    fs.appendFile(global.datafilename,
+      '{"term" : "blipp", "Watt" : 302.2, "timestamp": 1419266113000}\n'+
+      '{"term" : "blupp", "Watt" : 302.2, "timestamp": 1419266113000}\n',
+      function(err) {
+        if(err) {
+         console.log(err);
+        } else {
+          console.log("The file was saved!");
+        }
+    });
 	// wait for the ws initialization and start to be done...
 	http.get('http://localhost:42080/smartMeter/client/index.html', function (res) {
     assert.equal(200, res.statusCode);
@@ -22,8 +31,8 @@ before(function(done){
 /* test for some static pages */
 describe ('the webServer', function () {
   /* initializes */
-  it('serves the static file renderTable.js', function () {
-    http.get('http://localhost:42080/smartMeter/client/renderTable.js', function (res) {
+  it('serves the static file renderDataInTable.js', function () {
+    http.get('http://localhost:42080/smartMeter/client/renderDataInTable.js', function (res) {
       assert.equal(200, res.statusCode);
     })
   })
@@ -59,7 +68,7 @@ describe('runs and...', function () {
 
   /* and there is a websocket sending stuff */
   it ('broadcasts new energy value to client', function (done) {
-    this.timeout(12000);
+    this.timeout(12042);
     var
       socketURL = 'http://localhost:'+global.serverPort,
       options ={
@@ -74,11 +83,24 @@ describe('runs and...', function () {
       if (firstTime) done();
       firstTime = false;
       });
+
+    // now write something to the file
+    setTimeout (function () {
+          fs.appendFile(global.datafilename,
+      '{"term" : "brubbel", "Watt" : 342.42, "timestamp": 1419266113000}\n',
+      function(err) {
+        if(err) {
+         console.log(err);
+        } else {
+          console.log("The file was saved!");
+        }
+      });
+    },500);
   })
 
   // now test the get method of my webServer
   it ('has a /getData method implemented that lists some datafile entries', function (done) {
-    var url = 'http://localhost:'+global.serverPort+'/smartMeter/getData?nolines=20';
+    var url = 'http://localhost:'+global.serverPort+'/smartMeter/getData?nolines=17';
 
     http.get( url, function (res) {
       assert.equal(200, res.statusCode);
@@ -101,7 +123,7 @@ describe('runs and...', function () {
     })
   });
 
-  // now test the get method of my webServer
+  // now test the getfirst method of my webServer
   it ('has a /getfirst method implemented...', function (done) {
     var url = 'http://localhost:'+global.serverPort+'/smartMeter/getfirst';
     http.get( url, function (res) {
@@ -113,13 +135,26 @@ describe('runs and...', function () {
     })
   });
 
-  // now test the get method of my webServer
+  // now test the getlast method of my webServer
   it ('has a /getlast method implemented...', function (done) {
     var url = 'http://localhost:'+global.serverPort+'/smartMeter/getlast  ';
     http.get( url, function (res) {
       assert.equal(200, res.statusCode);
       res.on ('data', function (chunk) {
         assert (chunk.length > 0);
+        done();
+      });
+    })
+  });
+
+  // now test the getXref method of my webServer
+  it ('has a /getXref method implemented...', function (done) {
+    var url = 'http://localhost:'+global.serverPort+'/smartMeter/getXref?column=term';
+    http.get( url, function (res) {
+      assert.equal(200, res.statusCode);
+      res.on ('data', function (chunk) {
+        assert (chunk.length > 0);
+        assert (chunk.toString().indexOf("brubbel") >= 0);
         done();
       });
     })

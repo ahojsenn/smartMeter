@@ -52,7 +52,7 @@ function _Init (callerId) {
 
 	// Simple constructor, links all parameters in globalParameters object to global
 	if (globalParameters && Object.keys && Object.keys(globalParameters).length >= 1) {
-		global.log ("initializing this smartMeter with " + parameterFileName);
+		global.log ("				initializing  with " + parameterFileName);
 		Object.keys(globalParameters).forEach( function(param) {
 			global[param] = globalParameters[param];
 		})

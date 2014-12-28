@@ -41,10 +41,11 @@ function getEnergyObject() {
 
 
 
-	// now get the datsa for the first time
-	this.getData = function () {
+	// now get the data for the first time
+	this.getData = function (filter) {
+		console.log ("in getData, url=", global.url+'/getData?'+'nolines='+nrOfLines+'&filter='+filter );
 		$.ajax ({
-			url: global.url+'/getData?'+'nolines='+nrOfLines,
+			url: global.url+'/getData?'+'nolines='+nrOfLines+"&filter="+filter,
 			cache : false,
 			dataType: 'jsonp',
 			crossDomain: true,
@@ -60,12 +61,16 @@ function getEnergyObject() {
 	};
 
 	// and now listen on the websocket...
-	this.listenOnWebSocket = function (webSocketDomain) {
+	this.listenOnWebSocket = function (webSocketDomain, filter) {
 		console.log('in listenOnWebSocket', webSocketDomain);
 		var socket = io.connect(webSocketDomain);
 	  	socket.on('got new data',
 	  		function (d) {
-	    		console.log('\nWebSocket speaks:',  d);
+	    		console.log('\nWebSocket speaks:',  JSON.stringify(d) );
+	  			// only act, if filter critera is met
+	  			if (typeof (filter) === 'string' &&
+	  				JSON.stringify(d).indexOf(filter) == -1 )
+	  				return;
 	    		$(EnergyObject).trigger(gotNewDataEvent);
 				$('h1').addClass('redFlash');
 				$('th').addClass('redFlash');

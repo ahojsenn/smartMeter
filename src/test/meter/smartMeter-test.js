@@ -9,8 +9,8 @@ var assert = require("assert"),
 
 /* init the smartMeter */
 before(function(done){
-	this.timeout(20000);
-	global.datafilename = "/tmp/testData.json";
+	this.timeout(12042);
+//	global.datafilename = "/tmp/testData.json";
 	// wait for the smr initialization to be done...
 	global.eventEmitter.on('readyForMeasurement', function() {
 		simulator = require ("../../main/meter/smartMeterSimulator.js");
@@ -23,8 +23,10 @@ describe ('smartMeter', function () {
 
 	/* init */
 	it ('should init() without error', function (){
-		console.log (global.gpio_input_pin	);
-		assert(global.gpio_input_pin>0);
+		for (var i=0; i<global.gpio_input_pin; i++ ) {
+			console.log (global.gpio_input_pin[i]	);
+			assert(global.gpio_input_pin[i]>0);
+		}
 	})
 
 	/* datafile is there */
@@ -34,12 +36,14 @@ describe ('smartMeter', function () {
 
 	/* GPIO is set up */
 	it ('should create gpio device at **/direction', function () {
-		assert (
+		for (var i=0; i<global.gpio_input_pin; i++ ) {
+			assert (
 			fs.existsSync(global.gpio_path+"gpio"+global.gpio_input_pin+"/direction")
 		);
-		assert.equal (
-			fs.readFileSync(global.gpio_path+"gpio"+global.gpio_input_pin+"/direction")
-			, "in\n");
+			assert.equal (
+				fs.readFileSync(global.gpio_path+"gpio"+global.gpio_input_pin+"/direction")
+				, "in\n");
+		}
 	})
 
 	/* it should calculate correct Watts */

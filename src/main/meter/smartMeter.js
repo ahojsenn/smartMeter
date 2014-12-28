@@ -17,14 +17,14 @@
 var global = require ('../global/global.js').init("from smartMeter");
 
 var smartMeter = {
-	lastValue: "start",
+	lastValue: new Array(),
 	lastTimestamp: 0,
 	secondLastTimestamp: 0,
 	eventEmitter: new (require('events').EventEmitter),
 	//          diese ^ Klammern versteh ich  nicht  ^
 	// 			util.inspect ansehen
 	setupGPIO: require ('./setupGPIO.js'),
-	startReader: startReader,
+	readFromGPIO: readFromGPIO,
 	writeLog: smartMeter_writeLog,
 	powerConsumption: powerConsumption
 }
@@ -37,28 +37,36 @@ module.exports = smartMeter;
 // reads the inpup of the GPIO by polling
 // since I didn't get the onchange to run...
 //
-function startReader() {
+function readFromGPIO(i) {
 	var fs = require('fs'),
+		gpioPin = global.gpio_input_pin[i],
+		gpioIdentifier = global.gpioIdentifier[i],
+		UmdrehungenProKWh = global.UmdrehungenProKWh[i],
 		date = new Date(),
 		timestamp,
-		gpioFileName = global.gpio_path+'gpio'+global.gpio_input_pin+'/value',
+		gpioFileName = global.gpio_path+'gpio'+gpioPin+'/value',
 		message="",
 		watts = 0;
-	global.log ("in startReader(), polling interval="+global.polling_intervall+"ms");
+
+	//global.log ("in readFromGPIO("+gpioPin+", "+gpioIdentifier+"), polling interval="+global.polling_intervall+"ms");
 
 	message += '{';
-	message += '"term":"'+global.location+'.powerConsumption.'+ global.gpio_input_pin+'"';
+	message += '"term":"'+global.location+'.'+ gpioIdentifier+'"';
+
+
+// too tired to continue
+//here, I have to cater for finding pinchanges on different pins
 
 
 	fs.readFile (gpioFileName, function(err, inputValue) {
 		if(err) {
 	        console.log(err);
 	    } else {
-			if (smartMeter.lastValue+0 != inputValue+0 ) {
+			if (smartMeter.lastValue[i]+0 != inputValue+0 ) {
 	        	//global.log('gpio_input_pin was '+smartMeter.lastValue+' and changed to: ' + inputValue +': now=' + new Date().getTime());
-				smartMeter.lastValue = inputValue;
+				smartMeter.lastValue[i] = inputValue;
 				timestamp = date.getTime();
-				watts = powerConsumption (timestamp, smartMeter.secondLastTimestamp, inputValue);
+				watts = powerConsumption (timestamp, smartMeter.secondLastTimestamp, UmdrehungenProKWh);
 
 				message += ', "Watt":'+watts;
 				message += ', "timestamp":' + timestamp;
@@ -75,7 +83,8 @@ function startReader() {
 		}
 	});
 
-	global.timers.setTimeout (startReader, global.polling_intervall);
+	global.timers.setTimeout ( function () {readFromGPIO(i)},
+				global.polling_intervall);
 	return this;
 }
 
@@ -96,16 +105,17 @@ function smartMeter_writeLog (message) {
 
 //
 // a function to calculate ower consumption of my power meter...
+// t1 and t2 are timestamps...
 //
-function powerConsumption (t1, t2, inputValue) {
+function powerConsumption (t1, t2, UmdrehungenProKWh) {
 	var myWatt = 1,  // set myWatt to 1 rather than 0, that will allow me to have a log scale later...
 		UmdrehungenProh = 1000 * 3600	 / (t1 - t2);
 
 	if (t2 > 0 )
-		myWatt = 1000* UmdrehungenProh / global.UmdrehungenProKWh ;
+		myWatt = 1000* UmdrehungenProh / UmdrehungenProKWh ;
 
 	global.log("in powerConsumption ("
-		+ (t1-t2)/1000 +"s passed, "+ inputValue + "), "
+		+ (t1-t2)/1000 +"s passed, "+ UmdrehungenProKWh + "), "
 		+"UmdrehungenProh="+Math.round(1000*UmdrehungenProh)/1000 +", "
 		+"Watt="+myWatt);
 	return myWatt;
@@ -113,14 +123,27 @@ function powerConsumption (t1, t2, inputValue) {
 
 
 
+
+/*
+ * The main bit...
+ */
+smartMeter.setupGPIO ('readyForMeasurement')
+
 /*
  * register an event 'pinChange' and an event on initDone
  */
 global.eventEmitter
-		.on('readyForMeasurement', smartMeter.startReader)
-		.on('pinChange', smartMeter.writeLog)	;
+	.on('readyForMeasurement',
+		function () {
+			/*
+			 * loop through the cofigured input pins
+ 			 */
+			for (var i=0; i<global.gpio_input_pin.length; i++) {
+				global.log ("starting the smartmeter on pin="+global.gpio_input_pin[i]);
+				global.log ("           with gpioIdentifier="+global.gpioIdentifier[i]);
+				smartMeter.readFromGPIO (i);
+			}
+		})
+	.on('pinChange', smartMeter.writeLog);
 
-/*
- * The main bit... smartMeter is a nice name for smatrmeter...
- */
-smartMeter.setupGPIO ('readyForMeasurement')
+

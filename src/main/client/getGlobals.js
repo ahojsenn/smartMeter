@@ -10,7 +10,6 @@ function getGlobals(eventName) {
 	// get the global object from the server
 	// it it we'll find things like the name of the energy meter and some specs
 	// concerning the number of red flashed per Kw/h and so on...
-	console.log ("in my getGlobalData...");
 	$.ajax ({
 		url: '/smartMeter/getglobals',
 		cache : false,
@@ -20,11 +19,12 @@ function getGlobals(eventName) {
 			function (data) { // this little closure will preserve the object reference of this (energyObject)
 				console.log ("got called back with globalData ...", data );
 				global = data;
-				$(document).trigger(eventName);
 				console.log ("in callback, returning data now..." );
+				$(document).trigger(eventName);
 				return data;
 			}
 	});
+
 
 }
 

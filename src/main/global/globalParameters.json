@@ -2,10 +2,12 @@
 	"location": "V39",
 
 	"gpio_path": "/sys/class/gpio/",
-	"gpio_input_pin": 2,
 	"polling_intervall": 50,
-	"UmdrehungenProKWh": 75,
-	"EuroCentProKWh": 26.44,
+	"gpioSimulatorTimeout" : [3000, 10000],
+	"gpioIdentifier": ["Strom","Erdgas"],
+	"gpio_input_pin": [2,3],
+	"UmdrehungenProKWh": [75, 97.08],
+	"EuroCentProKWh": [23,6.44],
 
 	"debug": false,
 	"srcPath": "/home/pi/production/smartMeter/src/",
