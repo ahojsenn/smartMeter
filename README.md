@@ -17,8 +17,8 @@ Why? Because I love to measure things and I like to improve my IT-skills and als
 :-)
 
 I gave some brief talks on the issue, look here:
-link:https://www.youtube.com/watch?v=6IkVaIex_b0
-or here: link:https://www.youtube.com/watch?v=97bwN2U9SIQ#t=1164
+https://www.youtube.com/watch?v=6IkVaIex_b0
+or here: https://www.youtube.com/watch?v=97bwN2U9SIQ#t=1164
 
 ## Installation
 
@@ -28,7 +28,7 @@ There will be more here in future. To install it on Raspberry Pi do the followin
 - install the smartmeter with the help of the ./deploy script
 - goto http://serverurl:42080/smartMeter/client/index.html
 
-On Mac OS x you can testrun and simulate the smartMEter by running './testmode on' and then goto 'link:http://localhost:42080/smartMeter/client/index.html' with your favorite web browser.
+On Mac OS x you can testrun and simulate the smartMEter by running './testmode on' and then goto http://localhost:42080/smartMeter/client/index.html with your favorite web browser.
 
 ## API Reference
 I use the following libraries:
