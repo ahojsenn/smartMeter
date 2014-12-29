@@ -6,7 +6,7 @@
 	"gpioSimulatorTimeout" : [3000, 10000],
 	"gpioIdentifier": ["Strom","Erdgas"],
 	"gpio_input_pin": [2,3],
-	"UmdrehungenProKWh": [75, 97.08],
+	"UmdrehungenProKWh": [75, 91.421],
 	"EuroCentProKWh": [23,6.44],
 
 	"debug": false,

@@ -9,6 +9,23 @@
 	"UmdrehungenProKWh": [10000, 97.08],
 	"EuroCentProKWh": [23,6.44],
 
+	"measurements": [
+						{
+							"gpioInputPin" : 2,
+							"gpioIdentifier" : "Strom",
+							"gpioSimulatorTimeout" : 2000,
+							"UmdrehungenProKWh" : 75,
+							"EuroCentProKWh" : 23
+						},
+						{
+							"gpioInputPin" : 3,
+							"gpioIdentifier" : "Erdgas",
+							"gpioSimulatorTimeout" : 10000,
+							"UmdrehungenProKWh" : 91.421,
+							"EuroCentProKWh" : 6.44
+						}
+					],
+
 	"debug": true,
 	"srcPath": "/Users/docjoe/mystuff/development/smartMeter/src/",
 	"datafilename": "/tmp/data/gotResults.json",

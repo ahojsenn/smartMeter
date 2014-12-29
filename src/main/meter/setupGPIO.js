@@ -6,13 +6,13 @@ var global = require ('../global/global.js'),
 	testmode = require ('../global/testmode.js');
 
 
-function setupGPIO (emitEventWhenFinished, gpioInputPin) {
+function setupGPIO (emitEventWhenFinished) {
 	var exec = require('child_process').exec,
 		commands = new Array(),
 		cmdNr = 0;
 	global.log ("in setupGPIO...");
 
-	commands = defineSetupCommands(gpioInputPin);
+	commands = defineSetupCommands();
 	global.log ("              commands="+commands);
 
 
@@ -45,17 +45,10 @@ function setupGPIO (emitEventWhenFinished, gpioInputPin) {
 //
 // function defineSetupCommands
 //
-function defineSetupCommands (gpioInputPin) {
+function defineSetupCommands () {
 	var commands = new Array;
 
 	// create gpio devices and mock it on non raspi hardware //
-	for (var i=0; i<global.gpio_input_pin.length; i++) {
-		gpioInputPin=global.gpio_input_pin[i];
-		global.log ("              gpioPin="+gpioInputPin);
-	}
-
-
-
 	if (process.platform == 'darwin' || testmode.isSwitchedOn() ) {
 		global.gpio_path="/tmp/gpio/"
 		commands = commands.concat ([

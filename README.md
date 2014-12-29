@@ -16,6 +16,10 @@ The smartMeter project will help you, to build your own smart energy meter based
 Why? Because I love to measure things and I like to improve my IT-skills and also, because I like to share things.
 :-)
 
+I gave some brief talks on the issue, look here:
+- link:https://www.youtube.com/watch?v=6IkVaIex_b0
+- 
+
 ## Installation
 
 There will be more here in future. To install it on Raspberry Pi do the following:

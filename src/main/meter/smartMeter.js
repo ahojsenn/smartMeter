@@ -14,20 +14,28 @@
 	The resuting timestamps are logges in the logfile...
 
 */
-var global = require ('../global/global.js').init("from smartMeter");
+var global = require ('../global/global.js').init("from smartMeter"),
+	setupGPIO = require ('./setupGPIO.js');
 
 var smartMeter = {
-	lastValue: new Array(),
-	lastTimestamp: 0,
-	secondLastTimestamp: 0,
-	eventEmitter: new (require('events').EventEmitter),
-	//          diese ^ Klammern versteh ich  nicht  ^
-	// 			util.inspect ansehen
-	setupGPIO: require ('./setupGPIO.js'),
-	readFromGPIO: readFromGPIO,
-	writeLog: smartMeter_writeLog,
-	powerConsumption: powerConsumption
-}
+
+		init: function (i) {
+			this.gpioInputPin = global.measurements[i].gpioInputPin;
+			this.gpioIdentifier = global.measurements[i].gpioIdentifier;
+			this.gpioSimulatorTimeout = global.measurements[i].gpioSimulatorTimeout;
+			this.UmdrehungenProKWh = global.measurements[i].UmdrehungenProKWh;
+			this.EuroCentProKWh = global.measurements[i].EuroCentProKWh;
+			return this;
+		},
+
+		lastValue: new Array(),
+		lastTimestamp: 0,
+		secondLastTimestamp: 0,
+		setupGPIO: require ('./setupGPIO.js'),
+		readFromGPIO: readFromGPIO,
+		powerConsumption: powerConsumption
+	},
+	measurements = new Array();
 
 module.exports = smartMeter;
 
@@ -72,10 +80,10 @@ function readFromGPIO(i) {
 				message += ', "timestamp":' + timestamp;
 				message += '}';
 
-				// only l trigger to og stuff, if there is a significant power consumption,
+				// only trigger to log stuff, if there is a significant power consumption,
 				// i.e. not at startup or reboot time
 				if (watts > 1)
-					global.eventEmitter.emit('pinChange', message);
+					smartMeter_writeLog (message);
 
 				smartMeter.secondLastTimestamp = smartMeter.lastTimestamp;
 				smartMeter.lastTimestamp = timestamp;
@@ -127,7 +135,7 @@ function powerConsumption (t1, t2, UmdrehungenProKWh) {
 /*
  * The main bit...
  */
-smartMeter.setupGPIO ('readyForMeasurement')
+setupGPIO ('readyForMeasurement')
 
 /*
  * register an event 'pinChange' and an event on initDone
@@ -136,14 +144,21 @@ global.eventEmitter
 	.on('readyForMeasurement',
 		function () {
 			/*
-			 * loop through the cofigured input pins
+			 * loop through the configured input pins
  			 */
+			for (var i in global.measurements) {
+				var sm =  smartMeter.init(i);
+
+				measurements.push (sm);
+				global.log ("starting the smartmeter on pin="+sm.gpioInputPin);
+				global.log ("           with gpioIdentifier="+sm.gpioIdentifier);
+			}
+
 			for (var i=0; i<global.gpio_input_pin.length; i++) {
 				global.log ("starting the smartmeter on pin="+global.gpio_input_pin[i]);
 				global.log ("           with gpioIdentifier="+global.gpioIdentifier[i]);
 				smartMeter.readFromGPIO (i);
 			}
-		})
-	.on('pinChange', smartMeter.writeLog);
+		});
 
 
