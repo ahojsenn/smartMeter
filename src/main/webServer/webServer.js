@@ -11,12 +11,12 @@
 var	global = (typeof global != 'undefined' ) 
 		? global 
 		: require ("../../main/global/global.js").init("from webServer"),
-	dataReader = require ("../../main/dataReader/dataReader.js");
+	dataBase = require ("../../main/dataBase/dataBase.js");
 
 // the webServer Object
 var ws = {
 		start: startWebServer,
-		dataReader: require ("../../main/dataReader/dataReader.js")
+		dataBase: require ("../../main/dataBase/dataBase.js")
 	};
 
 // now start the webServer
@@ -67,30 +67,30 @@ function parseRequestAndRespond (request, response) {
 
 
 	if (requestPath == global.url+'/getXref')
-		dataReader.getXref (noLines, column, function (data) {
+		dataBase.getXref (noLines, column, function (data) {
 			response.end(wrapWithCallback(data, callback) );
 		});
 
 	else if (requestPath == global.url+'/getData')
-		dataReader.getData (noLines, filter, function (data) {
+		dataBase.getData (noLines, filter, function (data) {
 			response.end(wrapWithCallback(data, callback) );
 		});
 
 	// get nolines returns the number of lines in the data
 	else if (requestPath == global.url+'/getnolines')
-		dataReader.getNoLines (filter, function (data) {
+		dataBase.getNoLines (filter, function (data) {
 			response.end(wrapWithCallback(data, callback) );
 		});
 
 	// getfirst gets the first entry in the dta file
 	else if (requestPath == global.url+'/getfirst')
-		dataReader.getFirst ( function (data) {
+		dataBase.getFirst ( function (data) {
 			response.end(wrapWithCallback(data, callback) );
 		});
 
 	// getlast gets the last entry
 	else if (requestPath == global.url+'/getlast')
-		dataReader.getLast ( function (data) {
+		dataBase.getLast ( function (data) {
 			response.end(wrapWithCallback(data, callback) );
 		});
 

@@ -25,7 +25,7 @@ case "$1" in
    		echo "Starting local webServer and smartMeter in test mode..."
 		./src/main/webServer/webServer.js > /tmp/webServer.log 2>&1 &
 		./src/main/meter/smartMeter.js  > /tmp/smartMeter.log 2>&1 &
-		./src/main/meter/smartMeterSimulator.js  > /dev/null 2>&1 &
+		./src/main/meter/smartMeterSimulator.js  > /tmp/smartMeterSimulator.log 2>&1 &
 		exit 0
 	;;
 

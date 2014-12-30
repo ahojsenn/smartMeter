@@ -16,7 +16,8 @@ var dataReader = {
 	getLast:  	function (callback) {return getLast(callback)},
 	getNoLines: function (filter,callback) {return getNoLines(filter,callback)},
 	dataFileName: function () {return global.datafilename},
-	getXref : 	function (noLines, column, callback) {return getXref(noLines, column, callback)}
+	getXref : 	function (noLines, column, callback) {return getXref(noLines, column, callback)},
+	writeData : function (message, callback) {return writeData(message, callback)}
 };
 module.exports = dataReader;
 
@@ -155,4 +156,21 @@ function getXref (noLines, column, callback) {
 		callback( JSON.stringify(distinct) );
 	});
 
+}
+
+function writeData (message, callback) {
+	var	fs = require('fs');
+
+	//Now make sure, the values are logged somewhere, namely in logFile...
+	fs.appendFile (global.datafilename,  message +'\n', function(err) {
+	    if(err) {
+	        console.log(err);
+	    } else {
+	        global.log(global.datafilename + " was appended: " + message);
+		}
+	});
+
+	if (typeof callback === 'function' && callback())
+		callback ();
+	else return;
 }

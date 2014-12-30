@@ -3,13 +3,25 @@
 
 	"gpio_path": "/sys/class/gpio/",
 	"polling_intervall": 50,
-	"gpioSimulatorTimeout" : [3000, 10000],
-	"gpioIdentifier": ["Strom","Erdgas"],
-	"gpio_input_pin": [2,3],
-	"UmdrehungenProKWh": [75, 91.421],
-	"EuroCentProKWh": [23,6.44],
 
-	"debug": false,
+	"measurements": [
+						{
+							"gpioIdentifier" : "Strom",
+							"gpioInputPin" : 2,
+							"gpioSimulatorTimeout" : 2000,
+							"UmdrehungenProKWh" : 75,
+							"EuroCentProKWh" : 23
+						},
+						{
+							"gpioIdentifier" : "Erdgas",
+							"gpioInputPin" : 3,
+							"gpioSimulatorTimeout" : 10000,
+							"UmdrehungenProKWh" : 9.1421,
+							"EuroCentProKWh" : 6.44
+						}
+					],
+
+	"debug": true,
 	"srcPath": "/home/pi/production/smartMeter/src/",
 	"datafilename": "/home/pi/production/smartMeter/data/gotResults.json",
 

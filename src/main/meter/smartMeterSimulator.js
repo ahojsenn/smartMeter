@@ -15,10 +15,10 @@ var mySimulator = new Array;
 function simulator (gpioNr) {
 	// set timer intervall
 	var exec = require('child_process').exec,
-		gpioPin=global.gpio_input_pin[gpioNr],
-		gpioIdentifier=global.gpioIdentifier[gpioNr],
-		UmdrehungenProKWh=global.UmdrehungenProKWh[gpioNr],
-		EuroCentProKWh=global.EuroCentProKWh[gpioNr];
+		gpioPin=global.measurements[gpioNr].gpioInputPin,
+		gpioIdentifier=global.measurements[gpioNr].gpioIdentifier,
+		UmdrehungenProKWh=global.measurements[gpioNr].UmdrehungenProKWh,
+		EuroCentProKWh=global.measurements[gpioNr].EuroCentProKWh;
 
 	// milliSekundenProUmdrehung: the time it takes for one blink or turn of the meter
 	// kWhProUmdrehung = 1 / UmdrehungProKWh
@@ -37,16 +37,42 @@ function simulator (gpioNr) {
 		exec (cmd);
 	}
 
+	this.flipPinOnGPIO = function (gpioNr) {
+		var path = global.gpio_path+"gpio"
+				  +global.measurements[gpioNr].gpioInputPin+"/value",
+			fs = require('fs'),
+			pin;
+
+		global.log ("smartMeterSimulator: in flipPinOnGPIO");
+
+		fs.readFile(path, "binary", function (err, pin) {
+			var flippedPin= 1 - pin;
+			global.log ('	readFile: ' +path+ " pin="+pin);
+			if (err) {
+				global.log ('smartMeterSimulator: ERROR readFile: ' + './client/' + myfilename);
+		    	return;
+			}
+			fs.writeFile (path, flippedPin, function (err) {
+				global.log ('	write flipped pin: ' +path+ " flippedPin="+flippedPin);
+				if (err) {
+					global.log ('smartMeterSimulator: ERROR readFile: ' + './client/' + myfilename);
+		    		return;
+		    	}
+			})
+		})
+	}
+
 	// create an entry in the datafile at random time between 0-10s intervalls
 	this.createRandomData = function  (gpioNr) {
-		var timeout = global.gpioSimulatorTimeout[gpioNr],
+		var timeout = global.measurements[gpioNr].gpioSimulatorTimeout,
 			randomTime = timeout+Math.round(1000*Math.random()), // something between 3 and 4 seconds
 			objref = this;
-		global.log ("in createRandomData..., timeout="+timeout);
+		global.log ("smartMeterSimulator: in createRandomData..., timeout="+timeout);
 
 		setTimeout(function () {
 			global.log("time passed..." + randomTime + "s");
-			objref.writeSimulatedData (randomTime);
+			//objref.writeSimulatedData (randomTime);
+			objref.flipPinOnGPIO(gpioNr);
 			objref.createRandomData(gpioNr);
 		}, randomTime);
 	};
@@ -57,9 +83,9 @@ function simulator (gpioNr) {
 
 global.log ("starting simulator...");
 
-for (var gpioNr=0; gpioNr<global.gpio_input_pin.length; gpioNr++) {
-	mySimulator[gpioNr] = new simulator (gpioNr);
-	mySimulator[gpioNr].createRandomData(gpioNr);
+for (var i in global.measurements) {
+	mySimulator[i] = new simulator (i);
+	mySimulator[i].createRandomData(i);
 }
 
 

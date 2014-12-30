@@ -3,11 +3,6 @@
 
 	"gpio_path": "/tmp/gpio/",
 	"polling_intervall": 50,
-	"gpioSimulatorTimeout" : [3000, 10000],
-	"gpioIdentifier": ["Strom","Erdgas"],
-	"gpio_input_pin": [2,3],
-	"UmdrehungenProKWh": [10000, 97.08],
-	"EuroCentProKWh": [23,6.44],
 
 	"measurements": [
 						{
@@ -21,7 +16,7 @@
 							"gpioInputPin" : 3,
 							"gpioIdentifier" : "Erdgas",
 							"gpioSimulatorTimeout" : 10000,
-							"UmdrehungenProKWh" : 91.421,
+							"UmdrehungenProKWh" : 9.1421,
 							"EuroCentProKWh" : 6.44
 						}
 					],

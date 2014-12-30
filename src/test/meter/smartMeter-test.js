@@ -1,7 +1,8 @@
 var assert = require("assert"),
 	global = require ("../../main/global/global.js").init("Test"),
-	smr = require ("../../main/meter/smartMeter.js"),
+	smartMeter = require ("../../main/meter/smartMeter.js"),
 	simulator,
+	measurements = new Array(),
 	fs = require("fs"),
   	exec = require('child_process').exec
 	;
@@ -14,6 +15,7 @@ before(function(done){
 	// wait for the smr initialization to be done...
 	global.eventEmitter.on('readyForMeasurement', function() {
 		simulator = require ("../../main/meter/smartMeterSimulator.js");
+
 		done();
 	});
 })
@@ -23,9 +25,9 @@ describe ('smartMeter', function () {
 
 	/* init */
 	it ('should init() without error', function (){
-		for (var i=0; i<global.gpio_input_pin; i++ ) {
-			console.log (global.gpio_input_pin[i]	);
-			assert(global.gpio_input_pin[i]>0);
+		for (var i in global.measurements ) {
+			console.log (global.measurements[i].gpioInputPin	);
+			assert(global.measurements[i].gpioInputPin>0);
 		}
 	})
 
@@ -36,19 +38,21 @@ describe ('smartMeter', function () {
 
 	/* GPIO is set up */
 	it ('should create gpio device at **/direction', function () {
-		for (var i=0; i<global.gpio_input_pin; i++ ) {
+		for (var i in global.measurements ) {
 			assert (
-			fs.existsSync(global.gpio_path+"gpio"+global.gpio_input_pin+"/direction")
+			fs.existsSync(global.gpio_path+"gpio"+global.measurements[i].gpioInputPin+"/direction")
 		);
 			assert.equal (
-				fs.readFileSync(global.gpio_path+"gpio"+global.gpio_input_pin+"/direction")
+				fs.readFileSync(global.gpio_path+"gpio"+global.measurements[i].gpioInputPin+"/direction")
 				, "in\n");
 		}
 	})
 
 	/* it should calculate correct Watts */
 	it ('should calculate correct Watts', function () {
-		assert (smr.powerConsumption (6834,0, 1) > 0);
+		var sm = new smartMeter();
+		sm.init(0);
+		assert (sm.powerConsumption (6834,0, 1) > 0);
 	})
 
 })

@@ -50,14 +50,13 @@ function defineSetupCommands () {
 
 	// create gpio devices and mock it on non raspi hardware //
 	if (process.platform == 'darwin' || testmode.isSwitchedOn() ) {
-		global.gpio_path="/tmp/gpio/"
 		commands = commands.concat ([
 			"clear",
 			"rm -rf " + global.gpio_path
 			]);
 		// create gpio devices and mock it on non raspi hardware //
-		for (var i=0; i<global.gpio_input_pin.length; i++) {
-			gpioInputPin=global.gpio_input_pin[i];
+		for (var i in global.measurements) {
+			gpioInputPin=global.measurements[i].gpioInputPin;
 			global.log ("              gpioPin="+gpioInputPin);
 			commands = commands.concat ([
 				"mkdir -p " + global.gpio_path+"gpio"+gpioInputPin,
@@ -77,8 +76,8 @@ function defineSetupCommands () {
 		);
 	}
 	else {
-		for (var i=0; i<global.gpio_input_pin.length; i++) {
-			gpioInputPin=global.gpio_input_pin[i];
+		for (var i in global.measurements) {
+			gpioInputPin=global.measurements[i].gpioInputPin;
 			global.log ("              gpioPin="+gpioInputPin);
 			commands = commands.concat ([
 				"sudo echo "+gpioInputPin+" > /sys/class/gpio/unexport",

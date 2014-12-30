@@ -38,14 +38,14 @@ function renderDataInTable(EnergyObject) {
 			.append( $('<td/>').append('todays sum: ') )
 			.append( $('<td/>').append( noEntriesToday +" entries, "
 										+ kWh(data, firstEntryToday, data.length-1) + " KWh, "
-										+ Math.round(global.EuroCentProKWh*kWh(data, firstEntryToday, data.length-1))/100
+										+ Math.round(centProKWh*kWh(data, firstEntryToday, data.length-1))/100
 										+ "Euro"
 				))
 		)
 		.append( $('<tr/>')
 			.append( $('<td/>').append('average per day: ') )
 			.append( $('<td/>').append( kWh(data, 0, data.length-1) + " KWh, "
-										+ Math.round(global.EuroCentProKWh*kWh(data, 0, data.length-1))/100
+										+ Math.round(centProKWh*kWh(data, 0, data.length-1))/100
 										+ "Euro"
 									)
 			)
@@ -53,7 +53,7 @@ function renderDataInTable(EnergyObject) {
 		.append( $('<tr/>')
 			.append( $('<td/>').append('av. per year: ') )
 			.append( $('<td/>').append( 365*kWh(data, 0, data.length-1) + " KWh, "
-										+ Math.round(global.EuroCentProKWh*365*kWh(data, 0, data.length-1))/100
+										+ Math.round(centProKWh*365*kWh(data, 0, data.length-1))/100
 										+ "Euro"
 									)
 			)
