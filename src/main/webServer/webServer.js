@@ -8,15 +8,17 @@
 	The server serves data in json format from files
 	The Data is in the file 'global.datafilename'
 */
-var	global = (typeof global != 'undefined' ) 
-		? global 
-		: require ("../../main/global/global.js").init("from webServer"),
-	dataBase = require ("../../main/dataBase/dataBase.js");
+var stream 		= require('stream');
+var util 		= require('util');
+var Transform 	= stream.Transform || require('readable-stream').Transform;
+
+var	global 		=  global || require ("../../main/global/global.js").init("from webServer"),
+	DataBase 	= require ("../../main/dataBase/dataBase.js"),
+	dataBase = new DataBase();
 
 // the webServer Object
 var ws = {
 		start: startWebServer,
-		dataBase: require ("../../main/dataBase/dataBase.js")
 	};
 
 // now start the webServer
@@ -33,7 +35,7 @@ module.exports = ws;
 function startWebServer() {
 	global.log ("in startWebServer...");
 	var app = require('http').createServer(function (request, response) {
-  		response.writeHead(200, {'Content-Type':'text/plain'});
+//  		response.writeHead(200, {'Content-Type':'text/plain'});
   		parseRequestAndRespond (request, response);
 	}).listen(global.serverPort,  '::');
 
@@ -66,10 +68,11 @@ function parseRequestAndRespond (request, response) {
 
 
 
-	if (requestPath == global.url+'/getXref')
+	if (requestPath == global.url+'/getXref') {
 		dataBase.getXref (noLines, column, function (data) {
 			response.end(wrapWithCallback(data, callback) );
 		});
+	}
 
 	else if (requestPath == global.url+'/getData')
 		dataBase.getData (noLines, filter, function (data) {
@@ -77,10 +80,14 @@ function parseRequestAndRespond (request, response) {
 		});
 
 	// get nolines returns the number of lines in the data
-	else if (requestPath == global.url+'/getnolines')
+	else if (requestPath == global.url+'/getnolines') {
 		dataBase.getNoLines (filter, function (data) {
 			response.end(wrapWithCallback(data, callback) );
 		});
+
+///  continue here with teh stream thind
+///		dataBase.getNoLines (filter);
+	}
 
 	// getfirst gets the first entry in the dta file
 	else if (requestPath == global.url+'/getfirst')
@@ -111,6 +118,54 @@ function parseRequestAndRespond (request, response) {
 }
 
 
+
+/**
+ * myModGzip is my poor mans try to compress data...
+ * inspired by http://nodejs.org/api/zlib.html
+ */
+function myModGzip (request, response, raw) {
+	var zlib = require('zlib'),
+		acceptEncoding = request.headers['accept-encoding'];
+  	if (!acceptEncoding) {
+    	acceptEncoding = '';
+  	}
+
+  	// Note: this is not a conformant accept-encoding parser.
+  	// See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3
+  	if (acceptEncoding.match(/\bdeflate\b/)) {
+    	response.writeHead(200, { 'content-encoding': 'deflate' });
+    	raw.pipe(zlib.createDeflate()).pipe(response);
+  	} else if (acceptEncoding.match(/\bgzip\b/)) {
+    	response.writeHead(200, { 'content-encoding': 'gzip' });
+    	raw.pipe(zlib.createGzip()).pipe(response);
+  	} else {
+    	response.writeHead(200, {});
+    	raw.pipe(response);
+  	}
+}
+
+/**
+	wrap the data with a callback
+ */
+function WrapWithCallback(options) {
+  // allow use without new
+  if (!(this instanceof WrapWithCallback)) {
+    return new WrapWithCallback(options);
+  }
+
+  // init Transform
+  Transform.call(this, options);
+}
+util.inherits(WrapWithCallback, Transform);
+
+
+WrapWithCallback.prototype._transform = function  (data, callback) {
+	if (typeof callback === 'string')
+		return callback + "("+data+")";
+	else
+		return data;
+}
+
 /**
 	wrap the data with a callback
  */
@@ -120,7 +175,6 @@ function wrapWithCallback (data, callback) {
 	else
 		return data;
 }
-
 
 /**
    	start a Web-Socket that will deliver data on every new entry of the datafile

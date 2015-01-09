@@ -4,22 +4,31 @@
 	Johannes Mainusch
 	Start: 2014-12-21
 */
+module.exports = DataBase;
 
-var	global = (typeof global != 'undefined' ) ?
-		global : require ("../../main/global/global.js").init("from dataReader");
+var stream 		= require('stream');
+var util 		= require('util');
+var Readable 	= require('stream').Readable;
+Readable.prototype._read = function () {}
+
+var	global 	= global || require ("../../main/global/global.js").init("from DataBase");
 
 // the webServer Object
-var dataReader = {
-	getData: 	function (noLines, filter, callback) {return getData(noLines, filter, callback)},
-	getNoLines: function (filter,callback) {return getNoLines(filter,callback)},
-	getFirst: 	function (callback) {return getFirst(callback)},
-	getLast:  	function (callback) {return getLast(callback)},
-	getNoLines: function (filter,callback) {return getNoLines(filter,callback)},
-	dataFileName: function () {return global.datafilename},
-	getXref : 	function (noLines, column, callback) {return getXref(noLines, column, callback)},
-	writeData : function (message, callback) {return writeData(message, callback)}
+function DataBase(options) {
+  	// allow use without new
+  	if (!(this instanceof DataBase)) {
+  		global.log ("in DataBase: !(this instanceof DataBase, returning new DataBase...");
+    	return new DataBase(options);
+  	}
+  	this.getData = 	function (noLines, filter, callback) {return getData(noLines, filter, callback)};
+	this.getNoLines = function (filter,callback) {return getNoLines(filter,callback)};
+	this.getFirst = 	function (callback) {return getFirst(callback)};
+	this.getLast =   	function (callback) {return getLast(callback)};
+	this.getNoLines = function (filter,callback) {return getNoLines(filter,callback)};
+	this.dataFileName = function () {return global.datafilename};
+	this.getXref = 	function (noLines, column, callback) {return getXref(noLines, column, callback)};
+	this.writeData = function (message, callback) {return writeData(message, callback)};
 };
-module.exports = dataReader;
 
 
 /**
@@ -28,10 +37,11 @@ module.exports = dataReader;
 	callback: the callback
 */
 function getNoLines (filter, callback) {
-	global.log ('in getNoLines');
+	global.log ('in getNoLines...'  );
 	var cmd = "cat " + global.datafilename,
-		exec = require('child_process').exec,
-		responseData="[";
+		exec = require('child_process').exec;
+
+	this.stream = new Readable;
 
 	if (typeof filter === 'string' )
 		cmd += " | grep '"+filter+"'";
@@ -39,14 +49,19 @@ function getNoLines (filter, callback) {
 	cmd += " | wc -l | tr -d ' '";
 
 	exec(cmd, function (error, stdout) {
-		// get rid of newlines in data
-		var data = stdout.slice(0, stdout.length-1);
-		responseData += data+"]";
-
+		// get rid of newlines in data and add "[]" brackets
+		var data = "["+stdout.slice(0, stdout.length-1).concat("]");
 		global.log ('    getNoLines, cmd='+cmd);
-		global.log ('    getNoLines, responseData='+responseData);
-		callback (responseData);
-	});
+		global.log ('    getNoLines, data='+data);
+		if (typeof callback === 'function' )
+			callback(data);
+		else {
+			global.log("in getNoLines... no callback provided");
+			global.log("pushed data\n\n\n");
+			this.stream.push(data);
+		}
+	})
+	return this;  // this is neede for chaining like in streams
 }
 
 /**
@@ -59,25 +74,12 @@ function getData (noLines, filter, callback) {
 	var spawn = require('child_process').spawn,
 		tail = spawn("tail", [-noLines, global.datafilename]),
 		grep = spawn("grep", [filter]),
-		responseData="[";
-
+		responseData="[",
+		self = this;
 	global.log ('in getData('+noLines+', "'+filter+'", callback() )');
 
-	tail.stdout.on ('data', function (data) {
-		global.log ('      ... tail.stdout, data=\n'+ data);
-		grep.stdin.write(data);
-	});
-
-	tail.stderr.on('data', function (data) {
-	  	global.log('        ...tail stderr: ' + data);
-	});
-
-	tail.on('close', function (code) {
-		if (code !== 0) {
-    		console.log('ps process exited with code ' + code);
-  		}
-  		grep.stdin.end();
-	});
+	this.stream = new Readable;
+	tail.stdout.pipe(grep.stdin);
 
 	grep.stdout.on ('data', function (data) {
  		global.log ("      ... grep.stdout, data=\n"+ data);
@@ -95,8 +97,12 @@ function getData (noLines, filter, callback) {
   		responseData = responseData.replace(/,\n$/, '');		// removed the last ,
 		responseData += "]";
 	  	global.log('           exit with code ' + code + "\n    responseData:" + responseData+'...');
-		callback (responseData);
+		if (typeof callback === 'function' )
+			callback(responseData);
+		else
+			self.stream.push(responseData);
 	})
+	return this;  // this is neede for chaining like in streams
 }
 
 /**
@@ -104,6 +110,7 @@ function getData (noLines, filter, callback) {
 */
 function getFirst (callback) {
 	execInShell ('head -1 ', callback);
+	return this;  // this is neede for chaining like in streams
 }
 
 /**
@@ -111,6 +118,7 @@ function getFirst (callback) {
 */
 function getLast (callback) {
 	execInShell ('tail -1 ', callback);
+	return this;  // this is neede for chaining like in streams
 }
 
 /**
@@ -119,9 +127,11 @@ function getLast (callback) {
 */
 function execInShell (cmd, callback) {
 	var exec = require('child_process').exec,
+		self = this,
 		data;
+	this.stream = new Readable;
 
-	cmd += cmd + " " + global.datafilename;
+	cmd += " " + global.datafilename;
 	global.log ('in execInShell, cmd='+cmd);
 
 	exec(cmd, function (error, data) {
@@ -129,17 +139,24 @@ function execInShell (cmd, callback) {
 		data = "["+data+"]";					// add [] for array
 		data = data.replace(/},]/, '}]');		// removed the last ","
 		global.log('callback in execInShell, cmd: ' + cmd + "\n" +data);
-		callback( data );
+		if (typeof callback === 'function' )
+			callback(data);
+		else
+			self.stream.push(data);
+//		callback( data );
 	});
+	return this;  // this is neede for chaining like in streams
 }
 
 /**
-	getXref (column, callback) return the cross reference, i.e. all different values in column
+	getXref (noLines, column, callback) return the cross reference, i.e. all different values in column
  */
 function getXref (noLines, column, callback) {
+	var self = this;
 	global.log ("in getXref, column="+column);
+	this.stream = new Readable;
 
-	dataReader.getData (noLines, '', function (data) {
+	getData (noLines, '', function (data) {
 		// now find the uniques in the data 'column'
 		var unique 	 = {},
 			distinct = [];
@@ -153,10 +170,14 @@ function getXref (noLines, column, callback) {
 			}
 		}
 		global.log ("	returning JSON.stringify(unique)="+JSON.stringify(distinct)) ;
-		callback( JSON.stringify(distinct) );
+		if (typeof callback === 'function' )
+			callback(JSON.stringify(distinct));
+		else
+			self.stream.push(JSON.stringify(distinct));
 	});
-
+	return this;  // this is neede for chaining like in streams
 }
+
 
 function writeData (message, callback) {
 	var	fs = require('fs');
@@ -172,5 +193,5 @@ function writeData (message, callback) {
 
 	if (typeof callback === 'function' && callback())
 		callback ();
-	else return;
+	return this;  // this is neede for chaining like in streams
 }

@@ -16,7 +16,8 @@
 */
 var global = require ('../global/global.js').init("from smartMeter"),
 	setupGPIO = require ('./setupGPIO.js'),
-	dataBase = require ("../../main/dataBase/dataBase.js");
+	DataBase =  require ("../../main/dataBase/dataBase.js"),
+	dataBase = new DataBase;
 
 var smartMeter = function () {
 		objref = this;

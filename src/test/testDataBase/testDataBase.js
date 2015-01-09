@@ -3,7 +3,8 @@ var assert = require("assert"),
       ? global : require ("../../main/global/global.js").init("Test"),
     fs = require("fs"),
     TESTFILTER='ycxvyxcvxy',
-    dataBase = require ("../../main/dataBase/dataBase.js");
+    DataBase = require ("../../main/dataBase/dataBase.js"),
+    dataBase = new DataBase;
 
 
 
@@ -26,7 +27,16 @@ describe ('the dataBase', function () {
     assert.equal (global.datafilename, dataBase.dataFileName());
   })
 
-  it ('.getNolines returns the numer of lines', function (done) {
+  it ('getNoLines(filter).stream returns the number of lines', function (done) {
+    var filter = TESTFILTER;
+    dataBase.getNoLines(filter).stream.on('data', function (data) {
+      console.log ("=========>>>>>> stream is readable, data="+data);
+      assert (JSON.parse(data.toString())[0] >= 2);
+      done();
+    });
+  })
+
+  it ('.getNolines(filter,callback) returns the number of lines', function (done) {
     var filter = "";
     dataBase.getNoLines(filter, function (noLines) {
       assert (IsJsonString (noLines));
@@ -36,6 +46,7 @@ describe ('the dataBase', function () {
       done();
     });
   })
+
 
   it ('.getNolines with a very unlikely filter returns zero lines', function (done) {
     var filter = "sdafdasfasdfewsfewq0981235rio2qhnvqwerLKJL";
@@ -48,8 +59,15 @@ describe ('the dataBase', function () {
 
   it ('.getData returns a json array', function (done) {
     var noLines = 2;
-
     dataBase.getData(noLines, TESTFILTER, function (data) {
+      assert (IsJsonString (data));
+      done();
+    });
+  })
+
+  it ('.getData.stream returns a json array', function (done) {
+    var noLines = 2;
+    dataBase.getData(noLines).stream.on('data', function (data) {
       assert (IsJsonString (data));
       done();
     });
@@ -78,7 +96,6 @@ describe ('the dataBase', function () {
     });
   })
 
-
   it ('.getXref returns a json array', function (done) {
     dataBase.getXref(1000, 'term', function (data) {
       assert (IsJsonString (data));
@@ -86,6 +103,37 @@ describe ('the dataBase', function () {
     });
   })
 
+  it ('.getXref.stream gives a json array', function (done) {
+    dataBase.getXref(1000, 'term').stream.on('data', function (data) {
+      assert (IsJsonString (data));
+      done();
+    });
+  })
+
+  it ('.getFirst.stream gives a json array', function (done) {
+    dataBase.getFirst().stream.on('data', function (data) {
+      assert (IsJsonString (data));
+      done();
+    });
+  })
+
+  it ('.getLast.stream gives a json array', function (done) {
+    dataBase.getLast().stream.on('data', function (data) {
+      assert (IsJsonString (data));
+      done();
+    });
+  })
+
+  it ('.writeData appends the database at the end', function (done) {
+    var testData= '{"term" : "blattlaus", "Watt" : 0.42, "timestamp": 1419266113001}'
+    dataBase.writeData(testData, function (data) {
+      dataBase.getLast().stream.on('data', function (data) {
+        assert (JSON.parse(data)[0].term === 'blattlaus');
+        assert (JSON.parse(data)[0].Watt === 0.42);
+        done();
+      });
+    });
+  })
 
 
 });
