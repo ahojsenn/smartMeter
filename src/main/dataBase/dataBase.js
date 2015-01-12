@@ -27,7 +27,12 @@ function DataBase(options) {
 	this.getNoLines = function (filter,callback) {return getNoLines(filter,callback)};
 	this.dataFileName = function () {return global.datafilename};
 	this.getXref = 	function (noLines, column, callback) {return getXref(noLines, column, callback)};
+	this.tailDB = function () {return tailDB ()};
 	this.writeData = function (message, callback) {return writeData(message, callback)};
+	this.writePartial = function (message, callback) {return writePartial (message, callback)};
+	this.execInShell = function (cmd, callback) {return execInShell (cmd, callback)};
+	this.ObjectID = function() {return Math.random();}
+	return this;
 };
 
 
@@ -57,7 +62,7 @@ function getNoLines (filter, callback) {
 			callback(data);
 		else {
 			global.log("in getNoLines... no callback provided");
-			global.log("pushed data\n\n\n");
+			global.log("pushed data");
 			this.stream.push(data);
 		}
 	})
@@ -81,22 +86,22 @@ function getData (noLines, filter, callback) {
 	this.stream = new Readable;
 	tail.stdout.pipe(grep.stdin);
 
-	grep.stdout.on ('data', function (data) {
- 		global.log ("      ... grep.stdout, data=\n"+ data);
+	grep.stdout.once ('data', function (data) {
+ 		global.log ("dataBase:getData grep.stdout, data="+ data);
     	responseData += String(data).replace(/\n/g, ',\n');		// replace newlines by ',\n'
 	})
 
-	grep.stderr.on ('data', function (data) {
+	grep.stderr.once ('data', function (data) {
 		console.log('grep stderr: ' + data);
 	})
 
-	grep.on ('close', function (code) {
+	grep.once ('close', function (code) {
 		if (code !== 0) {
     		console.log('grep process exited with code ' + code);
   		}
   		responseData = responseData.replace(/,\n$/, '');		// removed the last ,
 		responseData += "]";
-	  	global.log('           exit with code ' + code + "\n    responseData:" + responseData+'...');
+	  	global.log('dataBase:getData, exit with code ' + code + "\n    responseData:" + responseData+'...');
 		if (typeof callback === 'function' )
 			callback(responseData);
 		else
@@ -117,7 +122,10 @@ function getFirst (callback) {
 	getLAst gets the first data entry
 */
 function getLast (callback) {
+	this.stream = new Readable;
+
 	execInShell ('tail -1 ', callback);
+
 	return this;  // this is neede for chaining like in streams
 }
 
@@ -129,6 +137,7 @@ function execInShell (cmd, callback) {
 	var exec = require('child_process').exec,
 		self = this,
 		data;
+
 	this.stream = new Readable;
 
 	cmd += " " + global.datafilename;
@@ -143,10 +152,54 @@ function execInShell (cmd, callback) {
 			callback(data);
 		else
 			self.stream.push(data);
-//		callback( data );
 	});
 	return this;  // this is neede for chaining like in streams
 }
+
+/**
+ * tailDB implements a tail stream on the DB that returns only full lines,
+ * even if data is only partially written to the DB
+ */
+ function tailDB () {
+	var tail = require('child_process').spawn("tail", [ '-n1', '-f', global.datafilename]),
+		self = this,
+		buffer = "",
+		data;
+
+	this.stream = this.stream || new Readable;
+
+	tail.stdout.on ('data', function (data) {
+ 		global.log ("dataBase:tailDB, tail.stdout, data="+ data);
+ 		buffer += data;
+ 		// split data in lines by \n
+ 		// push every complete line
+ 		// remove what was pushed from the buffer
+ 		// and buffer the rest, i.e. set data to the rest
+ 		var lineArray = buffer.toString('utf8')
+ 							.split("\n");
+// 							.split(/\r\n|[\n\r\u0085\u2028\u2029]/g);
+		//put \n back on the end of each line, except the last...
+		for (var i=0; i < lineArray.length-1; i++ ) {
+	 		lineArray[i] += "\n";
+			global.log ("         ..., found line="+lineArray[i]+"..."+i+" "+lineArray.length);
+	 	}
+	 	// now loop through all the lines and push every line with \n at the end
+	 	for (var i=0; i < lineArray.length; i++ ) {
+	 		var line = lineArray[i];
+			global.log ("dataBase:tailDB, found line="+line+"..."+lineArray.length);
+			if (line.indexOf('\n') >0) {
+				global.log ("dataBase:tailDB, pushing line"+line);
+				self.stream.push(line);
+			}
+			else {
+				global.log ("dataBase:tailDB, setting data to the uncomplete rest, line="+line);
+				buffer = line;
+			}
+		}
+	});
+
+ 	return this;
+ }
 
 /**
 	getXref (noLines, column, callback) return the cross reference, i.e. all different values in column
@@ -164,12 +217,12 @@ function getXref (noLines, column, callback) {
 		data=JSON.parse(data);
 		for (var line in data){
 			if ( !(data[line][column] in unique) ) {
-				global.log ("   ... found unique "+data[line][column]);
+				global.log ("dataBase:getXref, found unique "+data[line][column]);
 				unique[data[line][column]] = true;
 				distinct.push (data[line][column]);
 			}
 		}
-		global.log ("	returning JSON.stringify(unique)="+JSON.stringify(distinct)) ;
+		global.log ("dataBase:getXref, returning JSON.stringify(unique)="+JSON.stringify(distinct)) ;
 		if (typeof callback === 'function' )
 			callback(JSON.stringify(distinct));
 		else
@@ -187,11 +240,32 @@ function writeData (message, callback) {
 	    if(err) {
 	        console.log(err);
 	    } else {
-	        global.log(global.datafilename + " was appended: " + message);
+	        global.log('dataBase:writeData, '+global.datafilename + " was appended: " + message);
 		}
 	});
 
-	if (typeof callback === 'function' && callback())
+	if (typeof callback === 'function')
 		callback ();
-	return this;  // this is neede for chaining like in streams
+	return this;  // this is needed for chaining like in streams
 }
+
+// like writeData with no newline
+function writePartial (message, callback) {
+	var	fs = require('fs'),
+	 self = this;
+
+	//Now make sure, the values are logged somewhere, namely in logFile...
+	fs.appendFile (global.datafilename,  message, function(err) {
+	    if(err) {
+	        console.log(err);
+	    } else {
+	        global.log("dataBase:writePartial,"+global.datafilename + " was appended with partial: " + message);
+		}
+	});
+
+	if (typeof callback === 'function') {
+		callback ();
+	}
+	return self;  // this is needed for chaining like in streams
+}
+

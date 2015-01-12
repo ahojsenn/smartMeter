@@ -13,7 +13,7 @@ before(function(done){
   this.timeout(12042);
   // write some stuff to the datafile for  further testing
   dataBase.writeData(
-    '{"term" : "brubbel", "Watt" : 302.2, "timestamp": 1419266113000}\n'
+    '{"term" : "brabbel", "Watt" : 302.2, "timestamp": 1419266113000}\n'
     +'{"term" : "'+TESTFILTER+'", "Watt" : 302.2, "timestamp": 1419266113000}\n'
     +'{"term" : "'+TESTFILTER+'", "Watt" : 302.2, "timestamp": 1419266113000}',
     done()
@@ -118,23 +118,55 @@ describe ('the dataBase', function () {
   })
 
   it ('.getLast.stream gives a json array', function (done) {
-    dataBase.getLast().stream.on('data', function (data) {
+    var testData= '{"term" : "ameise", "Watt" : 0.72, "timestamp": 1419266113001}'
+    dataBase.writeData(testData);
+
+    dataBase.getLast().stream.once('data', function (data) {
+      global.log ("...testing getLast: got data="+data);
       assert (IsJsonString (data));
       done();
     });
   })
 
-  it ('.writeData appends the database at the end', function (done) {
-    var testData= '{"term" : "blattlaus", "Watt" : 0.42, "timestamp": 1419266113001}'
-    dataBase.writeData(testData, function (data) {
-      dataBase.getLast().stream.on('data', function (data) {
-        assert (JSON.parse(data)[0].term === 'blattlaus');
-        assert (JSON.parse(data)[0].Watt === 0.42);
+  it ('.tailDB.stream gives a json array', function (done) {
+    var testData1= '{"term" : "kaefer", "Watt" ';
+    var testData2= ': 0.42, "timestamp": 1419266113001}\n';
+
+    dataBase
+      .writePartial(testData1);
+
+    dataBase
+      .tailDB()
+      .stream
+      .once('data', function (data) {
+        global.log ("...testing: got data="+data);
+        assert (IsJsonString (data));
+        global.log ("...testing: that was JSON");
+        assert (JSON.parse(data).term === 'kaefer');
+        assert (JSON.parse(data).Watt === 0.42);
         done();
       });
-    });
+
+    setTimeout ( function () {
+      dataBase.writePartial(testData2);
+      }, 200);
   })
 
+  it ('.writeData appends the database at the end', function (done) {
+    var testData= '{"term" : "blattlaus", "Watt" : 0.42, "timestamp": 1419266113001}'
+    var dataBase = new DataBase;
+
+    dataBase.writeData(testData);
+    var tail=require('child_process').spawn("tail", ['-n1', global.datafilename]);
+
+    tail.stdout.on('data', function (data) {
+      global.log ("...testing writeData: got data="+data);
+      assert (IsJsonString (data));
+      assert (JSON.parse(data).term === 'blattlaus');
+      assert (JSON.parse(data).Watt === 0.42);
+      done();
+    });
+  })
 
 });
 

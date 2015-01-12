@@ -14,7 +14,7 @@ var Transform 	= stream.Transform || require('readable-stream').Transform;
 
 var	global 		=  global || require ("../../main/global/global.js").init("from webServer"),
 	DataBase 	= require ("../../main/dataBase/dataBase.js"),
-	dataBase = new DataBase();
+	dataBase 	= DataBase();
 
 // the webServer Object
 var ws = {
@@ -44,8 +44,8 @@ function startWebServer() {
 	// start a Web-Socket
 	var webSocket = new myWebSocket ();
 	webSocket
-		.startSocket (app)
-		.startDataListener (global.datafilename);
+		.startSocket (app);
+//		.startDataListener ();
 }
 
 
@@ -181,33 +181,40 @@ function wrapWithCallback (data, callback) {
 	last refactored: 20130411, JM
 */
 function myWebSocket () {
-
 	global.log('in myWebSocket');
 	var objref = this;
+	var tailDB;
 
 	this.setSocket = function (socket) { this.socket = socket; return this; };
 
-	this.startDataListener = function (filename) {
-		global.log ('started dataListener on file: '+ filename);
-		var tail  = require('child_process')
-			.spawn('tail', ['-f', '-n1', filename])
-			.stdout.on ('data',
-				function (data) {
-		  			global.log('in dataListener, data: '+  data );
-					if ( (typeof objref.socket === 'object') ) {
-						global.log('objref.socket.emit (news, data):' + data);
-						// Trigger the web socket now
-						objref.socket.emit ('got new data', JSON.parse (data) );
-					}
-				});
+	this.startDataListener = function () {
+		global.log ('webServer:myWebSocket, starting dataBase.tailDB().stream.on...');
+
+//		dataBase.tailDB().stream.pipe(objref.socket);  // that would be cool...
+		tailDB=dataBase.tailDB();
+		global.log("webServer:myWebSocket, stream.ObjectID="+tailDB.ObjectID);
+		tailDB.stream.on ('data', function (data) {
+			global.log('webServer:myWebSocket, in dataListener, data: '+  data );
+			global.log('webServer:myWebSocket, in dataListener, objref.socket: '+  objref.socket );
+			if ( (typeof objref.socket === 'object') ) {
+				global.log('webServer:myWebSocket, objref.socket.emit (news, data):' + data);
+				// Trigger the web socket now
+				objref.socket.emit ('got new data', JSON.parse (data) );
+			}
+		})
+/**/
+
 		return this;
 	};
 
 	this.startSocket = function (app) {
+		global.log ("webServer:startSocket...");
 		var io = require('socket.io')
 			.listen(app)
 			.sockets.on('connection', function (socket) {
+				global.log ("webServer:startSocket.sockets.on connection...");
 				objref.setSocket (socket);
+				objref.startDataListener();
 			});
 		return this;
 	};
@@ -284,3 +291,4 @@ function getUrlParameter (request, selector) {
 
 	return urlParameter;
 }
+

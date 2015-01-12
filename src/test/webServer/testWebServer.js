@@ -1,6 +1,6 @@
 var assert = require("assert"),
     global = (typeof global != 'undefined' ) ? global : require ("../../main/global/global.js").init("Test"),
-    ws,
+    ws =  require ("../../main/webServer/webServer.js"),
     fs = require("fs"),
 	  http = require ("http"),
     exec = require('child_process').exec
@@ -10,7 +10,6 @@ var assert = require("assert"),
 /* init and start the webServer */
 before(function(done){
   this.timeout(12042);
-  ws =  require ("../../main/webServer/webServer.js");
     fs.appendFile(global.datafilename,
       '{"term" : "blipp", "Watt" : 302.2, "timestamp": 1419266113000}\n'+
       '{"term" : "blupp", "Watt" : 302.2, "timestamp": 1419266113000}\n',
@@ -18,7 +17,7 @@ before(function(done){
         if(err) {
          console.log(err);
         } else {
-          console.log("The file was saved!");
+          console.log("in webServer-test: bafore, testdata appended to dataBase...");
         }
     });
 	// wait for the ws initialization and start to be done...
@@ -66,9 +65,10 @@ describe('runs and...', function () {
     });
   });
 
+
   /* and there is a websocket sending stuff */
-  it ('broadcasts new energy value to client', function (done) {
-    this.timeout(12042);
+  it ('websocket broadcasts new energy value to client', function (done) {
+    this.timeout(4042);
     var
       socketURL = 'http://localhost:'+global.serverPort,
       options ={
@@ -76,35 +76,34 @@ describe('runs and...', function () {
         'force new connection': true
         },
       io = require('socket.io-client'),
-      client = io.connect(socketURL, options);
+      client = io.connect(socketURL, options),
+      first = true;
 
-    var firstTime = true;
     client.on('got new data', function (data) {
-      if (firstTime) done();
-      firstTime = false;
-      });
+      global.log ("...testing: got data="+JSON.stringify(data));
+      assert (IsJsonString (JSON.stringify(data)));
+      if (data.term === 'brubbel' && first) {
+        first = false;
+        assert (data.Watt === 342.42);
+        return done();
+      }
+    });
 
-    // now write something to the file
+    // now write something to the file to trigger
+    // the dataBase:tailDB and ultimamtively the webServer:websocket
     setTimeout (function () {
           fs.appendFile(global.datafilename,
-      '{"term" : "brubbel", "Watt" : 342.42, "timestamp": 1419266113000}\n',
-      function(err) {
-        if(err) {
-         console.log(err);
-        } else {
-          console.log("The file was saved!");
-        }
-      });
-    },500);
+            '{"term" : "brubbel", "Watt" : 342.42, "timestamp": 1419266113000}\n',
+            function(err) { if(err) console.log(err); });
+          },300);
   })
 
   // now test the get method of my webServer
   it ('has a /getData method implemented that lists some datafile entries', function (done) {
     var url = 'http://localhost:'+global.serverPort+'/smartMeter/getData?nolines=17';
-
     http.get( url, function (res) {
       assert.equal(200, res.statusCode);
-      res.on ('data', function (chunk) {
+      res.once ('data', function (chunk) {
         assert (chunk.length > 0);
         done();
       });
@@ -116,7 +115,7 @@ describe('runs and...', function () {
     var url = 'http://localhost:'+global.serverPort+'/smartMeter/getnolines';
     http.get( url, function (res) {
       assert.equal(200, res.statusCode);
-      res.on ('data', function (chunk) {
+      res.once ('data', function (chunk) {
         assert (chunk.length > 0);
         done();
       });
@@ -128,7 +127,7 @@ describe('runs and...', function () {
     var url = 'http://localhost:'+global.serverPort+'/smartMeter/getfirst';
     http.get( url, function (res) {
       assert.equal(200, res.statusCode);
-      res.on ('data', function (chunk) {
+      res.once ('data', function (chunk) {
         assert (chunk.length > 0);
         done();
       });
@@ -140,7 +139,7 @@ describe('runs and...', function () {
     var url = 'http://localhost:'+global.serverPort+'/smartMeter/getlast  ';
     http.get( url, function (res) {
       assert.equal(200, res.statusCode);
-      res.on ('data', function (chunk) {
+      res.once ('data', function (chunk) {
         assert (chunk.length > 0);
         done();
       });
@@ -152,7 +151,7 @@ describe('runs and...', function () {
     var url = 'http://localhost:'+global.serverPort+'/smartMeter/getXref?column=term';
     http.get( url, function (res) {
       assert.equal(200, res.statusCode);
-      res.on ('data', function (chunk) {
+      res.once ('data', function (chunk) {
         assert (chunk.length > 0);
         assert (chunk.toString().indexOf("brubbel") >= 0);
         done();
@@ -166,7 +165,7 @@ describe('runs and...', function () {
 
     http.get( url, function (res) {
       assert.equal(200, res.statusCode);
-      res.on ('data', function (chunk) {
+      res.once ('data', function (chunk) {
         assert ( chunk.toString().indexOf("blubberblubber") == 0);
         done ();
         });
@@ -178,7 +177,7 @@ describe('runs and...', function () {
     var url = 'http://localhost:'+global.serverPort+'/smartMeter/getglobals';
     http.get( url, function (res) {
       assert.equal(200, res.statusCode);
-      res.on ('data', function (chunk) {
+      res.once ('data', function (chunk) {
         assert (chunk.length > 0);
         assert (JSON.parse(chunk).location == 'TestLocation')
         done();
@@ -190,6 +189,14 @@ describe('runs and...', function () {
 
 
 
-
+// =========
+function IsJsonString(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
 
 

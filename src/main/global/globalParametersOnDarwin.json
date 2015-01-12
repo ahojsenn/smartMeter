@@ -13,6 +13,13 @@
 							"EuroCentProKWh" : 23
 						},
 						{
+							"gpioInputPin" : 4,
+							"gpioIdentifier" : "Wasser",
+							"gpioSimulatorTimeout" : 3000,
+							"UmdrehungenProKWh" : 123,
+							"EuroCentProKWh" : 23
+						},
+						{
 							"gpioInputPin" : 3,
 							"gpioIdentifier" : "Erdgas",
 							"gpioSimulatorTimeout" : 10000,
