@@ -131,7 +131,7 @@ describe ('the dataBase', function () {
 
 describe ('the dataBase has a stream', function () {
   it ('.tailDB.stream gives a json array', function (done) {
-    var testData1= '{"term" : "kaefer", "Watt" : 0.42, "timestamp": 1419266113001}\n';
+    var testData1= '{"term" : "kaefer", "Watt" : 0.42, "timestamp": 1419266113001}';
     dataBase
       .tailDB()
       .stream
@@ -141,11 +141,12 @@ describe ('the dataBase has a stream', function () {
         global.log ("...testing: that was JSON");
         if (JSON.parse(data).term === 'kaefer') done();
       });
-    dataBase.writePartial(testData1);
+    dataBase.writeData(testData1);
   })
 })
 
 describe ('the dataBase has a write method', function () {
+  this.timeout(5042);
   it ('.writeData appends the database at the end', function (done) {
     var testData= '{"term" : "blattlaus", "Watt" : 0.42, "timestamp": 1419266113001}'
     var dataBase = new DataBase;
@@ -157,6 +158,7 @@ describe ('the dataBase has a write method', function () {
       assert (IsJsonString (data));
       if (JSON.parse(data).term === 'blattlaus') done();
     });
+
     dataBase.writeData(testData);
 
   })

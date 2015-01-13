@@ -86,16 +86,16 @@ function getData (noLines, filter, callback) {
 	this.stream = new Readable;
 	tail.stdout.pipe(grep.stdin);
 
-	grep.stdout.once ('data', function (data) {
+	grep.stdout.on ('data', function (data) {
  		global.log ("dataBase:getData grep.stdout, data="+ data);
     	responseData += String(data).replace(/\n/g, ',\n');		// replace newlines by ',\n'
 	})
 
-	grep.stderr.once ('data', function (data) {
+	grep.stderr.on ('data', function (data) {
 		console.log('grep stderr: ' + data);
 	})
 
-	grep.once ('close', function (code) {
+	grep.on ('close', function (code) {
 		if (code !== 0) {
     		console.log('grep process exited with code ' + code);
   		}
