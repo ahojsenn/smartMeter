@@ -1,5 +1,5 @@
 var assert = require("assert"),
-    global = (typeof global != 'undefined' ) ? global : require ("../../main/global/global.js").init("Test"),
+    global = global || require ("../../main/global/global.js").init("Test"),
     ws =  require ("../../main/webServer/webServer.js"),
     fs = require("fs"),
 	  http = require ("http"),
@@ -9,7 +9,7 @@ var assert = require("assert"),
 
 /* init and start the webServer */
 before(function(done){
-  this.timeout(12042);
+  this.timeout(10042);
     fs.appendFile(global.datafilename,
       '{"term" : "blipp", "Watt" : 302.2, "timestamp": 1419266113000}\n'+
       '{"term" : "blupp", "Watt" : 302.2, "timestamp": 1419266113000}\n',

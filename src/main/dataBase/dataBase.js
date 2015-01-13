@@ -214,6 +214,7 @@ function getXref (noLines, column, callback) {
 		var unique 	 = {},
 			distinct = [];
 
+		global.log ('dataBase:getXref, getData callback, data='+data);
 		data=JSON.parse(data);
 		for (var line in data){
 			if ( !(data[line][column] in unique) ) {

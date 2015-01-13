@@ -1,6 +1,5 @@
 var assert = require("assert"),
-    global = (typeof global != 'undefined' )
-      ? global : require ("../../main/global/global.js").init("Test"),
+    global = global || require ("../../main/global/global.js").init("Test"),
     fs = require("fs"),
     TESTFILTER='ycxvyxcvxy',
     DataBase = require ("../../main/dataBase/dataBase.js"),
@@ -128,45 +127,40 @@ describe ('the dataBase', function () {
     });
   })
 
+})
+
+describe ('the dataBase has a stream', function () {
   it ('.tailDB.stream gives a json array', function (done) {
-    var testData1= '{"term" : "kaefer", "Watt" ';
-    var testData2= ': 0.42, "timestamp": 1419266113001}\n';
-
-    dataBase
-      .writePartial(testData1);
-
+    var testData1= '{"term" : "kaefer", "Watt" : 0.42, "timestamp": 1419266113001}\n';
     dataBase
       .tailDB()
       .stream
-      .once('data', function (data) {
+      .on('data', function (data) {
         global.log ("...testing: got data="+data);
         assert (IsJsonString (data));
         global.log ("...testing: that was JSON");
-        assert (JSON.parse(data).term === 'kaefer');
-        assert (JSON.parse(data).Watt === 0.42);
-        done();
+        if (JSON.parse(data).term === 'kaefer') done();
       });
-
-    setTimeout ( function () {
-      dataBase.writePartial(testData2);
-      }, 200);
+    dataBase.writePartial(testData1);
   })
+})
 
+describe ('the dataBase has a write method', function () {
   it ('.writeData appends the database at the end', function (done) {
     var testData= '{"term" : "blattlaus", "Watt" : 0.42, "timestamp": 1419266113001}'
     var dataBase = new DataBase;
 
-    dataBase.writeData(testData);
     var tail=require('child_process').spawn("tail", ['-n1', global.datafilename]);
 
     tail.stdout.on('data', function (data) {
       global.log ("...testing writeData: got data="+data);
       assert (IsJsonString (data));
-      assert (JSON.parse(data).term === 'blattlaus');
-      assert (JSON.parse(data).Watt === 0.42);
-      done();
+      if (JSON.parse(data).term === 'blattlaus') done();
     });
+    dataBase.writeData(testData);
+
   })
+
 
 });
 

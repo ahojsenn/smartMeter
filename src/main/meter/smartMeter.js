@@ -14,7 +14,7 @@
 	The resuting timestamps are logges in the logfile...
 
 */
-var global = require ('../global/global.js').init("from smartMeter"),
+var global = global || require ('../global/global.js').init("from smartMeter"),
 	setupGPIO = require ('./setupGPIO.js'),
 	DataBase =  require ("../../main/dataBase/dataBase.js"),
 	dataBase = new DataBase;
@@ -123,7 +123,7 @@ module.exports = smartMeter;
 /*
  * The main bit...
  */
-setupGPIO ('readyForMeasurement')
+setupGPIO ('readyForMeasurement');
 
 /*
  * after setup, i.e. .on('readyForMeasurement', I will start one

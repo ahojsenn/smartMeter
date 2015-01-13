@@ -13,7 +13,7 @@ function renderDataSelector() {
 	if ( !(typeof selectedValue === 'string' ) ) selectedValue = 'all';
 
 	$.ajax ({
-		url: global.url+'/getXref?'+'nolines='+1000+"&column=term",
+		url: global.url+'/getXref?'+'nolines='+200+"&column=term",
 		cache : false,
 		dataType: 'jsonp',
 		crossDomain: true,

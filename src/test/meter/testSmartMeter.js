@@ -1,5 +1,5 @@
 var assert = require("assert"),
-	global = require ("../../main/global/global.js").init("Test"),
+	global = global || 	require ("../../main/global/global.js").init("Test"),
 	smartMeter = require ("../../main/meter/smartMeter.js"),
 	simulator,
 	measurements = new Array(),
@@ -10,12 +10,11 @@ var assert = require("assert"),
 
 /* init the smartMeter */
 before(function(done){
-	this.timeout(12042);
+	this.timeout(11042);
 //	global.datafilename = "/tmp/testData.json";
 	// wait for the smr initialization to be done...
 	global.eventEmitter.on('readyForMeasurement', function() {
 		simulator = require ("../../main/meter/smartMeterSimulator.js");
-
 		done();
 	});
 })
