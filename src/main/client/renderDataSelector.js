@@ -7,13 +7,13 @@ function renderDataSelector() {
 	console.log ("in renderDataSelector...");
 	var myhtml = $('<select>')
 			.appendTo('#dataSelectorId')
-			.change( handleSelectBoxChange),
+			.change(handleSelectBoxChange),
 		selectedValue = getQueryVariable('filter');
 
 	if ( !(typeof selectedValue === 'string' ) ) selectedValue = 'all';
 
 	$.ajax ({
-		url: global.url+'/getXref?'+'nolines='+200+"&column=term",
+		url: global.url+'/getXref?'+'nolines='+1000+"&column=term",
 		cache : false,
 		dataType: 'jsonp',
 		crossDomain: true,

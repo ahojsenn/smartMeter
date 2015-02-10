@@ -21,7 +21,7 @@
 						}
 					],
 
-	"debug": true,
+	"debug": false,
 	"srcPath": "/home/pi/production/smartMeter/src/",
 	"datafilename": "/home/pi/production/smartMeter/data/gotResults.json",
 

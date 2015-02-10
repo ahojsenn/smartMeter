@@ -51,7 +51,8 @@ function getEnergyObject() {
 			crossDomain: true,
 			success:
 				function (data) { // this little closure will preserve the object reference of this (energyObject)
-					console.log ("got called back with data[data.length-1]=", data[data.length-1] );
+					console.log ("got called back with data=", data );
+					console.log ("                     data[data.length-1]=", data[data.length-1] );
 					EnergyObject.setMyData( data );
 					$(EnergyObject).trigger(gotInitialDataEvent);
 					return EnergyObject;
@@ -70,6 +71,7 @@ function getEnergyObject() {
 	  			// only act, if filter critera is met
 	  			if (typeof (filter) === 'string' &&
 	  				JSON.stringify(d).indexOf(filter) == -1 )
+//		  				d.indexOf(filter) == -1 )
 	  				return;
 	    		$(EnergyObject).trigger(gotNewDataEvent);
 				$('h1').addClass('redFlash');

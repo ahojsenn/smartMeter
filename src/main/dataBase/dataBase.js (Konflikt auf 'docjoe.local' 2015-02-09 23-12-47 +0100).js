@@ -205,12 +205,12 @@ function execInShell (cmd, callback) {
 		new require('child_process').spawn("tail", [ '-fn', '1', global.datafilename]);
 
 	this.stream = this.stream || new Transform;
-	this.tail.stdout
+	tail.stdout
 		.pipe(this.stream);
 
 	// this should kill the hanging tail process
 	process.on ('exit', function () {
-		self.tail.kill("SIGHUP");
+		tail.kill("SIGHUP");
 	});
  	return this;
  }

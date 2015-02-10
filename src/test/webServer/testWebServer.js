@@ -17,7 +17,7 @@ before(function(done){
         if(err) {
          console.log(err);
         } else {
-          console.log("in webServer-test: bafore, testdata appended to dataBase...");
+          console.log("in webServer-test: before, testdata appended to dataBase...");
         }
     });
 	// wait for the ws initialization and start to be done...
@@ -50,7 +50,7 @@ describe ('the webServer', function () {
 });
 
 /* start */
-describe('runs and...', function () {
+describe('the webServer runs and...', function () {
   it('should return 200', function (done) {
     http.get('http://localhost:'+global.serverPort+'/smartMeter/getData', function (res) {
       assert.equal(200, res.statusCode);
@@ -59,7 +59,7 @@ describe('runs and...', function () {
   });
 
   /* a webserver is also started on ipv6 */
-  it('should return 200', function (done) {
+  it('should return 200 with ipv6 request', function (done) {
     http.get('http://[::1]:'+global.serverPort+'/smartMeter/getData', function (res) {
       done();
     });

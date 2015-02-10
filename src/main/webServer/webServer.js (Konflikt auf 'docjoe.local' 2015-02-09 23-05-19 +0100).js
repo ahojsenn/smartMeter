@@ -194,10 +194,12 @@ function WebSocket () {
 	var objref = this;
 	var tailDB;
 
+//	this.setSocket = function (socket) { this.socket = socket; return this; };
+
 	this.startDataListener = function (socket) {
 		global.log ('webServer:myWebSocket, starting dataBase.tailDB().stream.on...');
 
-//		dataBase.tailDB().stream.pipe(socket);  // that would be cool...
+//		dataBase.tailDB().stream.pipe(objref.socket);  // that would be cool...
 		tailDB=dataBase.tailDB();
 		global.log("webServer:myWebSocket, stream.ObjectID="+tailDB.ObjectID);
 		tailDB.stream.on ('data', function (data) {
@@ -207,8 +209,14 @@ function WebSocket () {
 				global.log('webServer:myWebSocket, socket.emit (news, data):' + data);
 				// Trigger the web socket now
 				socket.emit ('got new data', parseJSON(data));
+//				objref.socket.emit ('got new data', data );
 			}
 		})
+		socket.on ('disconnect', function () {});
+
+/**/
+
+		return this;
 	};
 
 	this.startSocket = this.startSocket || function (app) {
@@ -218,6 +226,7 @@ function WebSocket () {
 			.sockets
 			.on('connection', function (socket) {
 				global.log ("webServer:startSocket.sockets.on connection...");
+				objref.setSocket (socket);
 				objref.startDataListener(socket);
 			});
 		return this;
