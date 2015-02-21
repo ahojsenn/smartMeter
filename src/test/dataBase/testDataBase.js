@@ -10,24 +10,30 @@ var assert = require("assert"),
 /* connect to the 'dataBase' and prepare everything */
 before(function(done){
   this.timeout(12042);
+  var tail=require('child_process').spawn("tail", ['-fn1', global.datafilename]);
+
   // write some stuff to the datafile for  further testing
   for (var i=0; i< 500; i++) {
     dataBase.writeData(
-      '{"term" : "brabbel", "Watt" : '+i+'.1, "timestamp": 1419266113000}\n'
+      '{"term" : "brabbel1", "Watt" : '+i+'.1, "timestamp": 1419266113000}\n'
       +'{"term" : "'+TESTFILTER+'", "Watt" : '+i+'.2, "timestamp": 1419266113000}\n'
       +'{"term" : "'+TESTFILTER+'", "Watt" : '+i+'.3, "timestamp": 1419266113003}\n'
       +'{"term" : "'+TESTFILTER+'", "Watt" : '+i+'.4, "timestamp": 1419266113005}');
   }
+
   done();
 })
 
+/*
 after (function (done) {
   dataBase.removeDB();
   done();
 })
+*/
 
 // the dataBase ist there
 describe ('the dataBase', function () {
+  this.timeout(3542);
   /* initializes */
   it('returns the datafile name', function () {
     assert.equal (global.datafilename, dataBase.dataFileName());
@@ -126,54 +132,50 @@ describe ('the dataBase', function () {
   })
 
   it ('.getFirst.stream gives a json array', function (done) {
-    dataBase.getFirst().stream.on('data', function (data) {
+    dataBase.getFirst().stream.once('data', function (data) {
       assert (IsJsonString (data));
-      done();
+      if (JSON.parse(data)[0].term === 'brabbel1') done();
     });
   })
 
   it ('.getLast.stream gives a json array', function (done) {
-    var testData= '{"term" : "ameise", "Watt" : 0.72, "timestamp": 1419266113001}'
-    dataBase.writeData(testData);
+    var testData= '{"term" : "ameisegugu", "Watt" : 0.72, "timestamp": 1419266113001}'
 
-    dataBase.getLast().stream.once('data', function (data) {
+    dataBase
+    .getLast()
+    .stream
+    .once('data', function (data) {
       global.log ("...testing getLast: got data="+data);
       assert (IsJsonString (data));
-      done();
+      if (JSON.parse(data)[0].term === 'ameisegugu') done();
     });
-  })
 
-})
-
-describe ('the dataBase has a stream', function () {
-  it ('.tailDB.stream gives a json array', function (done) {
-    var testData= '{"term" : "kaefer", "Watt" : 0.42, "timestamp": 1419266112003}';
-    dataBase
-      .tailDB()
-      .stream
-      .once('data', function (data) {
-        global.log ("...testing: got data="+data);
-        assert (IsJsonString (data));
-        global.log ("...testing: that was JSON");
-        if (JSON.parse(data).term === 'kaefer') done();
-      });
     dataBase.writeData(testData);
   })
-})
 
-describe ('the dataBase has a write method', function () {
-  this.timeout(2042);
+  it ('.tailDB.stream gives a json array', function (done) {
+    var testData= '{"term" : "kaeferss", "Watt" : 0.42, "timestamp": 1419266112003}';
+    dataBase
+      .tailDB( function () { dataBase.writeData(testData) })
+      .tail.on('data', function (data) {
+        global.log ("...testing.tailDB: got data="+data);
+        assert (IsJsonString (data));
+        global.log ("...testing.tailDB: that was JSON");
+        if (JSON.parse(data).term === 'kaeferss') {
+          done();
+        }
+      });
+  })
+
   it ('.writeData appends the database at the end', function (done) {
     var testData= '{"term" : "blattlaus", "Watt" : 0.42, "timestamp": 1419266113001}'
-    var dataBase = new DataBase;
-
     var tail=require('child_process').spawn("tail", ['-fn1', global.datafilename]);
 
     process.on ('exit', function () {
       tail.kill("SIGHUP");
     });
 
-    tail.stdout.on('data', function (data) {
+    tail.stdout.on  ('data', function (data) {
       global.log ("...testing writeData: got data="+data);
       assert (IsJsonString (data));
       if (JSON.parse(data).term === 'blattlaus') {
@@ -194,6 +196,7 @@ function IsJsonString(str) {
     try {
         JSON.parse(str);
     } catch (e) {
+        global.log ("this aint no json, str="+str);
         return false;
     }
     return true;

@@ -18,9 +18,8 @@ function renderDataInTable(EnergyObject) {
 		noEntriesToday = data.length-firstEntryToday,
 		filter = getQueryVariable('filter');
 
- 	getSetGlobals();
 
-	// Let's not work on the DOM
+	// Let's render the table...
 	$summaryTable = $('<table id="summaryTable" class="center"/>');
 
 	$summaryTable
@@ -36,36 +35,49 @@ function renderDataInTable(EnergyObject) {
 			.append( $('<td/>').append(date) )
 		);
 
-	if (filter && filter != 'all') $summaryTable
-		.append( $('<tr/>')
-			.append( $('<td/>').append('currently: ') )
-			.append( $('<td/>').append(  Math.round( 100*watt)/100 +" Watt at 0." + EuroCentProKWh +" Euro/KWh") )
-		)
-		.append( $('<tr/>')
-			.append( $('<td/>').append('todays sum: ') )
-			.append( $('<td/>').append( noEntriesToday +" entries, "
-										+ kWh(data, firstEntryToday, data.length-1) + " KWh, "
-										+ Math.round(EuroCentProKWh*kWh(data, firstEntryToday, data.length-1))/100
-										+ "Euro"
-				))
-		)
-		.append( $('<tr/>')
-			.append( $('<td/>').append('average per day: ') )
-			.append( $('<td/>').append( kWh(data, 0, data.length-1) + " KWh, "
-										+ Math.round(EuroCentProKWh*kWh(data, 0, data.length-1))/100
-										+ "Euro"
-									)
+	if (filter && filter != 'all') {
+	 	getSetGlobals();
+		$summaryTable
+			.append( $('<tr/>')
+				.append($('<td/>')
+					.append('currently: ') )
+				.append( $('<td/>')
+					.append(  Math.round( 100*watt)/100
+						+" Watt at 0."
+						+ EuroCentProKWh
+						+" Euro/KWh") )
 			)
-		)
-		.append( $('<tr/>')
-			.append( $('<td/>').append('av. per year: ') )
-			.append( $('<td/>').append( Math.round(365*kWh(data, 0, data.length-1)) + " KWh, "
-										+ Math.round(EuroCentProKWh*365*kWh(data, 0, data.length-1))/100
-										+ "Euro"
-									)
+			.append( $('<tr/>')
+				.append($('<td/>')
+					.append('todays sum: ') )
+				.append( $('<td/>')
+					.append( noEntriesToday +" entries, "
+							+ kWh(data, firstEntryToday, data.length-1) + " KWh, "
+							+ Math.round(EuroCentProKWh*kWh(data, firstEntryToday, data.length-1))/100
+							+ "Euro"
+				))
+			)
+			.append( $('<tr/>')
+				.append( $('<td/>')
+					.append('average per day: ') )
+				.append( $('<td/>')
+					.append( kWh(data, 0, data.length-1) + " KWh, "
+							+ Math.round(EuroCentProKWh*kWh(data, 0, data.length-1))/100
+							+ "Euro"
+					)
+				)
+			)
+			.append( $('<tr/>')
+			.append( $('<td/>')
+				.append('av. per year: ') )
+			.append( $('<td/>')
+				.append( Math.round(365*kWh(data, 0, data.length-1)) + " KWh, "
+							+ Math.round(EuroCentProKWh*365*kWh(data, 0, data.length-1))/100
+							+ "Euro"
+				)
 			)
 		);
-
+	}
 	console.log ("in calculate, t1 :: t2:" + t1 + " :: " + t2);
 	console.log ("              myobj.mydata.length:" + data.length);
 	console.log ("              Watt:" + watt);
@@ -116,6 +128,11 @@ function kWh(data, first, last) {
 				       * (86400*1000)/tdiff) /10
 }
 
+/*
+ * get the globals from the global data object and calculate
+ * var  UmdrehungenProKWh,
+ *		EuroCentProKWh;
+ */
 function getSetGlobals () {
 	var measurementsSelector = localStorage.getItem("dataFilter");
 	// find selector in global.measurements array and set UmdrehungenProKWh

@@ -27,16 +27,20 @@ function DataBase(options) {
 	this.getNoLines = function (filter,callback) {return getNoLines(filter,callback)};
 	this.dataFileName = function () {return global.datafilename};
 	this.getXref = 	function (noLines, column, callback) {return getXref(noLines, column, callback)};
-	this.tailDB = function () {return tailDB ()};
+	this.tailDB = function (callback) {return tailDB (callback)};
+	this.tail = new Transform;
 	this.writeData = function (message, callback) {return writeData(message, callback)};
 	this.writePartial = function (message, callback) {return writePartial (message, callback)};
 	this.execInShell = function (cmd, callback) {return execInShell (cmd, callback)};
 	this.removeDB = function() {return removeDB()};
-	this.ObjectID = function() {return Math.random();}
+	this.setObjectID = function() {this.ObjectID=Math.random(); return this;};
+	this.ObjectID;
+	this.lines2JSON = new Lines2JSON;
+	this.stream = new Transform;
 	return this;
 };
 
-var dataBase = this.dataBase || new DataBase();
+var dataBase = new DataBase().setObjectID();
 
 Transform.prototype._transform = function (chunk, encoding, done) {
 	this.push (chunk);
@@ -89,20 +93,16 @@ function getNoLines (filter, callback) {
 function getData (noLines, filter) {
 	var spawn = require('child_process').spawn,
 		tail = spawn("tail", [-noLines, global.datafilename]),
-		grep = spawn("grep", [filter]),
-		responseData="[",
-		self = this;
+		grep = spawn("grep", [filter]);
 	global.log ('in getData('+noLines+', "'+filter+'" )');
-
-	this.stream = this.stream || new Transform;
-	this.lines2JSON = this.lines2JSON || new Lines2JSON;
 
 	tail.stdout
 		.pipe(grep.stdin);
 	grep.stdout
-		.pipe(this.lines2JSON)
-		.pipe(this.stream);
-	return this;  // this is neede for chaining like in streams
+		.pipe(dataBase.lines2JSON)
+		.pipe(dataBase.stream);
+
+	return dataBase;  // this is neede for chaining like in streams
 }
 
 
@@ -150,18 +150,15 @@ function getDataCB (noLines, filter, callback) {
 */
 function getFirst (callback) {
 	execInShell ('head -1 ', callback);
-	return this;  // this is neede for chaining like in streams
+	return this;
 }
 
 /**
 	getLAst gets the first data entry
 */
 function getLast (callback) {
-	this.stream = new Transform;
-
 	execInShell ('tail -1 ', callback);
-
-	return this;  // this is neede for chaining like in streams
+	return this;
 }
 
 /**
@@ -195,32 +192,38 @@ function execInShell (cmd, callback) {
  * tailDB implements a tail stream on the DB that returns only full lines,
  * even if data is only partially written to the DB
  */
- function tailDB () {
-	var //tail = require('child_process').spawn("tail", [ '-fn', '1', global.datafilename]),
-		self = this,
+ function tailDB (callback) {
+	var self = this,
 		buffer = "",
 		data;
+
+	this.kill = function () { global.log ("tailDB.kill: "+self); self.tail.kill("SIGHUP") };
 
 	this.tail = this.tail ||
 		new require('child_process').spawn("tail", [ '-fn', '1', global.datafilename]);
 
-	this.stream = this.stream || new Transform;
 	this.tail.stdout
-		.pipe(this.stream);
+		.pipe(dataBase.tail);
 
 	// this should kill the hanging tail process
 	process.on ('exit', function () {
 		self.tail.kill("SIGHUP");
 	});
- 	return this;
+
+	if (typeof callback === 'function' ) callback();
+
+ 	return dataBase;
  }
 
 /**
 	getXref (noLines, column, callback) return the cross reference, i.e. all different values in column
  */
 function getXref (noLines, column, callback) {
-	var self = this;
+	var self = this,
+		spawn = require('child_process').spawn,
+		tail = spawn("tail", [-noLines, global.datafilename]);
 	global.log ("in getXref, column="+column);
+
 	this.stream = new Transform;
 
 /*	dataBase.getData (noLines, '')

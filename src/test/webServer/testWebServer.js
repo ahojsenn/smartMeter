@@ -30,16 +30,13 @@ before(function(done){
 /* test for some static pages */
 describe ('the webServer', function () {
   /* initializes */
+  this.timeout(5542);
   it('serves the static file renderDataInTable.js', function () {
     http.get('http://localhost:42080/smartMeter/client/renderDataInTable.js', function (res) {
       assert.equal(200, res.statusCode);
     })
   })
-});
 
-
-/* switch on the webserver */
-describe ('the webServer', function () {
 	/* initializes */
   describe('has a property called serverPort with a positive value', function () {
     it ('should return a postive integer 1025 < serverPort < 65536', function () {
@@ -47,10 +44,7 @@ describe ('the webServer', function () {
       assert (global.serverPort < 65536);
     })
   })
-});
 
-/* start */
-describe('the webServer runs and...', function () {
   it('should return 200', function (done) {
     http.get('http://localhost:'+global.serverPort+'/smartMeter/getData', function (res) {
       assert.equal(200, res.statusCode);
@@ -65,37 +59,47 @@ describe('the webServer runs and...', function () {
     });
   });
 
-
-  /* and there is a websocket sending stuff */
   it ('websocket broadcasts new energy value to client', function (done) {
-    this.timeout(4042);
     var
       socketURL = 'http://localhost:'+global.serverPort,
-      options ={
-        transports: ['websocket'],
-        'force new connection': true
-        },
-      io = require('socket.io-client'),
-      client = io.connect(socketURL, options),
-      first = true;
+      options   = { transports: ['websocket'], 'force new connection': true },
+      io        = require('socket.io-client'),
+      client    = io.connect(socketURL, options),
+      first     = true;
 
-    client.on('got new data', function (data) {
-      global.log ("...testing: got data="+JSON.stringify(data));
-      assert (IsJsonString (JSON.stringify(data)));
-      if (data.term === 'brubbel' && first) {
+    global.log ("... testing websocket, setting up client...");
+
+    client.on ('connect', function () {global.log ("...testing websocket: client got connect") })
+    client.on ('error', function (e) {global.log ("...ERROR:"+e) })
+
+    client.on('tailDB', function (data) {
+      global.log ("...testing websocket: got data="+JSON.stringify(data));
+      //
+/*      var lines = data.split('\n');
+      while (i in lines  ) {
+        var line = lines[i];
+        global.log ("..., line["+i+"]="+line)
+      }
+*/
+      assert (IsJsonString (JSON.stringify(data)));  // function IsJsonString is from testDataBase.js
+      global.log ("<<<>>>..., data="+data.term)
+      if (data.term === 'brubbelwebsocket' && first) {
         first = false;
         assert (data.Watt === 342.42);
+        client.disconnect();
         return done();
-      }
+        }
     });
 
     // now write something to the file to trigger
     // the dataBase:tailDB and ultimamtively the webServer:websocket
-    setTimeout (function () {
-          fs.appendFile(global.datafilename,
-            '{"term" : "brubbel", "Watt" : 342.42, "timestamp": 1419266113000}\n',
+    client.on('connect', function () {
+      global.log ("...testing websocket: writing testdata...");
+      fs.appendFile(global.datafilename,
+            '{"term" : "bribbel", "Watt" : 342.41, "timestamp": 1419266113000}\n'+
+            '{"term" : "brubbelwebsocket", "Watt" : 342.42, "timestamp": 1419266113000}\n',
             function(err) { if(err) console.log(err); });
-          },300);
+    });
   })
 
   // now test the get method of my webServer
@@ -177,7 +181,7 @@ describe('the webServer runs and...', function () {
     var url = 'http://localhost:'+global.serverPort+'/smartMeter/getglobals';
     http.get( url, function (res) {
       assert.equal(200, res.statusCode);
-      res.once ('data', function (chunk) {
+      res.on ('data', function (chunk) {
         assert (chunk.length > 0);
         assert (JSON.parse(chunk).location == 'TestLocation')
         done();
@@ -187,16 +191,14 @@ describe('the webServer runs and...', function () {
 
 });
 
-
-
 // =========
 function IsJsonString(str) {
     try {
         JSON.parse(str);
     } catch (e) {
+        global.log ("surely this aint no json, str="+str);
         return false;
     }
     return true;
 }
-
 

@@ -43,9 +43,13 @@ function getEnergyObject() {
 
 	// now get the data for the first time
 	this.getData = function (filter) {
+		var url=global.url+'/getData?'+'nolines='+nrOfLines;
+		if (filter) url += "&filter="+filter;
+		else url += "&filter=";
+
 		console.log ("in getData, url=", global.url+'/getData?'+'nolines='+nrOfLines+'&filter='+filter );
 		$.ajax ({
-			url: global.url+'/getData?'+'nolines='+nrOfLines+"&filter="+filter,
+			url: url,
 			cache : false,
 			dataType: 'jsonp',
 			crossDomain: true,
@@ -65,7 +69,7 @@ function getEnergyObject() {
 	this.listenOnWebSocket = function (webSocketDomain, filter) {
 		console.log('in listenOnWebSocket', webSocketDomain);
 		var socket = io.connect(webSocketDomain);
-	  	socket.on('got new data',
+	  	socket.on('tailDB',
 	  		function (d) {
 	    		console.log('\nWebSocket speaks:',  JSON.stringify(d) );
 	  			// only act, if filter critera is met

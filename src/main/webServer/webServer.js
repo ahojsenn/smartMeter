@@ -14,7 +14,7 @@ var Transform 	= stream.Transform || require('readable-stream').Transform;
 
 var	global 		=  global || require ("../../main/global/global.js").init("from webServer"),
 	DataBase 	= require ("../../main/dataBase/dataBase.js"),
-	dataBase 	= DataBase();
+	dataBase 	= dataBase || DataBase();
 
 // the webServer Object
 var ws = {
@@ -192,21 +192,23 @@ function wrapWithCallback (data, callback) {
 function WebSocket () {
 	global.log('in myWebSocket');
 	var objref = this;
-	var tailDB;
 
 	this.startDataListener = function (socket) {
-		global.log ('webServer:myWebSocket, starting dataBase.tailDB().stream.on...');
+		var tailDB = dataBase.tailDB();
+		global.log ('webServer:myWebSocket, starting dataBase.tailDB().tail.on...');
 
-//		dataBase.tailDB().stream.pipe(socket);  // that would be cool...
-		tailDB=dataBase.tailDB();
+//		tailDB.tail.pipe(socket);  // that would be cool... but does not work
 		global.log("webServer:myWebSocket, stream.ObjectID="+tailDB.ObjectID);
-		tailDB.stream.on ('data', function (data) {
+		tailDB.tail.on ('data', function (data) {
 			global.log('webServer:myWebSocket, in dataListener, data: '+  data );
 			global.log('webServer:myWebSocket, in dataListener, socket: '+  socket );
-			if ( (typeof socket === 'object') ) {
-				global.log('webServer:myWebSocket, socket.emit (news, data):' + data);
-				// Trigger the web socket now
-				socket.emit ('got new data', parseJSON(data));
+			var lines = data.toString().split('\n');
+			for (var i in lines) {
+				if ( (typeof socket === 'object') && (lines[i]) ) {
+					global.log('webServer:myWebSocket, socket.emit, data:' + lines[i]);
+					// Trigger the web socket now
+					socket.emit ('tailDB', parseJSON(lines[i]));
+				}
 			}
 		})
 	};
@@ -303,7 +305,7 @@ function parseJSON (data) {
   		foo = JSON.parse(data);
 	} catch (e) {
   		// An error has occured, handle it, by e.g. logging it
-  		console.log("in parseJSON (data), data="+data);
+  		console.log("ERROR in parseJSON (data), data="+data);
   		console.log(e);
 	}
 	return foo;

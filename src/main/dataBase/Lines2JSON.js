@@ -13,7 +13,7 @@ var	global 	= global || require ("../../main/global/global.js").init("from DataB
 function Lines2JSON (options) {
 	// allow use without new
   	if (!(this instanceof Lines2JSON)) {return new Lines2JSON(options); }
-
+ 	//
   	// init Transform
   	Transform.call(this, options);
 	this._lastline = "";

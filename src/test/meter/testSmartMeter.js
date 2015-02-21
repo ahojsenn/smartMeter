@@ -21,6 +21,7 @@ before(function(done){
 
 
 describe ('smartMeter', function () {
+  this.timeout(3542);
 
 	/* init */
 	it ('should init() without error', function (){

@@ -44,5 +44,10 @@ describe ('the testmode object, the switch between test and production, ...', fu
     done();
   })
 
+  it ('switches to testmode with testmode.setOn()', function (done) {
+    testmode.setOn ();
+    assert( testmode.isSwitchedOn() == true);
+    done();
+  })
 
 });
