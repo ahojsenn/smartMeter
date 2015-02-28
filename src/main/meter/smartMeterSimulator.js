@@ -7,6 +7,7 @@
 var global = require ('../global/global.js').init("smartMetersimulator");
 var mySimulator = new Array;
 
+module.exports = mySimulator;
 
 /*
  * a random data generator which may be used in dev-mode
@@ -19,6 +20,8 @@ function simulator (gpioNr) {
 		gpioIdentifier=global.measurements[gpioNr].gpioIdentifier,
 		UmdrehungenProKWh=global.measurements[gpioNr].UmdrehungenProKWh,
 		EuroCentProKWh=global.measurements[gpioNr].EuroCentProKWh;
+
+	this.stop = false;
 
 	// milliSekundenProUmdrehung: the time it takes for one blink or turn of the meter
 	// kWhProUmdrehung = 1 / UmdrehungProKWh
@@ -69,12 +72,17 @@ function simulator (gpioNr) {
 			objref = this;
 		global.log ("smartMeterSimulator: in createRandomData..., timeout="+timeout);
 
-		setTimeout(function () {
-			global.log("time passed..." + randomTime + "s");
-			//objref.writeSimulatedData (randomTime);
-			objref.flipPinOnGPIO(gpioNr);
-			objref.createRandomData(gpioNr);
-		}, randomTime);
+		if (!this.stop)
+			setTimeout(function () {
+				global.log("time passed..." + randomTime + "s");
+				//objref.writeSimulatedData (randomTime);
+				objref.flipPinOnGPIO(gpioNr);
+				objref.createRandomData(gpioNr);
+			}, randomTime);
+	};
+
+	this.stopSimulator = function () {
+		this.stop = true;
 	};
 
 	return this;

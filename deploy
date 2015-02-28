@@ -56,10 +56,7 @@ case "$1" in
 	set -e
 	$remote 'sudo rm -f /tmp/data/gotResults.json'
 	$remote 'touch /tmp/smartMeterTestModeIsOn'
-	$remote 'cd production/smartMeter/src/; mocha test/global'
-	$remote	'cd production/smartMeter/src/; mocha test/meter'
-	$remote	'cd production/smartMeter/src/; mocha test/dataBase'
-	$remote	'cd production/smartMeter/src/; mocha test/webServer'
+	$remote 'cd production/smartMeter/src/; mocha --recursive'
 	# and removing the /tmp/smartMeterTestModeIsOn if necessary
 	$remote 'sudo rm -f /tmp/smartMeterTestModeIsOn'
 	$remote 'killall tail'

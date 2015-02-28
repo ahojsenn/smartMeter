@@ -11,10 +11,11 @@
 var stream 		= require('stream');
 var util 		= require('util');
 var Transform 	= stream.Transform || require('readable-stream').Transform;
+var WrapWithCallback  = require ("./WrapWithCallback.js");
 
 var	global 		=  global || require ("../../main/global/global.js").init("from webServer"),
-	DataBase 	= require ("../../main/dataBase/dataBase.js"),
-	dataBase 	= dataBase || DataBase();
+	DataBase 	= new require ("../../main/dataBase/dataBase.js"),
+	dataBase 	= new DataBase;
 
 // the webServer Object
 var ws = {
@@ -58,57 +59,52 @@ function parseRequestAndRespond (request, response) {
 		noLines = getUrlParameter (request, 'nolines') 
 					? getUrlParameter (request, 'nolines') :23,
 		column = getUrlParameter (request, 'column'),
-		mapRequestToMethod = {  // I do not use this yet, but keep followin g the idea
+		wrap = new WrapWithCallback(callback),
+		mapRequestToMethod = {  // I do not use this yet, but keep following the idea
 			"/getData" 		: "getData",
 			"/getnolines" 	: "getNoLines"
-		};
+		},
+		result = '';
 	global.log ('in parseRequestAndRespond..., requestPath='+requestPath);
 
 
 
 	if (requestPath == global.url+'/getXref') {
-		dataBase.getXref (noLines, column, function (data) {
-			response.end(wrapWithCallback(data, callback) );
-		});
+		dataBase
+			.getXref (noLines, column)
+			.pipe(wrap)
+			.pipe(response);
 	}
 
-	else if (requestPath == global.url+'/getData')
-/*		dataBase
+	else if (requestPath == global.url+'/getData') {
+		dataBase
 			.getData (noLines, filter)
-			.stream
+			.pipe (wrap)
 			.pipe (response);
-*/
-		dataBase.getDataCB (noLines, filter, function (data) {
-			response.end(wrapWithCallback(data, callback) );
-		});
+	}
 
 	// get nolines returns the number of lines in the data
 	else if (requestPath == global.url+'/getnolines') {
-		dataBase.getNoLines(filter,callback).stream.on (
-			'data',
-			function (data) {
-				global.log ("in parseRequestAndRespond..., data="+data);
-			});
-//////		dataBase.getNoLines(filter).stream.pipe(response);
-		dataBase.getNoLines (filter, function (data) {
-			response.end(wrapWithCallback(data, callback) );
-		});
-
-///  continue here with the stream thing
-///		dataBase.getNoLines (filter);
+		dataBase
+			.getNoLines(filter)
+			.pipe (wrap)
+			.pipe(response);
 	}
 
 	// getfirst gets the first entry in the dta file
 	else if (requestPath == global.url+'/getfirst')
-		dataBase.getFirst ( function (data) {
-			response.end(wrapWithCallback(data, callback) );
-		});
+		dataBase
+			.getFirst()
+			.pipe (wrap)
+			.pipe(response);
+
 
 	// getlast gets the last entry
 	else if (requestPath == global.url+'/getlast')
-		dataBase.getLast ( function (data) {
-			response.end(wrapWithCallback(data, callback) );
-		});
+		dataBase
+			.getLast()
+			.pipe (wrap)
+			.pipe(response);
 
 	// getglobal returns the global object to the client to transport server info
 	else if (requestPath == global.url+'/getglobals') {
@@ -153,27 +149,6 @@ function myModGzip (request, response, raw) {
   	}
 }
 
-/**
-	wrap the data with a callback
- */
-function WrapWithCallback(options) {
-  // allow use without new
-  if (!(this instanceof WrapWithCallback)) {
-    return new WrapWithCallback(options);
-  }
-
-  // init Transform
-  Transform.call(this, options);
-}
-util.inherits(WrapWithCallback, Transform);
-
-
-WrapWithCallback.prototype._transform = function  (data, callback) {
-	if (typeof callback === 'string')
-		return callback + "("+data+")";
-	else
-		return data;
-}
 
 /**
 	wrap the data with a callback
@@ -194,12 +169,12 @@ function WebSocket () {
 	var objref = this;
 
 	this.startDataListener = function (socket) {
-		var tailDB = dataBase.tailDB();
+		var tailDB = dataBase.tailDB(dataBase);
 		global.log ('webServer:myWebSocket, starting dataBase.tailDB().tail.on...');
 
 //		tailDB.tail.pipe(socket);  // that would be cool... but does not work
 		global.log("webServer:myWebSocket, stream.ObjectID="+tailDB.ObjectID);
-		tailDB.tail.on ('data', function (data) {
+		tailDB.on ('data', function (data) {
 			global.log('webServer:myWebSocket, in dataListener, data: '+  data );
 			global.log('webServer:myWebSocket, in dataListener, socket: '+  socket );
 			var lines = data.toString().split('\n');

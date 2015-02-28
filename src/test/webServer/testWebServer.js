@@ -153,11 +153,17 @@ describe ('the webServer', function () {
   // now test the getXref method of my webServer
   it ('has a /getXref method implemented...', function (done) {
     var url = 'http://localhost:'+global.serverPort+'/smartMeter/getXref?column=term';
+    var result = "";
     http.get( url, function (res) {
       assert.equal(200, res.statusCode);
-      res.once ('data', function (chunk) {
-        assert (chunk.length > 0);
-        assert (chunk.toString().indexOf("brubbel") >= 0);
+      res
+        .on ('data', function (chunk) {
+          global.log ("...testing..., /getXref, chunk="+chunk);
+          result += chunk;
+        })
+        .on ('end', function () {
+        assert (result.length > 0);
+        assert (result.toString().indexOf("brubbel") >= 0);
         done();
       });
     })
@@ -166,15 +172,19 @@ describe ('the webServer', function () {
   // now test the getnolines method of my webServer with callback parameter
   it ('works with callback parameter', function (done) {
     var url = 'http://localhost:'+global.serverPort+'/smartMeter/getnolines?callback=blubberblubber';
-
+    var result = "";
     http.get( url, function (res) {
       assert.equal(200, res.statusCode);
-      res.once ('data', function (chunk) {
-        assert ( chunk.toString().indexOf("blubberblubber") == 0);
+      res.on ('data', function (chunk) {
+        result += chunk;
+      })
+      .on ('end', function () {
+        global.log ("testing works with callback, result="+result);
+        assert ( result.toString().indexOf("blubberblubber") == 0);
         done ();
-        });
       })
     });
+  })
 
   //
   it ('serves the global object under the url /smartMeter/getglobals', function (done) {

@@ -1,7 +1,7 @@
 var assert = require("assert"),
 	global = global || 	require ("../../main/global/global.js").init("Test"),
 	smartMeter = require ("../../main/meter/smartMeter.js"),
-	simulator,
+	simulators,
 	measurements = new Array(),
 	fs = require("fs"),
   	exec = require('child_process').exec
@@ -14,11 +14,17 @@ before(function(done){
 //	global.datafilename = "/tmp/testData.json";
 	// wait for the smr initialization to be done...
 	global.eventEmitter.on('readyForMeasurement', function() {
-		simulator = require ("../../main/meter/smartMeterSimulator.js");
+		simulators = require ("../../main/meter/smartMeterSimulator.js");
 		done();
 	});
 })
 
+after (function (done) {
+	for (var i in simulators)
+		simulators[i].stopSimulator();
+	global.log ("Stopped all simulators");
+	done ();
+})
 
 describe ('smartMeter', function () {
   this.timeout(3542);

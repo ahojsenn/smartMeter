@@ -40,13 +40,14 @@ Lines2JSON.prototype._transform = function (chunk, encoding, done) {
    			data += ","+line+"\n";
    	};
    	this._lastline = lines[lines.length-1];
+//		global.log ("Lines2JSON.prototype._transform: >>>>>>> ... "+data);
    	this.push (data);
 	done();
 }
 
 
 Lines2JSON.prototype._flush = function (done) {
-	global.log ("Lines2JSON.prototype._flush: >>>>>>> ... "+this._lastline);
+//	global.log ("Lines2JSON.prototype._flush: >>>>>>> ... "+this._lastline);
 	this.push (this._lastline+"]");
 	done();
 }

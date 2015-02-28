@@ -2,14 +2,14 @@ var assert = require("assert"),
     global = global || require ("../../main/global/global.js").init("Test"),
     fs = require("fs"),
     TESTFILTER='ycxvyxcvxy',
-    DataBase = require ("../../main/dataBase/dataBase.js"),
-    dataBase = new DataBase;
+    DataBase = require ("../../main/dataBase/dataBase.js");
+    dataBase = new DataBase();
 
-
+global.log ("in testDataBase, dataBase.ObjectID="+dataBase.ObjectID);
 
 /* connect to the 'dataBase' and prepare everything */
 before(function(done){
-  this.timeout(12042);
+  this.timeout(5042);
   var tail=require('child_process').spawn("tail", ['-fn1', global.datafilename]);
 
   // write some stuff to the datafile for  further testing
@@ -20,16 +20,14 @@ before(function(done){
       +'{"term" : "'+TESTFILTER+'", "Watt" : '+i+'.3, "timestamp": 1419266113003}\n'
       +'{"term" : "'+TESTFILTER+'", "Watt" : '+i+'.4, "timestamp": 1419266113005}');
   }
-
   done();
 })
 
-/*
+
 after (function (done) {
   dataBase.removeDB();
   done();
 })
-*/
 
 // the dataBase ist there
 describe ('the dataBase', function () {
@@ -39,16 +37,20 @@ describe ('the dataBase', function () {
     assert.equal (global.datafilename, dataBase.dataFileName());
   })
 
-  it ('getNoLines(filter).stream returns the number of lines', function (done) {
+  it ('getNoLines(filter) streams the number of lines', function (done) {
     var filter = TESTFILTER;
-    dataBase.getNoLines(filter)
-      .stream.once('data', function (data) {
-      console.log ("=========>>>>>> stream is readable, data=\n"+data);
-      assert (JSON.parse(data.toString())[0] >= 2);
-      done();
-    });
-  })
-
+    var result = "";
+    dataBase
+      .getNoLines(filter)
+      .on('data', function (data) {
+        result += data; })
+      .on('end', function () {
+        console.log ("=========>>>>>> stream is readable, data=\n"+result);
+        assert (JSON.parse(result.toString())[0] >= 2);
+        done();
+      });
+    })
+/*
   it ('.getNolines(filter,callback) returns the number of lines', function (done) {
     var filter = "";
     dataBase.getNoLines(filter, function (noLines) {
@@ -59,32 +61,27 @@ describe ('the dataBase', function () {
       done();
     });
   })
-
+*/
 
   it ('.getNolines with a very unlikely filter returns zero lines', function (done) {
     var filter = "sdafdasfasdfewsfewq0981235rio2qhnvqwerLKJL";
-    dataBase.getNoLines(filter, function (noLines) {
-      assert (IsJsonString (noLines));
-      assert (JSON.parse(noLines)[0] === 0);
-      done();
-    });
+    var result = "";
+    dataBase
+      .getNoLines(filter)
+      .on('data', function (data) {
+        result += data; })
+      .on('end', function () {
+        console.log ("=========>>>>>> stream is readable, data=\n"+result);
+        assert (JSON.parse(result.toString())[0] == 0);
+        done();
+      });
   })
-
-  it ('.getDataCB returns a json array', function (done) {
-    var noLines = 2;
-    dataBase.getDataCB(noLines, TESTFILTER, function (data) {
-      assert (IsJsonString (data));
-      done();
-    });
-  })
-
 
   it ('.getData returns a json array', function (done) {
     var noLines = 2000,
         result = "";
     dataBase
       .getData(noLines, TESTFILTER)
-      .stream
       .on('data', function (data) {
 //        global.log ("in testDataBase, got data="+data);
         result += data; })
@@ -94,77 +91,69 @@ describe ('the dataBase', function () {
       });
   })
 
-
-  it ('.getDataCB (noLines=800) returnes the lines...', function (done) {
-    var noLines = 800;
-    dataBase.getDataCB(noLines, '', function (data) {
-      data = JSON.parse(data);
-      assert.equal (noLines, data.length);
-      done();
-    });
+  it ('.getXref streams a json array', function (done) {
+    var result = "";
+    dataBase
+      .getXref(1000, 'term')
+      .on ('data', function (data) {
+        global.log ("...testing..., getXref streams, data="+data);
+        result += data;
+      })
+      .on('end', function () {
+        assert (IsJsonString (result));
+        done();
+      });
   })
 
-
-  it ('.getData with filter returnes filtered data...', function (done) {
-    var noLines = 3;
-    dataBase.getDataCB(noLines, TESTFILTER, function (data) {
-      data = JSON.parse(data);
-      for (var line in data) {
-        global.log ('      ...data[line]='+data[line].term);
-        assert.equal (TESTFILTER, data[line].term);
-      }
-      done();
-    });
-  })
-
-  it ('.getXref returns a json array', function (done) {
-    dataBase.getXref(1000, 'term', function (data) {
-      assert (IsJsonString (data));
-      done();
-    });
-  })
-
-  it ('.getXref.stream gives a json array', function (done) {
-    dataBase.getXref(1000, 'term').stream.on('data', function (data) {
-      assert (IsJsonString (data));
-      done();
-    });
-  })
-
-  it ('.getFirst.stream gives a json array', function (done) {
-    dataBase.getFirst().stream.once('data', function (data) {
+  it ('.getFirst streams a json array', function (done) {
+    dataBase
+      .getFirst()
+      .on('data', function (data) {
       assert (IsJsonString (data));
       if (JSON.parse(data)[0].term === 'brabbel1') done();
     });
   })
 
-  it ('.getLast.stream gives a json array', function (done) {
+  it ('.getLast streams a json array', function (done) {
     var testData= '{"term" : "ameisegugu", "Watt" : 0.72, "timestamp": 1419266113001}'
 
     dataBase
-    .getLast()
-    .stream
-    .once('data', function (data) {
+    .getLast( function () {return dataBase.writeData(testData)} )
+    .on('data', function (data) {
       global.log ("...testing getLast: got data="+data);
       assert (IsJsonString (data));
-      if (JSON.parse(data)[0].term === 'ameisegugu') done();
-    });
-
+      if (
+        (JSON.parse(data)[0].term === TESTFILTER) ||
+        (JSON.parse(data)[0].term === 'ameisegugu') ||
+        (JSON.parse(data)[0].term === 'blupp') )  {// there is a chance of the simuator
+                                               // interfering right now
+        done();
+      }
+    })
     dataBase.writeData(testData);
   })
 
   it ('.tailDB.stream gives a json array', function (done) {
-    var testData= '{"term" : "kaeferss", "Watt" : 0.42, "timestamp": 1419266112003}';
+    var testData = '{"term" : "kaeferss", "Watt" : 0.42, "timestamp": 1419266112003}';
+    global.log ('...testing, dataBase.ObjectID='+dataBase.ObjectID);
+    dataBase.logObjectID();
+    global.log ('...testing, dataBase.ObjectID='+dataBase.ObjectID);
+
     dataBase
-      .tailDB( function () { dataBase.writeData(testData) })
-      .tail.on('data', function (data) {
+      .tailDB()
+      .on('data', function (data) {
         global.log ("...testing.tailDB: got data="+data);
-        assert (IsJsonString (data));
-        global.log ("...testing.tailDB: that was JSON");
-        if (JSON.parse(data).term === 'kaeferss') {
-          done();
+        var lines = data.toString().split('\n');
+        for (var i in lines ) {
+          if (lines [i] == 0) break;
+          assert (IsJsonString (lines[i]));
+          if (JSON.parse(lines[i]).term === 'kaeferss') {
+            done();
+          }
         }
-      });
+      })
+      .on('end', function () {global.log ('the end...') });
+    dataBase.writeData(testData);
   })
 
   it ('.writeData appends the database at the end', function (done) {

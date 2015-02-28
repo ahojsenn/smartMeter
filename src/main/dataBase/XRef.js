@@ -33,7 +33,10 @@ XRef.prototype._transform = function (chunk, encoding, done) {
 		data = "";
 	//
 	for (var i=0; i< lines.length-1; i++) {
-		var line = JSON.parse(lines[i]);
+		var line = lines[i];
+		if (i==0)
+			line = this._lastline + line;
+		line = JSON.parse(line);
 		// the first time ever called
 		if (this._first) {
 			this._first = false;
