@@ -52,22 +52,28 @@ function startWebServer() {
 	parse the request and construct the server response
 */
 function parseRequestAndRespond (request, response) {
-	var requestPath = require('url').parse(request.url, true).pathname,
-		params = require('url').parse(request.url, true),
-		filter  = getUrlParameter (request, 'filter'),
-		callback = getUrlParameter (request, 'callback'),
-		noLines = getUrlParameter (request, 'nolines') 
-					? getUrlParameter (request, 'nolines') :23,
-		column = getUrlParameter (request, 'column'),
-		wrap = new WrapWithCallback(callback),
-		mapRequestToMethod = {  // I do not use this yet, but keep following the idea
-			"/getData" 		: "getData",
-			"/getnolines" 	: "getNoLines"
+	var fs = require('fs'),
+		requestPath = require('url').parse(request.url, true).pathname,
+		params 		= require('url').parse(request.url, true),
+		filter  	= getUrlParameter (request, 'filter'),
+		callback 	= getUrlParameter (request, 'callback'),
+		noLines 	= getUrlParameter (request, 'nolines')
+						? getUrlParameter (request, 'nolines') :23,
+		column 		= getUrlParameter (request, 'column'),
+		wrap 		= new WrapWithCallback(callback),
+		reqMethod 	= requestPath.split('/').pop(),
+		map2Method 	= {  // I do not use this yet, but keep following the idea
+			"getXref" 		: "getXref",
+			"getData" 		: "getData",
+			"getnolines" 	: "getNoLines",
+			"getfirst" 		: "getFirst",
+			"getlast" 		: "getData",
+			"getglobals" 	: "getGlobals"
 		},
 		result = '';
-	global.log ('in parseRequestAndRespond..., requestPath='+requestPath);
+	global.log ('in parseRequestAndRespond..., requestPath='+requestPath+" "+map2Method[reqMethod]);
 
-
+	//map2Method.reqMethod
 
 	if (requestPath == global.url+'/getXref') {
 		dataBase
@@ -108,12 +114,16 @@ function parseRequestAndRespond (request, response) {
 
 	// getglobal returns the global object to the client to transport server info
 	else if (requestPath == global.url+'/getglobals') {
-		response.end( wrapWithCallback( JSON.stringify(global), callback));
+		dataBase
+			.getGlobals()
+			.pipe (wrap)
+			.pipe(response);
 	}
 
 	// server static files under url "+/client/"
 	else if ( (requestPath.indexOf(global.url+'/client/') == 0 ) ){
-		serveStaticFile (request, response);
+		fs.createReadStream(global.srcPath+'main/client/' + reqMethod)
+			.pipe(response);
 	}
 	else {// the last catch, if it comes here it aint good...
 		global.log ('ERROR in parseRequestAndRespond, last else..., requestPath='+requestPath);
@@ -169,23 +179,20 @@ function WebSocket () {
 	var objref = this;
 
 	this.startDataListener = function (socket) {
-		var tailDB = dataBase.tailDB(dataBase);
-		global.log ('webServer:myWebSocket, starting dataBase.tailDB().tail.on...');
+		var tailDB = dataBase.tailDB();
 
-//		tailDB.tail.pipe(socket);  // that would be cool... but does not work
-		global.log("webServer:myWebSocket, stream.ObjectID="+tailDB.ObjectID);
+//		dataBase.tailDB().pipe(socket);  // that would be cool... but does not work
+/**/
 		tailDB.on ('data', function (data) {
-			global.log('webServer:myWebSocket, in dataListener, data: '+  data );
-			global.log('webServer:myWebSocket, in dataListener, socket: '+  socket );
 			var lines = data.toString().split('\n');
 			for (var i in lines) {
 				if ( (typeof socket === 'object') && (lines[i]) ) {
-					global.log('webServer:myWebSocket, socket.emit, data:' + lines[i]);
 					// Trigger the web socket now
 					socket.emit ('tailDB', parseJSON(lines[i]));
 				}
 			}
 		})
+/**/
 	};
 
 	this.startSocket = this.startSocket || function (app) {
@@ -195,6 +202,7 @@ function WebSocket () {
 			.sockets
 			.on('connection', function (socket) {
 				global.log ("webServer:startSocket.sockets.on connection...");
+//				dataBase.tailDB().pipe(socket);
 				objref.startDataListener(socket);
 			});
 		return this;
@@ -203,14 +211,6 @@ function WebSocket () {
 	return this;
 }
 
-/**
-	getFilename parses the request and gets the filename
-*/
-function getFilename (request) {
-	var requestPath = require('url').parse(request.url, true).pathname,
-		myfilename = requestPath.substring (requestPath.lastIndexOf('/')+1);
-	return myfilename;
-}
 
 /**
 	getMimetype parses the request and determines the mimetype
@@ -234,29 +234,6 @@ function getMimetype (request) {
 	return myMimeType;
 }
 
-/**
-	serveStaticFile parses the request and gets the filename and responds
-*/
-function serveStaticFile (request, response) {
-	var myfilename = getFilename (request),
-		myMimeType = getMimetype (request),
-		fs = require('fs');
-	fs.readFile(global.srcPath+'main/client/' + myfilename, "binary", function (err, file) {
-		global.log ('readFile: ' +global.srcPath+ './client/' + myfilename);
-		if (err) {
-			global.log ('ERROR readFile: ' + './client/' + myfilename);
-		    response.writeHead(500, {"Content-Type": "text/plain"});
-		    response.write(err + "\n");
-		    response.end();
-		    return;
-		}
-		global.log ('response.write: ' + './client/' + myfilename);
-		response.writeHead(200, {"Content-Type": myMimeType});
-		response.write(file, "binary");
-		response.end();
-		global.log ('response.end: ' + './client/' + myfilename);
-	});
-}
 
 
 /**

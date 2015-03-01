@@ -59,7 +59,6 @@ case "$1" in
 	$remote 'cd production/smartMeter/src/; mocha --recursive'
 	# and removing the /tmp/smartMeterTestModeIsOn if necessary
 	$remote 'sudo rm -f /tmp/smartMeterTestModeIsOn'
-	$remote 'killall tail'
 
 	# install the server
     echo "installing the smartMeter bootstrap"

@@ -21,7 +21,7 @@ function XRef (filter, options) {
 	this._lastline = "";
 	this._first = true;
 	this.filter = filter;
-	this.xref = [];
+	this.xref = [];  // the array with the xrefs
 }
 util.inherits(XRef, Transform);
 
@@ -34,8 +34,7 @@ XRef.prototype._transform = function (chunk, encoding, done) {
 	//
 	for (var i=0; i< lines.length-1; i++) {
 		var line = lines[i];
-		if (i==0)
-			line = this._lastline + line;
+		if (i==0) { line = this._lastline + line; }
 		line = JSON.parse(line);
 		// the first time ever called
 		if (this._first) {

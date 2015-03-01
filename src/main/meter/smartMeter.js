@@ -103,7 +103,8 @@ smartMeter.prototype.readFromGPIO = function readFromGPIO(callback) {
 				// if there is a significant power consumption,
 				// i.e. not at startup or reboot time
 				if (watts > 1)
-					dataBase.writeData (message);
+					dataBase.streamString(message+'\n').pipe(dataBase.appendDB());
+//					dataBase.writeData (message);
 
 				objref.secondLastTimestamp = objref.lastTimestamp;
 				objref.lastTimestamp = timestamp;

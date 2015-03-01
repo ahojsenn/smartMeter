@@ -66,23 +66,10 @@ describe ('the webServer', function () {
       io        = require('socket.io-client'),
       client    = io.connect(socketURL, options),
       first     = true;
-
-    global.log ("... testing websocket, setting up client...");
-
     client.on ('connect', function () {global.log ("...testing websocket: client got connect") })
     client.on ('error', function (e) {global.log ("...ERROR:"+e) })
-
     client.on('tailDB', function (data) {
-      global.log ("...testing websocket: got data="+JSON.stringify(data));
-      //
-/*      var lines = data.split('\n');
-      while (i in lines  ) {
-        var line = lines[i];
-        global.log ("..., line["+i+"]="+line)
-      }
-*/
       assert (IsJsonString (JSON.stringify(data)));  // function IsJsonString is from testDataBase.js
-      global.log ("<<<>>>..., data="+data.term)
       if (data.term === 'brubbelwebsocket' && first) {
         first = false;
         assert (data.Watt === 342.42);
@@ -94,7 +81,6 @@ describe ('the webServer', function () {
     // now write something to the file to trigger
     // the dataBase:tailDB and ultimamtively the webServer:websocket
     client.on('connect', function () {
-      global.log ("...testing websocket: writing testdata...");
       fs.appendFile(global.datafilename,
             '{"term" : "bribbel", "Watt" : 342.41, "timestamp": 1419266113000}\n'+
             '{"term" : "brubbelwebsocket", "Watt" : 342.42, "timestamp": 1419266113000}\n',
@@ -157,29 +143,25 @@ describe ('the webServer', function () {
     http.get( url, function (res) {
       assert.equal(200, res.statusCode);
       res
-        .on ('data', function (chunk) {
-          global.log ("...testing..., /getXref, chunk="+chunk);
-          result += chunk;
-        })
+        .on ('data', function (chunk) { result += chunk; })
         .on ('end', function () {
-        assert (result.length > 0);
-        assert (result.toString().indexOf("brubbel") >= 0);
-        done();
+          global.log ("...testing..., in getXref, result="+result);
+          assert (result.length > 0);
+          assert (result.toString().indexOf("brubbel") >= 0);
+          done();
       });
     })
   });
 
   // now test the getnolines method of my webServer with callback parameter
-  it ('works with callback parameter', function (done) {
+  it ('getnolines works with callback parameter', function (done) {
     var url = 'http://localhost:'+global.serverPort+'/smartMeter/getnolines?callback=blubberblubber';
     var result = "";
     http.get( url, function (res) {
       assert.equal(200, res.statusCode);
-      res.on ('data', function (chunk) {
-        result += chunk;
-      })
+      res
+      .on ('data', function (chunk) { result += chunk; })
       .on ('end', function () {
-        global.log ("testing works with callback, result="+result);
         assert ( result.toString().indexOf("blubberblubber") == 0);
         done ();
       })

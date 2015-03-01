@@ -24,7 +24,6 @@ function WrapWithCallback (cbName, options) {
 util.inherits(WrapWithCallback, Transform);
 
 WrapWithCallback.prototype._transform = function (chunk, encoding, done) {
-	global.log ("in WrapWithCallback, got chunk..., "+chunk);
 	if ( (this.cbName != '' ) && this._first) {
 	   	this.push ( this.cbName + "(" + chunk);
 		this._first = false;

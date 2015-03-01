@@ -18,10 +18,7 @@ case "$1" in
 
 		set -e;
 		cd src;
-		mocha test/global;
-		mocha test/meter;
-		mocha test/dataBase;
-		mocha test/webServer;
+		mocha --recursive;
 		echo "now deleting the testdata..."
 		rm -f /tmp/data/gotResults.json
 		cd ..

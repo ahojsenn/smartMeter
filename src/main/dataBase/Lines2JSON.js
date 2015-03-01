@@ -23,9 +23,7 @@ util.inherits(Lines2JSON, Transform);
 
 
 Lines2JSON.prototype._transform = function (chunk, encoding, done) {
-	global.log ("in Lines2JSON_transform, got chunk..., this._lastline="+this._lastline);
 	var lines = chunk.toString().split("\n"),
-		self = this,
 		data = "";
 	//
 	for (var i=0; i< lines.length-1; i++) {
