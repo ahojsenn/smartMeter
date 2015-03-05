@@ -54,73 +54,26 @@ function startWebServer() {
 function parseRequestAndRespond (request, response) {
 	var fs = require('fs'),
 		requestPath = require('url').parse(request.url, true).pathname,
-		params 		= require('url').parse(request.url, true),
-		filter  	= getUrlParameter (request, 'filter'),
+		filter  	= getUrlParameter (request, 'filter') || '',
 		callback 	= getUrlParameter (request, 'callback'),
-		noLines 	= getUrlParameter (request, 'nolines')
-						? getUrlParameter (request, 'nolines') :23,
-		column 		= getUrlParameter (request, 'column'),
+		noLines 	= getUrlParameter (request, 'nolines') || 23,
+		column 		= getUrlParameter (request, 'column') || '',
 		wrap 		= new WrapWithCallback(callback),
 		reqMethod 	= requestPath.split('/').pop(),
 		map2Method 	= {  // I do not use this yet, but keep following the idea
-			"getXref" 		: "getXref",
-			"getData" 		: "getData",
-			"getnolines" 	: "getNoLines",
-			"getfirst" 		: "getFirst",
-			"getlast" 		: "getData",
-			"getglobals" 	: "getGlobals"
-		},
-		result = '';
-	global.log ('in parseRequestAndRespond..., requestPath='+requestPath+" "+map2Method[reqMethod]);
+			"getXref" 		: { func: dataBase.getXref(noLines, column) },
+			"getData" 		: { func: dataBase.getData(noLines, filter) },
+			"getnolines" 	: { func: dataBase.getNoLines(noLines) },
+			"getfirst" 		: { func: dataBase.getFirst() },
+			"getlast" 		: { func: dataBase.getLast() },
+			"getglobals" 	: { func: dataBase.getGlobals() }
+		};
 
-	//map2Method.reqMethod
-
-	if (requestPath == global.url+'/getXref') {
-		dataBase
-			.getXref (noLines, column)
+	if (map2Method[reqMethod] )
+		map2Method[reqMethod].func
 			.pipe(wrap)
 			.pipe(response);
-	}
-
-	else if (requestPath == global.url+'/getData') {
-		dataBase
-			.getData (noLines, filter)
-			.pipe (wrap)
-			.pipe (response);
-	}
-
-	// get nolines returns the number of lines in the data
-	else if (requestPath == global.url+'/getnolines') {
-		dataBase
-			.getNoLines(filter)
-			.pipe (wrap)
-			.pipe(response);
-	}
-
-	// getfirst gets the first entry in the dta file
-	else if (requestPath == global.url+'/getfirst')
-		dataBase
-			.getFirst()
-			.pipe (wrap)
-			.pipe(response);
-
-
-	// getlast gets the last entry
-	else if (requestPath == global.url+'/getlast')
-		dataBase
-			.getLast()
-			.pipe (wrap)
-			.pipe(response);
-
-	// getglobal returns the global object to the client to transport server info
-	else if (requestPath == global.url+'/getglobals') {
-		dataBase
-			.getGlobals()
-			.pipe (wrap)
-			.pipe(response);
-	}
-
-	// server static files under url "+/client/"
+	// serve a static files under url "+/client/"
 	else if ( (requestPath.indexOf(global.url+'/client/') == 0 ) ){
 		fs.createReadStream(global.srcPath+'main/client/' + reqMethod)
 			.pipe(response);
@@ -160,15 +113,6 @@ function myModGzip (request, response, raw) {
 }
 
 
-/**
-	wrap the data with a callback
- */
-function wrapWithCallback (data, callback) {
-	if (typeof callback === 'string')
-		return callback + "("+data+")";
-	else
-		return data;
-}
 
 /**
    	start a Web-Socket that will deliver data on every new entry of the datafile

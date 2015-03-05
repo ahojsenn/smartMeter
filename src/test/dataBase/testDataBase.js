@@ -156,7 +156,6 @@ describe ('the dataBase', function () {
       var lines = data.toString().split('\n');  // sometimes tail takes two lines at a time...
       for (i in lines) {
         if (lines [i] == 0) break;
-        global.log ("...testing... in tail, got result=>>>"+lines[i]+"<<<");
         assert (IsJsonString (lines[i]));
         if (JSON.parse(lines[i]).term === 'blattlaus') {
           tail.kill('SIGHUP');

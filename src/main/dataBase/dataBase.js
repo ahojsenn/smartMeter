@@ -40,9 +40,8 @@ Transform.prototype._transform = function (chunk, encoding, done) {
 /**
 	getnoLines will return the number of lines in the file
 	filter: a filter string to grep for
-	callback: the callback
 */
-DataBase.prototype.getNoLines = function (filter, callback) {
+DataBase.prototype.getNoLines = function (filter) {
 	var spawn 	= require('child_process').spawn,
 		cat 	= spawn("cat", [global.datafilename]),
 		grep 	= spawn("grep", [filter]),
@@ -64,7 +63,6 @@ DataBase.prototype.getNoLines = function (filter, callback) {
 	getData() will return Data as array of data objects
 	filter: a filter string to grep for
 	noLines: the number of lines to tail the data...
-	callback: the callback
 */
 DataBase.prototype.getData = function (noLines, filter) {
 	var spawn 	= require('child_process').spawn,
@@ -72,6 +70,7 @@ DataBase.prototype.getData = function (noLines, filter) {
 		grep 	= spawn("grep", [filter]),
 		lines2JSON = new Lines2JSON,
 		stream 	= new Transform;
+	global.log ("in dataBase.getData..." + noLines + " " + filter);
 	tail.stdout
 		.pipe(grep.stdin);
 	grep.stdout
@@ -124,6 +123,8 @@ DataBase.prototype.getLast = function  () {
 
 /**
 	getXref (noLines, column) return the cross reference, i.e. all different values in column
+	{"term": "Erdgas"; "Watt": 36.7; "Timestamp" : 1241231234123}
+	{"term": "Strom"; "Watt": 36.7; "Timestamp" : 1241231234123}
  */
 DataBase.prototype.getXref = function (noLines, column) {
 	var self = this,

@@ -30,15 +30,12 @@ describe ('xRef is a stream object, and...', function () {
 
     xRef
       .on('data', function (data) {
-        global.log ("...testing: got data="+data);
         result += data;
       });
 
     xRef
       .on('end', function () {
-        global.log ("...testing: got end signal=");
         assert (IsJsonString (result));
-        global.log ("...testing: that was JSON, result="+JSON.parse(result).term);
         if (JSON.parse(result)[0] === 'kaefer') done();
       });
   })

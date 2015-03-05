@@ -66,7 +66,6 @@ describe ('the webServer', function () {
       io        = require('socket.io-client'),
       client    = io.connect(socketURL, options),
       first     = true;
-    client.on ('connect', function () {global.log ("...testing websocket: client got connect") })
     client.on ('error', function (e) {global.log ("...ERROR:"+e) })
     client.on('tailDB', function (data) {
       assert (IsJsonString (JSON.stringify(data)));  // function IsJsonString is from testDataBase.js
@@ -91,10 +90,13 @@ describe ('the webServer', function () {
   // now test the get method of my webServer
   it ('has a /getData method implemented that lists some datafile entries', function (done) {
     var url = 'http://localhost:'+global.serverPort+'/smartMeter/getData?nolines=17';
+    var result = "";
     http.get( url, function (res) {
       assert.equal(200, res.statusCode);
-      res.once ('data', function (chunk) {
-        assert (chunk.length > 0);
+      res.on ('data', function (chunk) {result += chunk})
+      res.on ('end', function () {
+        assert (result.length > 0);
+        assert (IsJsonString (JSON.stringify(result)))
         done();
       });
     })
@@ -145,7 +147,6 @@ describe ('the webServer', function () {
       res
         .on ('data', function (chunk) { result += chunk; })
         .on ('end', function () {
-          global.log ("...testing..., in getXref, result="+result);
           assert (result.length > 0);
           assert (result.toString().indexOf("brubbel") >= 0);
           done();
