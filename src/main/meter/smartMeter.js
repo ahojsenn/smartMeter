@@ -76,7 +76,7 @@ smartMeter.prototype.readFromGPIO = function () {
 												objref.secondLastTimestamp,
 												objref.UmdrehungenProKWh);
 			message += ', "Watt":'+watts;
-			message += ', "now":' + now;
+			message += ', "timestamp":' + now;
 			message += '}';
 
 			// only trigger to log stuff,
