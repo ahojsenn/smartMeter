@@ -27,13 +27,8 @@ var smartMeter = function () {
 			objref.gpioSimulatorTimeout = global.measurements[i].gpioSimulatorTimeout;
 			objref.UmdrehungenProKWh = global.measurements[i].UmdrehungenProKWh;
 			objref.EuroCentProKWh = global.measurements[i].EuroCentProKWh;
-			global.log ("in smartMeter.init, initialized!");
-			global.log ("                    gpioInputPin="+objref.gpioInputPin);
 			return objref;
 		};
-
-		//this.powerConsumption = function (t1,t2,u) {powerConsumption (t1,t2,u)};
-
 		this.lastValue = "start";
 		this.lastTimestamp = 0;
 		this.secondLastTimestamp = 0;
@@ -45,20 +40,12 @@ var smartMeter = function () {
 // a function to calculate ower consumption of my power meter...
 // t1 and t2 are timestamps...
 //
-smartMeter.prototype.powerConsumption = function powerConsumption (t1, t2, UmdrehungenProKWh) {
-	var myWatt = 1,  // set myWatt to 1 rather than 0, that will allow me to have a log scale later...
-		UmdrehungenProh = 1000 * 3600	 / (t1 - t2),
-		message = '';
-
-	if (t2 > 0 )
-		myWatt = 1000* UmdrehungenProh / UmdrehungenProKWh ;
-
-	global.log("in powerConsumption ("
-		+ (t1-t2)/1000 +"s passed, "+ UmdrehungenProKWh + "), "
-		+"UmdrehungenProh="+Math.round(1000*UmdrehungenProh)/1000 +", "
-		+"Watt="+myWatt);
-
-
+smartMeter.prototype.powerConsumption = function (t1, t2, UmdrehungenProKWh) {
+	var myWatt 		= 1,  // set myWatt to 1 rather than 0, that will allow me to have a log scale later...
+		pulseProh 	= 3600000 / (t1 - t2);
+	if (t2 > 0 ) {
+		myWatt = 1000* pulseProh / UmdrehungenProKWh ;
+	}
 	return myWatt;
 }
 
@@ -70,51 +57,43 @@ smartMeter.prototype.powerConsumption = function powerConsumption (t1, t2, Umdre
 // reads the inpup of the GPIO by polling
 // since I didn't get the onchange to run...
 //
-smartMeter.prototype.readFromGPIO = function readFromGPIO(callback) {
+smartMeter.prototype.readFromGPIO = function () {
 	var fs = require('fs'),
-		date = new Date(),
-		timestamp,
-		message="",
-		watts = 0,
 		objref = this;
-
-	message += '{';
-	message += '"term":"'+global.location+'.'+ objref.gpioIdentifier+'"';
-
 	fs.readFile (	global.gpio_path+'gpio'+objref.gpioInputPin+'/value',
 					function(err, inputValue) {
 		if(err) {
 	        console.log(err);
-//	        return err;
+	        return err;
 	    }
-	    else {
-			if (objref.lastValue+0 != inputValue+0 ) {  // pin changed
-				global.log ("in readFromGPIO, pin changed, inputValue="+inputValue);
-				objref.lastValue = inputValue;
-				timestamp = date.getTime();
-				watts = objref.powerConsumption	(	timestamp,
-													objref.secondLastTimestamp,
-													objref.UmdrehungenProKWh);
-				message += ', "Watt":'+watts;
-				message += ', "timestamp":' + timestamp;
-				message += '}';
+	    // only, if the pin changed
+		if (objref.lastValue+0 != inputValue+0 ) { 
+			var date 	= new Date(),
+				now 	=date.getTime(),
+				watts 	= 0,
+				message	='{"term":"'+global.location+'.'+ objref.gpioIdentifier+'"';
+			watts = objref.powerConsumption	(	now,
+												objref.secondLastTimestamp,
+												objref.UmdrehungenProKWh);
+			message += ', "Watt":'+watts;
+			message += ', "now":' + now;
+			message += '}';
 
-				// only trigger to log stuff,
-				// if there is a significant power consumption,
-				// i.e. not at startup or reboot time
-				if (watts > 1)
-					dataBase.streamString(message+'\n').pipe(dataBase.appendDB());
-//					dataBase.writeData (message);
-
-				objref.secondLastTimestamp = objref.lastTimestamp;
-				objref.lastTimestamp = timestamp;
-			}
-			global.timers.setTimeout (
-				function () {objref.readFromGPIO()},
-				global.polling_intervall);
+			// only trigger to log stuff,
+			// if there is a significant power consumption,
+			// i.e. not at startup or reboot time
+			if (watts > 1)
+				dataBase.streamString(message+'\n').pipe(dataBase.appendDB());
+			objref.lastValue 			= inputValue;
+			objref.secondLastTimestamp 	= objref.lastTimestamp;
+			objref.lastTimestamp 		= now;
 		}
+		// wait some time and them read the file again...
+		global.timers.setTimeout (
+			function () { objref.readFromGPIO() },
+			global.polling_intervall
+		);
 	});
-	if (typeof callback === 'function' && callback());
 	return objref;
 }
 
@@ -139,9 +118,9 @@ global.eventEmitter
 			var sm =  new smartMeter();
 			sm.init(i);
 			measurements.push (sm);
-			global.log ("starting the smartmeter on pin="+sm.gpioInputPin);
-			global.log ("                             i="+i);
-			global.log ("           with gpioIdentifier="+sm.gpioIdentifier);
+//			global.log ("starting the smartmeter on pin="+sm.gpioInputPin);
+//			global.log ("                             i="+i);
+//			global.log ("           with gpioIdentifier="+sm.gpioIdentifier);
 			sm.readFromGPIO ();
 		}
 	});

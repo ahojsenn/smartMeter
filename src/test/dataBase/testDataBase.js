@@ -109,7 +109,7 @@ describe ('the dataBase', function () {
     var result = "";
     dataBase
     .getLast()
-    .on('data', function (data) { result += data; global.log ("adfasdsa result="+result);})
+    .on('data', function (data) { result += data; })
     .on('end', function (){
       assert (IsJsonString (result));
       if (

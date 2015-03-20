@@ -18,7 +18,6 @@ after (function (done) {
 
 describe ('xRef is a stream object, and...', function () {
   it ('I can pipe things to xRef...', function (done) {
-    var xRef = new XRef();
     var testData= '{"term" : "kaefer", "Watt" : 0.42, "timestamp": 1419266112003}';
     var testData_echo  = require('child_process').spawn("echo", [testData]);
     var result = "";
@@ -58,15 +57,15 @@ describe ('xRef is a stream object, and...', function () {
 
     xRef
       .on('data', function (data) {
-        global.log ("...testing: got data="+data);
+//        global.log ("...testing: got data="+data);
         result += data;
       });
 
     xRef
       .on('end', function () {
-        global.log ("...testing: got end signal, result="+result);
+//      global.log ("...testing: got end signal, result="+result);
         assert (IsJsonString (result));
-        global.log ("...testing: that was JSON, result="+JSON.parse(result).term);
+//      global.log ("...testing: that was JSON, result="+JSON.parse(result).term);
         if (result === '["Kaefer","Meise","Wurm"]') done();
       });
   })

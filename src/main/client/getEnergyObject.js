@@ -12,6 +12,7 @@ function getEnergyObject() {
 	    gotNewDataEvent = "gotNewDataEvent";
 	console.log ("in energyObject definition");
 
+
 	// Simple constructor, adds all key-value pairs in 'params' to EnergyObject
 //	if (params && Object.keys && Object.keys(params).length >= 1) {
 //		Object.keys(params).forEach(function(param) {

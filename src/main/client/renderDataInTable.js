@@ -139,7 +139,7 @@ function getSetGlobals () {
 	for (var i=0; i< global.measurements.length; i++) {
 		if (measurementsSelector.indexOf(global.measurements[i].gpioIdentifier) > 0) {
 			UmdrehungenProKWh = global.measurements[i].UmdrehungenProKWh;
-			EuroCentProKWh	= global.measurements[i].UmdrehungenProKWh;
+			EuroCentProKWh	= global.measurements[i].EuroCentProKWh;
 		}
 	}
 }

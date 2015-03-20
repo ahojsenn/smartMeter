@@ -15,7 +15,7 @@ var Transform 	= stream.Transform;
 var Readable 	= stream.Readable;
 var fs 			= require('fs');
 
-// the webServer Object
+// the DataBase Object
 function DataBase() {
   	// allow use without new
   	if (!(this instanceof DataBase)) {
@@ -33,8 +33,6 @@ Transform.prototype._transform = function (chunk, encoding, done) {
 	this.push (chunk);
 	done();
 }
-
-
 
 
 /**
@@ -70,7 +68,7 @@ DataBase.prototype.getData = function (noLines, filter) {
 		grep 	= spawn("grep", [filter]),
 		lines2JSON = new Lines2JSON,
 		stream 	= new Transform;
-	global.log ("in dataBase.getData..." + noLines + " " + filter);
+//	global.log ("in dataBase.getData..." + noLines + " " + filter);
 	tail.stdout
 		.pipe(grep.stdin);
 	grep.stdout

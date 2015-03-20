@@ -35,8 +35,8 @@ function simulator (gpioNr) {
 			sekundeProUmdrehung = milliSekundenProUmdrehung/1000,
 			watt = wattSekundeProUmdrehung / sekundeProUmdrehung,
 			cmd = "echo {'\"'term'\"' : '\"'"+gpioIdentifier+"'\"', '\"'Watt'\"' : "+watt+", '\"'timestamp'\"': `date +%s000`} >> "+ global.datafilename;
-		global.log('  createRandomData created entry after '+ milliSekundenProUmdrehung/1000 + 's. Watt= ' + watt);
-		global.log('  logged it to: '+ global.datafilename);
+//		global.log('  createRandomData created entry after '+ milliSekundenProUmdrehung/1000 + 's. Watt= ' + watt);
+//		global.log('  logged it to: '+ global.datafilename);
 		exec (cmd);
 	}
 
@@ -46,7 +46,7 @@ function simulator (gpioNr) {
 			fs = require('fs'),
 			pin;
 
-		global.log ("smartMeterSimulator: in flipPinOnGPIO");
+//		global.log ("smartMeterSimulator: in flipPinOnGPIO");
 
 		fs.readFile(path, "binary", function (err, pin) {
 			var flippedPin= 1 - pin;
@@ -70,7 +70,7 @@ function simulator (gpioNr) {
 		var timeout = global.measurements[gpioNr].gpioSimulatorTimeout,
 			randomTime = timeout+Math.round(1000*Math.random()), // something between 3 and 4 seconds
 			objref = this;
-		global.log ("smartMeterSimulator: in createRandomData..., timeout="+timeout);
+//		global.log ("smartMeterSimulator: in createRandomData..., timeout="+timeout);
 
 		if (!this.stop)
 			setTimeout(function () {

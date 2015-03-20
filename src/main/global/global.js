@@ -39,7 +39,7 @@ function _Init (callerId) {
 		fs   = require('fs'),
 		path = require('path');
 
-	global.log ("in global.init, got called from "+ callerId);
+//global.log ("in global.init, got called from "+ callerId);
 	if (process.platform == 'darwin')
 		parameterFileName = './globalParametersOnDarwin.json';
 	else
@@ -52,7 +52,7 @@ function _Init (callerId) {
 
 	// Simple constructor, links all parameters in globalParameters object to global
 	if (globalParameters && Object.keys && Object.keys(globalParameters).length >= 1) {
-		global.log ("				initializing  with " + parameterFileName);
+//		global.log ("				initializing  with " + parameterFileName);
 		Object.keys(globalParameters).forEach( function(param) {
 			global[param] = globalParameters[param];
 		})

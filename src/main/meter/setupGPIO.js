@@ -10,20 +10,20 @@ function setupGPIO (emitEventWhenFinished) {
 	var exec = require('child_process').exec,
 		commands = new Array(),
 		cmdNr = 0;
-	global.log ("in setupGPIO...");
+//	global.log ("in setupGPIO...");
 
 	commands = defineSetupCommands();
-	global.log ("              commands="+commands);
+//	global.log ("              commands="+commands);
 
 
 	// daisy chaining the commands to set up the gpio
 	( function execCmdInADaisyChain (commands, cmdNr) {
-		global.log ("  ... in execCmdInADaisyChain, cmdNr=" + cmdNr + " of" + commands.length);
+//		global.log ("  ... in execCmdInADaisyChain, cmdNr=" + cmdNr + " of" + commands.length);
 		if ( cmdNr < commands.length ) {
 			exec ( commands[cmdNr], function (error, stdout, stderr) {
-				global.log("  Step:   " +cmdNr+": executing: " + commands[cmdNr]);
-				global.log("  stdout: " + stdout);
-    			global.log("  stderr: " + stderr);
+//				global.log("  Step:   " +cmdNr+": executing: " + commands[cmdNr]);
+//				global.log("  stdout: " + stdout);
+  //  			global.log("  stderr: " + stderr);
     			if (error !== null) {
       				console.log('exec error: ' + error);
       			}
@@ -34,7 +34,7 @@ function setupGPIO (emitEventWhenFinished) {
 		}
 		else {
 			/* start the smarty */
-			global.log('I think setup is done, emitting '+emitEventWhenFinished+' event...');
+//			global.log('I think setup is done, emitting '+emitEventWhenFinished+' event...');
 			global.eventEmitter.emit(emitEventWhenFinished);
 		}
 	})(commands, cmdNr);
@@ -57,7 +57,7 @@ function defineSetupCommands () {
 		// create gpio devices and mock it on non raspi hardware //
 		for (var i in global.measurements) {
 			gpioInputPin=global.measurements[i].gpioInputPin;
-			global.log ("              gpioPin="+gpioInputPin);
+//			global.log ("              gpioPin="+gpioInputPin);
 			commands = commands.concat ([
 				"mkdir -p " + global.gpio_path+"gpio"+gpioInputPin,
 				"ls -al " + global.gpio_path+"gpio"+gpioInputPin,
@@ -78,7 +78,7 @@ function defineSetupCommands () {
 	else {
 		for (var i in global.measurements) {
 			gpioInputPin=global.measurements[i].gpioInputPin;
-			global.log ("              gpioPin="+gpioInputPin);
+//			global.log ("              gpioPin="+gpioInputPin);
 			commands = commands.concat ([
 				"sudo echo "+gpioInputPin+" > /sys/class/gpio/unexport",
 				"sleep 1",

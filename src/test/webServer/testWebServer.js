@@ -3,8 +3,7 @@ var assert = require("assert"),
     ws =  require ("../../main/webServer/webServer.js"),
     fs = require("fs"),
 	  http = require ("http"),
-    exec = require('child_process').exec
-	  ;
+    exec = require('child_process').exec;
 
 
 /* init and start the webServer */

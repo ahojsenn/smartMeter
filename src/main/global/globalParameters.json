@@ -2,7 +2,7 @@
 	"location": "V39",
 
 	"gpio_path": "/sys/class/gpio/",
-	"polling_intervall": 50,
+	"polling_intervall": 100,
 
 	"measurements": [
 						{

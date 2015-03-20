@@ -2,14 +2,14 @@
 	"location": "TestLocation",
 
 	"gpio_path": "/tmp/gpio/",
-	"polling_intervall": 50,
+	"polling_intervall": 100,
 
 	"measurements": [
 						{
 							"gpioInputPin" : 2,
 							"gpioIdentifier" : "Strom",
 							"gpioSimulatorTimeout" : 2000,
-							"UmdrehungenProKWh" : 75,
+							"UmdrehungenProKWh" : 750,
 							"EuroCentProKWh" : 23
 						},
 						{

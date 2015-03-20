@@ -32,7 +32,6 @@ describe ('smartMeter', function () {
 	/* init */
 	it ('should init() without error', function (){
 		for (var i in global.measurements ) {
-			console.log (global.measurements[i].gpioInputPin	);
 			assert(global.measurements[i].gpioInputPin>0);
 		}
 	})
