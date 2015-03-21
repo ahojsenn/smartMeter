@@ -2,10 +2,10 @@
 	"location": "TestLocation",
 
 	"gpio_path": "/tmp/gpio/",
-	"polling_intervall": 50,
 
 	"measurements": [
 						{
+							"polling_intervall": 50,
 							"gpioInputPin" : 2,
 							"gpioIdentifier" : "Strom",
 							"gpioSimulatorTimeout" : 2000,
@@ -13,6 +13,7 @@
 							"EuroCentProKWh" : 23
 						},
 						{
+							"polling_intervall": 200,
 							"gpioInputPin" : 3,
 							"gpioIdentifier" : "Erdgas",
 							"gpioSimulatorTimeout" : 10000,

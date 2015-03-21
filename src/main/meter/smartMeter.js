@@ -27,6 +27,7 @@ var smartMeter = function () {
 			objref.gpioSimulatorTimeout = global.measurements[i].gpioSimulatorTimeout;
 			objref.UmdrehungenProKWh = global.measurements[i].UmdrehungenProKWh;
 			objref.EuroCentProKWh = global.measurements[i].EuroCentProKWh;
+			objref.pollingIntervall = global.measurements[i].polling_intervall;
 			return objref;
 		};
 		this.lastValue = "start";
@@ -91,7 +92,7 @@ smartMeter.prototype.readFromGPIO = function () {
 		// wait some time and them read the file again...
 		global.timers.setTimeout (
 			function () { objref.readFromGPIO() },
-			global.polling_intervall
+			objref.pollingIntervall
 		);
 	});
 	return objref;

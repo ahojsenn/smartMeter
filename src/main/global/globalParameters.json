@@ -2,10 +2,9 @@
 	"location": "V39",
 
 	"gpio_path": "/sys/class/gpio/",
-	"polling_intervall": 100,
-
 	"measurements": [
 						{
+							"polling_intervall": 50,
 							"gpioIdentifier" : "Strom",
 							"gpioInputPin" : 2,
 							"gpioSimulatorTimeout" : 2000,
@@ -13,6 +12,7 @@
 							"EuroCentProKWh" : 23
 						},
 						{
+							"polling_intervall": 200,
 							"gpioIdentifier" : "Erdgas",
 							"gpioInputPin" : 3,
 							"gpioSimulatorTimeout" : 10000,

@@ -1,6 +1,6 @@
 {
 	"name" : "smartMeter",
-	"version" : "0.0.1",
+	"version" : "0.0.2",
 	"description" : "This is my smartMeter Project. This is contains some documentation on how to build your own smartmeter and contains the code to run it. Its based on node.js and raspberry pi. There is more info in the smartMeter github project",
 	"homepage" : "https://github.com/ahojsenn/smartMeter",
 	"repository" : {
