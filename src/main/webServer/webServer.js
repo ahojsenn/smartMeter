@@ -16,7 +16,7 @@ var WrapWithCallback  = require ("./WrapWithCallback.js"),
 
 var	global 		=  global || require ("../../main/global/global.js").init("from webServer"),
 	DataBase 	= new require ("../../main/dataBase/dataBase.js"),
-	dataBase 	= new DataBase;
+	dataBase 	= new DataBase ({"dataFileName" : global.datafilename});
 
 // the webServer Object
 var ws = {

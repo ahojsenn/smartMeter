@@ -50,13 +50,13 @@ function simulator (gpioNr) {
 
 		fs.readFile(path, "binary", function (err, pin) {
 			var flippedPin= 1 - pin;
-			global.log ('	readFile: ' +path+ " pin="+pin);
+//			global.log ('	readFile: ' +path+ " pin="+pin);
 			if (err) {
 				global.log ('smartMeterSimulator: ERROR readFile: ' + './client/' + myfilename);
 		    	return;
 			}
 			fs.writeFile (path, flippedPin, function (err) {
-				global.log ('	write flipped pin: ' +path+ " flippedPin="+flippedPin);
+//				global.log ('	write flipped pin: ' +path+ " flippedPin="+flippedPin);
 				if (err) {
 					global.log ('smartMeterSimulator: ERROR readFile: ' + './client/' + myfilename);
 		    		return;
@@ -74,7 +74,7 @@ function simulator (gpioNr) {
 
 		if (!this.stop)
 			setTimeout(function () {
-				global.log("time passed..." + randomTime + "s");
+//				global.log("time passed..." + randomTime + "s");
 				//objref.writeSimulatedData (randomTime);
 				objref.flipPinOnGPIO(gpioNr);
 				objref.createRandomData(gpioNr);

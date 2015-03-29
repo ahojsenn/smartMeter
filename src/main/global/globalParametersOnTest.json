@@ -25,6 +25,7 @@
 	"debug": true,
 	"srcPath": "/home/pi/production/smartMeter/src/",
 	"datafilename": "/tmp/data/gotResults.json",
+	"accumulatedDataFileName": "/tmp/data/accumulatedData.json",
 
 	"serverPort": 42080,
 	"url": "/smartMeter"

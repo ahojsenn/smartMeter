@@ -3,7 +3,7 @@ var assert = require("assert"),
     fs = require("fs"),
     TESTFILTER='ycxvyxcvxy',
     DataBase = require ("../../main/dataBase/dataBase.js");
-    dataBase = new DataBase();
+    dataBase = new DataBase({"dataFileName" : global.datafilename});
 
 global.log ("in testDataBase, dataBase.ObjectID="+dataBase.ObjectID);
 
@@ -11,7 +11,6 @@ global.log ("in testDataBase, dataBase.ObjectID="+dataBase.ObjectID);
 /* connect to the 'dataBase' and prepare everything */
 before(function(done){
   this.timeout(5042);
-  var tail=require('child_process').spawn("tail", ['-fn1', global.datafilename]);
   // write some stuff to the datafile for  further testing
   for (var i=0; i< 1500; i++) {
     dataBase
@@ -37,7 +36,7 @@ describe ('the dataBase', function () {
   this.timeout(3542);
   /* initializes */
   it('returns the datafile name', function () {
-    assert.equal (global.datafilename, dataBase.dataFileName());
+    assert.equal (global.datafilename, dataBase.dataFileName);
   })
 
 

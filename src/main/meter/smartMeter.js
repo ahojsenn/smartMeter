@@ -17,7 +17,7 @@
 var global = global || require ('../global/global.js').init("from smartMeter"),
 	setupGPIO = require ('./setupGPIO.js'),
 	DataBase =  require ("../../main/dataBase/dataBase.js"),
-	dataBase = new DataBase;
+	dataBase = new DataBase ({"dataFileName" : global.datafilename});
 
 var smartMeter = function () {
 		objref = this;
@@ -68,23 +68,29 @@ smartMeter.prototype.readFromGPIO = function () {
 	        return err;
 	    }
 	    // only, if the pin changed
-		if (objref.lastValue+0 != inputValue+0 ) { 
+		if (objref.lastValue+0 != inputValue+0 ) {
 			var date 	= new Date(),
-				now 	=date.getTime(),
+				now 	= date.getTime(),
+				nowISO	= date.toISOString(),
 				watts 	= 0,
-				message	='{"term":"'+global.location+'.'+ objref.gpioIdentifier+'"';
+				message	= '{';
+
 			watts = objref.powerConsumption	(	now,
 												objref.secondLastTimestamp,
-												objref.UmdrehungenProKWh);
+												objref.UmdrehungenProKWh );
+//			global.log ("in readFromGPIO, observed pin flip..., watts="+watts+", "+now +", "+objref.secondLastTimestamp);
+			message += '"timestamp":' +'"'+nowISO+'"';
+			message += ', "term":"'+global.location+'.'+ objref.gpioIdentifier+'"';
 			message += ', "Watt":'+watts;
-			message += ', "timestamp":' + now;
 			message += '}';
 
 			// only trigger to log stuff,
 			// if there is a significant power consumption,
 			// i.e. not at startup or reboot time
-			if (watts > 1)
+			if (watts > 1) {
+//				global.log ("in readFromGPIO, writing data...");
 				dataBase.streamString(message+'\n').pipe(dataBase.appendDB());
+			}
 			objref.lastValue 			= inputValue;
 			objref.secondLastTimestamp 	= objref.lastTimestamp;
 			objref.lastTimestamp 		= now;

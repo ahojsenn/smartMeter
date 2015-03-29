@@ -8,7 +8,7 @@
 							"polling_intervall": 50,
 							"gpioInputPin" : 2,
 							"gpioIdentifier" : "Strom",
-							"gpioSimulatorTimeout" : 2000,
+							"gpioSimulatorTimeout" : 200,
 							"UmdrehungenProKWh" : 750,
 							"EuroCentProKWh" : 23
 						},
@@ -16,7 +16,7 @@
 							"polling_intervall": 200,
 							"gpioInputPin" : 4,
 							"gpioIdentifier" : "Wasser",
-							"gpioSimulatorTimeout" : 3000,
+							"gpioSimulatorTimeout" : 300,
 							"UmdrehungenProKWh" : 123,
 							"EuroCentProKWh" : 23
 						},
@@ -24,7 +24,7 @@
 							"polling_intervall": 150,
 							"gpioInputPin" : 3,
 							"gpioIdentifier" : "Erdgas",
-							"gpioSimulatorTimeout" : 10000,
+							"gpioSimulatorTimeout" : 1000,
 							"UmdrehungenProKWh" : 9.1421,
 							"EuroCentProKWh" : 6.44
 						}
@@ -33,6 +33,7 @@
 	"debug": true,
 	"srcPath": "/Users/docjoe/mystuff/development/smartMeter/src/",
 	"datafilename": "/tmp/data/gotResults.json",
+	"accumulatedDataFileName": "/tmp/data/accumulatedData.json",
 
 	"serverPort": 42080,
 	"url": "/smartMeter"

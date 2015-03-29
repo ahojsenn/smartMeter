@@ -27,7 +27,7 @@ after (function (done) {
 })
 
 describe ('smartMeter', function () {
-  this.timeout(3542);
+  this.timeout(10542);
 
 	/* init */
 	it ('should init() without error', function (){
@@ -58,6 +58,18 @@ describe ('smartMeter', function () {
 		var sm = new smartMeter();
 		sm.init(0);
 		assert (sm.powerConsumption (6834,0, 1) > 0);
+	})
+
+	it ('should measure some - at least simulated - data', function (done) {
+		var spawn 	= require('child_process').spawn,
+			tail 	= spawn("tail", ['-fn0', global.datafilename]);
+		tail
+			.stdout
+			.on ('data', function (data) {
+				tail.kill();
+				done();
+			})
+
 	})
 
 })

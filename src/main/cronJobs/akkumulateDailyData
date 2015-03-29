@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+/*jslint node: true */
+/*
+ 	Johannes Mainusch, 2015-03-22
+
+	Idea: akkumulate dayly data and save ist in a separate file
+*/
+
+function getDaysData (timestamp) {
+
+	return '{"term" : "hugo", "Watt" : '+i+'.4, "timestamp": '+(1419266116000+i*120000)/1+'}\n';
+}

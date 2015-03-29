@@ -16,13 +16,16 @@ var Readable 	= stream.Readable;
 var fs 			= require('fs');
 
 // the DataBase Object
-function DataBase() {
+function DataBase(options) {
   	// allow use without new
   	if (!(this instanceof DataBase)) {
   		global.log ("in DataBase: !(this instanceof DataBase, returning new DataBase...");
-    	return new DataBase();
+    	return new DataBase(options);
   	}
-	this.dataFileName = function () {return global.datafilename};
+  	if (options && options.dataFileName)
+		this.dataFileName = options.dataFileName;
+	else
+		this.dataFileName = global.datafilename;
 	this.setObjectID = function(x) {this.ObjectID=x; return this;};
 	this.logObjectID = function() { global.log ("dataBase.ObjectID=" + this.ObjectID); return this;};
 	this.setObjectID.call (this, Math.random());
@@ -41,20 +44,16 @@ Transform.prototype._transform = function (chunk, encoding, done) {
 */
 DataBase.prototype.getNoLines = function (filter) {
 	var spawn 	= require('child_process').spawn,
-		cat 	= spawn("cat", [global.datafilename]),
+		cat 	= spawn("cat", [this.dataFileName]),
 		grep 	= spawn("grep", [filter]),
 		wc	 	= spawn("wc", ['-l']),
 		tr	 	= spawn("tr", ['-d',' ']),
-		lines2JSON = new Lines2JSON,
-		stream 	= new Transform;
+		lines2JSON = new Lines2JSON;
 
 	cat.stdout.pipe(grep.stdin);
 	grep.stdout.pipe(wc.stdin);
 	wc.stdout.pipe(tr.stdin);
-	tr.stdout
-		.pipe(lines2JSON)
-		.pipe(stream);
-	return stream;
+	return tr.stdout.pipe(lines2JSON)
 }
 
 /**
@@ -64,17 +63,12 @@ DataBase.prototype.getNoLines = function (filter) {
 */
 DataBase.prototype.getData = function (noLines, filter) {
 	var spawn 	= require('child_process').spawn,
-		tail 	= spawn("tail", [-noLines, global.datafilename]),
+		tail 	= spawn("tail", [-noLines, this.dataFileName]),
 		grep 	= spawn("grep", [filter]),
-		lines2JSON = new Lines2JSON,
-		stream 	= new Transform;
-//	global.log ("in dataBase.getData..." + noLines + " " + filter);
+		lines2JSON = new Lines2JSON;
 	tail.stdout
 		.pipe(grep.stdin);
-	grep.stdout
-		.pipe(lines2JSON)
-		.pipe(stream);
-	return stream;  // this is needed for chaining like in streams
+	return grep.stdout.pipe(lines2JSON);
 }
 
 
@@ -84,11 +78,8 @@ DataBase.prototype.getData = function (noLines, filter) {
  */
 DataBase.prototype.tailDB = function () {
 	var tail 	= require('child_process')
-					.spawn("tail", [ '-fn', '1', global.datafilename]),
-		stream 	= new Transform;
-	tail.stdout
-		.pipe(stream);
- 	return stream;
+					.spawn("tail", [ '-fn', '1', this.dataFileName]);
+	return tail.stdout;
 }
 
 
@@ -96,26 +87,18 @@ DataBase.prototype.tailDB = function () {
 	getFirst gets the first data entry
 */
 DataBase.prototype.getFirst = function() {
-	var head 	= require('child_process').spawn("head", ['-1', global.datafilename]),
-		stream 	= new Transform;
-		l2JSON  = new Lines2JSON,
-	head.stdout
-		.pipe(l2JSON)
-		.pipe(stream);
- 	return stream;
+	var head 	= require('child_process').spawn("head", ['-1', this.dataFileName]),
+		l2JSON  = new Lines2JSON;
+	return head.stdout.pipe(l2JSON)
 }
 
 /**
 	getLAst gets the first data entry
 */
 DataBase.prototype.getLast = function  () {
-	var tail 	= require('child_process').spawn("tail", ['-1', global.datafilename]),
-		stream 	= new Transform;
-		l2JSON  = new Lines2JSON,
-	tail.stdout
-		.pipe(l2JSON)
-		.pipe(stream);
- 	return stream;
+	var tail 	= require('child_process').spawn("tail", ['-1', this.dataFileName]),
+		l2JSON  = new Lines2JSON;
+	return tail.stdout.pipe(l2JSON);
 }
 
 
@@ -125,22 +108,17 @@ DataBase.prototype.getLast = function  () {
 	{"term": "Strom"; "Watt": 36.7; "Timestamp" : 1241231234123}
  */
 DataBase.prototype.getXref = function (noLines, column) {
-	var self = this,
-		spawn = require('child_process').spawn,
-		tail = spawn("tail", [-noLines, global.datafilename]),
-		xRef = new XRef(column),
-		stream = new Transform;
-	tail.stdout
-		.pipe(xRef)
-		.pipe(stream);
-	return stream;
+	var spawn = require('child_process').spawn,
+		tail = spawn("tail", [-noLines, this.dataFileName]),
+		xRef = new XRef(column);
+	return tail.stdout.pipe(xRef);
 }
 
 /**
 	append the Database
  */
 DataBase.prototype.appendDB = function () {
-	return fs.createWriteStream(global.datafilename, {'flags': 'a'});
+	return fs.createWriteStream(this.dataFileName, {'flags': 'a'});
 }
 
 /**
@@ -160,7 +138,7 @@ DataBase.prototype.getGlobals = function () {
  */
 DataBase.prototype.streamString = function (string) {
 	var s = new stream.Readable();
-	s._read = function noop() {}; // redundant? see update below
+	s._read = function noop() {}; // redundant? see update below, I think this is here to cope for older node versions...
 	s.push(string);
 	s.push(null);
 	return s;
@@ -170,7 +148,20 @@ DataBase.prototype.streamString = function (string) {
 DataBase.prototype.removeDB = function() {
 	var	fs 			= require('fs');
 	var killAll 	= require('child_process').spawn("killall", ['tail']);
-	fs.unlinkSync(global.datafilename);
+	fs.exists( this.dataFileName, function (exists) {
+  		if (exists) fs.unlinkSync(this.dataFileName);
+		});
 	killAll;
 	return this;
+}
+
+// get all the data of one day
+DataBase.prototype.getDaysData = function (timestamp) {
+	// use sed -n '/1419980400000/,/1420066800000/p' /tmp/data/test.json
+ 	var date 		= new Date (timestamp),
+ 		startOfDay 	= Date.parse( new Date (date.getFullYear(), date.getMonth(), date.getDate() )),
+		endOfDay 	= Date.parse( new Date (date.getFullYear(), date.getMonth(), date.getDate() +1)),
+ 		spawn 		= require('child_process').spawn,
+		sed 		= spawn('sed', ['-n', "'/"+startOfDay+"/,/"+endOfDay+"/p'",this.dataFileName]);
+	return sed.stdout;
 }

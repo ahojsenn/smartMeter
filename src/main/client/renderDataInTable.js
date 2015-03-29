@@ -9,8 +9,8 @@ var UmdrehungenProKWh,
 function renderDataInTable(EnergyObject) {
 	console.log ("in renderDataInTable...");
 	var data = EnergyObject.myData,
-		t1 = data[0].timestamp,
-		t2 = data[data.length-1].timestamp,
+		t1 = new Date(data[0].timestamp).getTime(),
+		t2 = new Date(data[data.length-1].timestamp).getTime(),
 		watt = data[data.length-1].Watt,
 		tdiff = t2 - t1,
 		date = new Date (data[data.length-1].timestamp).toLocaleString(),
@@ -78,7 +78,7 @@ function renderDataInTable(EnergyObject) {
 			)
 		);
 	}
-	console.log ("in calculate, t1 :: t2:" + t1 + " :: " + t2);
+	console.log ("in calculate, t1 :: t2:" + t1 + " :: " + t2 );
 	console.log ("              myobj.mydata.length:" + data.length);
 	console.log ("              Watt:" + watt);
 	console.log ("              mydata:" + new Date (data[0].timestamp));
@@ -88,8 +88,9 @@ function renderDataInTable(EnergyObject) {
 	console.log ("              UmdrehungenProKWh=" + UmdrehungenProKWh);
 	console.log ("              EuroCentProKWh=" + EuroCentProKWh);
 	console.log ("              tdiff[s]=" + tdiff/1000);
-	console.log ("              KW/h per day=" + (data.length/global.UmdrehungenProKWh) * (86400*1000)/tdiff );
-	console.log ("              KW/h per year="+ (365*data.length/global.UmdrehungenProKWh) * (86400*1000)/tdiff );
+	console.log ("              (data.length/UmdrehungenProKWh)=" + (data.length/UmdrehungenProKWh));
+	console.log ("              KW/h per day=" + (data.length/UmdrehungenProKWh) * (86400*1000)/tdiff );
+	console.log ("              KW/h per year="+ (365*data.length/UmdrehungenProKWh) * (86400*1000)/tdiff );
 
 	$('#summaryTableDivId').html($summaryTable);
 
@@ -118,8 +119,8 @@ function findFirstEntryAfterMidnight (data) {
 // kWh
 //
 function kWh(data, first, last) {
-	var t1 = data[first].timestamp,
-		t2 = data[last].timestamp,
+	var t1 = new Date(data[first].timestamp).getTime(),
+		t2 = new Date(data[last].timestamp).getTime(),
 		watt = data[last].Watt,
 		centProKWh =  global.EuroCentProKWh,
 		tdiff = t2 - t1;
