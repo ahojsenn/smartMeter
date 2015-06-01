@@ -18,14 +18,21 @@ var testmode = require("../../main/global/testmode.js");
 
 var	global = (typeof global != 'undefined' ) ? global :
 	{
-		timers: require('timers'),
+		timers: 	require('timers'),
 		eventEmitter: new (require('events').EventEmitter),
 		//          diese ^ Klammern versteh ich  nicht  ^
-		init: 	_Init,
-		log: 	function log (s) {
-					if (this.debug==true)  console.log(s);
-					return this;
-				}
+		init: 		_Init,
+		deltaT: 	function () {
+						var dt;
+						this.now = new Date().getTime();
+						dt = this.now - this.lastLogged;
+						this.lastLogged = this.now;
+						return dt
+					},
+		log: 		function log (s) {
+						if (this.debug==true)  console.log(this.deltaT() + "ms later: "+ s);
+						return this;
+					}
 	}
 
 module.exports = global;

@@ -43,8 +43,9 @@ function startWebServer() {
 				.createServer( function (request, response) {
   					parseRequestAndRespond (request, response);
 					})
-				.listen(global.serverPort,  '::');
-	global.log('Server is running at http://127.0.0.1:'+global.serverPort);
+				.listen(global.serverPort);
+//				.listen(global.serverPort,  '::');
+	console.log('Server is running at http://127.0.0.1:'+global.serverPort);
 	return app;
 }
 
@@ -53,7 +54,7 @@ function startWebServer() {
 	parse the request and construct the server response
 */
 function parseRequestAndRespond (request, response) {
-    var zip = new Zip(request, response),
+    var zip 		= new Zip(request, response),
 		fs 			= require('fs'),
 		requestPath = require('url').parse(request.url, true).pathname,
 		filter  	= getUrlParameter (request, 'filter') || '',
@@ -71,7 +72,10 @@ function parseRequestAndRespond (request, response) {
 			"getglobals"	: { func: dataBase.getGlobals() }
 		};
 
-//	global.log ("got request... req="+requestPath);
+	global.log ("got request... req="+requestPath);
+
+	request.on('end', function () { global.log ("...answered request "+ requestPath) } );
+
 	if ( map2Method[reqMethod] )
 		map2Method[reqMethod].func
 			.pipe(wrap)
@@ -84,7 +88,7 @@ function parseRequestAndRespond (request, response) {
 			.pipe(response);
 	}
 	else {// the last catch, if it comes here it aint good...
-//		global.log ('ERROR in parseRequestAndRespond, last else..., requestPath='+requestPath);
+		global.log ('ERROR in parseRequestAndRespond, last else..., requestPath='+requestPath);
         response.writeHead(500, {"Content-Type": "text/plain"});
         response.end();
 	}

@@ -2,10 +2,11 @@ var assert = require("assert"),
     global = global || require ("../../main/global/global.js").init("Test"),
     fs = require("fs"),
     TESTFILTER='ycxvyxcvxy',
-    DataBase = require ("../../main/dataBase/dataBase.js");
-    dataBase = new DataBase({"dataFileName" : global.datafilename});
+    DATAFN =  "/tmp/testDataBasexyz.txt",
+    DataBase = require ("../../main/dataBase/dataBase.js"),
+    dataBase = new DataBase({"dataFileName" : DATAFN}),
+    TESTTIMESTAMP = 1419989114000;  // sometime at 31.12.2014
 
-global.log ("in testDataBase, dataBase.ObjectID="+dataBase.ObjectID);
 
 
 /* connect to the 'dataBase' and prepare everything */
@@ -15,10 +16,10 @@ before(function(done){
   for (var i=0; i< 1500; i++) {
     dataBase
       .streamString(
-        '{"term" : "brabbel1", "Watt" : '+i+'.1, "timestamp": 1419266113000}\n'
-        +'{"term" : "'+TESTFILTER+'", "Watt" : '+i+'.2, "timestamp": 1419266113000}\n'
-        +'{"term" : "'+TESTFILTER+'", "Watt" : '+i+'.3, "timestamp": 1419266113003}\n'
-        +'{"term" : "'+TESTFILTER+'", "Watt" : '+i+'.4, "timestamp": 1419266113005}\n')
+        '{"timestamp":"2015-03-30T07:08:03.247Z", "term" : "brabbel1", "Watt" : '+i+'.1}\n'
+        +'{"timestamp":"2015-03-30T07:08:04.247Z", "term" : "'+TESTFILTER+'", "Watt" : '+i+'.2}\n'
+        +'{"timestamp":"2015-03-30T07:08:05.247Z", "term" : "'+TESTFILTER+'", "Watt" : '+i+'.3}\n'
+        +'{"timestamp":"2015-03-30T07:08:06.247Z", "term" : "'+TESTFILTER+'", "Watt" : '+i+'.4}\n')
       .pipe(dataBase.appendDB());
   }
   done();
@@ -26,8 +27,7 @@ before(function(done){
 
 
 after (function (done) {
-  dataBase.removeDB();
-  done();
+  dataBase.removeDB(done);
 })
 
 
@@ -36,7 +36,7 @@ describe ('the dataBase', function () {
   this.timeout(3542);
   /* initializes */
   it('returns the datafile name', function () {
-    assert.equal (global.datafilename, dataBase.dataFileName);
+    assert.equal (DATAFN, dataBase.dataFileName);
   })
 
 
@@ -78,6 +78,15 @@ describe ('the dataBase', function () {
       });
   })
 
+  it ('.getDataAtoms returns a stream of json objects array', function (done) {
+    var noLines = 2000;
+    dataBase
+      .getDataAtoms(noLines, TESTFILTER)
+      .on('data', function (data) { assert (IsJsonString (data)) })
+      .on('end', function () {
+        done();
+      });
+  })
 
   it ('.getXref streams a json array', function (done) {
     var result = "";
@@ -95,7 +104,7 @@ describe ('the dataBase', function () {
     var result = "";
     dataBase
       .getFirst()
-      .on('data', function (data) {result += data})
+      .on('data', function (data) {result += data })
       .on('end', function () {
         assert (IsJsonString (result));
         if (JSON.parse(result)[0].term === 'brabbel1') done();
@@ -104,7 +113,7 @@ describe ('the dataBase', function () {
 
 
   it ('.getLast streams a json array', function (done) {
-    var testData= '{"term" : "ameisegugu", "Watt" : 0.72, "timestamp": 1419266113001}\n'
+    var testData= '{"timestamp":"2015-03-30T07:09:03.247Z", "term" : "ameisegugu", "Watt" : 0.72}\n'
     var result = "";
     dataBase
     .getLast()
@@ -124,7 +133,7 @@ describe ('the dataBase', function () {
 
 
   it ('.tailDB streams a json array', function (done) {
-    var testData = '{"term" : "kaeferss", "Watt" : 0.42, "timestamp": 1419266112003}\n';
+    var testData = '{"timestamp":"2015-03-30T07:08:03.247Z", "term" : "kaeferss", "Watt" : 0.42}\n';
     dataBase
       .tailDB()
       .on('data', function (data) {
@@ -143,8 +152,8 @@ describe ('the dataBase', function () {
 
 
   it ('.appendDB() appends the database at the end', function (done) {
-    var testData= '{"term" : "blattlaus", "Watt" : 0.42, "timestamp": 1419266113001}\n'
-    var tail=require('child_process').spawn("tail", ['-f', '-n1',global.datafilename]);
+    var testData= '{"timestamp":"2015-03-30T07:08:03.247Z", "term" : "blattlaus", "Watt" : 0.42}\n'
+    var tail=require('child_process').spawn("tail", ['-f', '-n1',dataBase.dataFileName]);
     var result = "";
 
     process.on ('exit', function () {
@@ -164,6 +173,27 @@ describe ('the dataBase', function () {
     });
 
     dataBase.streamString(testData).pipe(dataBase.appendDB());
+  })
+
+  it ('has a getDaysData method that returns the data of one day', function (done) {
+    var date    = new Date (TESTTIMESTAMP),
+        startOfDay  = new Date (date.getFullYear(), date.getMonth(), date.getDate() ).toISOString(),
+        endOfDay  = new Date (date.getFullYear(), date.getMonth(), date.getDate() +1).toISOString(),
+        result    = "";
+    dataBase
+      .getDaysData (TESTTIMESTAMP)
+      .on('data', function (data) { result += data; })
+      .on('end', function () {
+        var lines = result.toString().split('\n');  // sometimes tail takes two lines at a time...
+        for (i in lines) {
+          if (lines [i] == 0) break;
+          var ts = JSON.parse(lines[i]).TESTTIMESTAMP;
+          assert (IsJsonString (lines [i]));
+          assert ( ts > startOfDay );
+          assert ( ts < endOfDay );
+          }
+        if (i>-10) done ();
+        });
   })
 });
 

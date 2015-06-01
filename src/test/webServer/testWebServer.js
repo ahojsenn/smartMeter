@@ -10,8 +10,8 @@ var assert = require("assert"),
 before(function(done){
   this.timeout(10042);
     fs.appendFile(global.datafilename,
-      '{"term" : "blipp", "Watt" : 302.2, "timestamp": 1419266113000}\n'+
-      '{"term" : "blupp", "Watt" : 302.2, "timestamp": 1419266113000}\n',
+      '{"timestamp":"2015-03-30T07:17:05.735Z", "term" : "blipp", "Watt" : 302.2}\n'+
+      '{"timestamp":"2015-03-30T07:17:06.735Z", "term" : "blupp", "Watt" : 302.2}\n',
       function(err) {
         if(err) {
          console.log(err);
@@ -52,11 +52,11 @@ describe ('the webServer', function () {
   });
 
   /* a webserver is also started on ipv6 */
-  it('should return 200 with ipv6 request', function (done) {
-    http.get('http://[::1]:'+global.serverPort+'/smartMeter/getData', function (res) {
-      done();
-    });
-  });
+//  it('should return 200 with ipv6 request', function (done) {
+//    http.get('http://[::1]:'+global.serverPort+'/smartMeter/getData', function (res) {
+//      done();
+//    });
+//  });
 
   it ('websocket broadcasts new energy value to client', function (done) {
     var
@@ -80,8 +80,8 @@ describe ('the webServer', function () {
     // the dataBase:tailDB and ultimamtively the webServer:websocket
     client.on('connect', function () {
       fs.appendFile(global.datafilename,
-            '{"term" : "bribbel", "Watt" : 342.41, "timestamp": 1419266113000}\n'+
-            '{"term" : "brubbelwebsocket", "Watt" : 342.42, "timestamp": 1419266113000}\n',
+            '{"timestamp":"2015-03-30T07:17:07.735Z", "term" : "bribbel", "Watt" : 342.41}\n'+
+            '{"timestamp":"2015-03-30T07:17:08.735Z", "term" : "brubbelwebsocket", "Watt" : 342.42}\n',
             function(err) { if(err) console.log(err); });
     });
   })

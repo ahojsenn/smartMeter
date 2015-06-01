@@ -25,6 +25,7 @@ then
 else
 	(cd $WPATH; $SERVER $SERVERPARAMS ) > /tmp/webServer.log 2>&1 &
 	echo started $SERVER $SERVERPARAMS
+	logger "started $SERVER $SERVERPARAMS"
 fi
 ;;
 
@@ -35,6 +36,7 @@ do
 	echo 'found $SERVER in process '$ps'. Now kill it...'
 	kill -9 $ps
 	echo done
+	logger "killed $SERVER"
 done
 ;;
 
@@ -45,9 +47,10 @@ $0 start
 
 'rcinstall')
     echo "installing $WPATH$RCDSERVER in /etc/init.d/."
+    logger "installing $WPATH$RCDSERVER in /etc/init.d/."
 	sudo cp $RCPATH$RCDSERVER /etc/init.d/.
     sudo update-rc.d -f $RCDSERVER remove
-	sudo update-rc.d -f $RCDSERVER defaults
+	sudo update-rc.d $RCDSERVER defaults
 ;;
 
 'Required-Stop')

@@ -56,6 +56,7 @@ case "$1" in
 	set -e
 	$remote 'sudo rm -f /tmp/data/gotResults.json'
 	$remote 'touch /tmp/smartMeterTestModeIsOn'
+#	$remote 'cd production/smartMeter/src/; mocha --recursive'
 	$remote 'cd production/smartMeter/src/; mocha test/global'
 	$remote 'cd production/smartMeter/src/; mocha test/meter'
 	$remote 'cd production/smartMeter/src/; mocha test/dataBase'
@@ -74,10 +75,15 @@ case "$1" in
     echo "starting the smartMeter and the server..."
 	$remote '(
 		sudo killall node;
-		cd production/smartMeter/src/main;
-		sudo meter/rcdSmartMeter start
-		sudo webServer/rcdSmartMeterWebServer start
+		cd production/smartMeter/;
+		sudo src/main/meter/rcdSmartMeter start
+		sudo src/main/webServer/rcdSmartMeterWebServer start
 		)'
+
+	# read the ecrontab.user file
+    echo "read the crontab..."
+	$remote 'crontab production/smartMeter/src/main/cronJobs/crontab.user'
+	$remote 'crontab -l'
 
 
 	# edit the crontab entry that limits the number of datasets...

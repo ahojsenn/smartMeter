@@ -8,6 +8,7 @@ module.exports = DataBase;
 
 var	global 	= global || require ("../../main/global/global.js").init("from DataBase");
 var Lines2JSON  = require ("./Lines2JSON.js");
+var Lines2JSONAtoms  = require ("./Lines2JSONAtoms.js");
 var XRef  		= require ("./XRef.js");
 var stream 		= require('stream');
 var util 		= require('util');
@@ -57,12 +58,29 @@ DataBase.prototype.getNoLines = function (filter) {
 }
 
 /**
+	getDataAtoms() will return Data as stream of json objects
+*/
+DataBase.prototype.getDataAtoms = function (noLines, filter) {
+	var noLines = (typeof noLines === 'undefined') ? 100000 : noLines,
+		filter  = (typeof filter === 'undefined') ? '' : filter,
+		spawn 	= require('child_process').spawn,
+		tail 	= spawn("tail", [-noLines, this.dataFileName]),
+		grep 	= spawn("grep", [filter]),
+		lines2JSONAtoms = new Lines2JSONAtoms;
+	tail.stdout
+		.pipe(grep.stdin);
+	return grep.stdout.pipe(lines2JSONAtoms);
+}
+
+/**
 	getData() will return Data as array of data objects
 	filter: a filter string to grep for
 	noLines: the number of lines to tail the data...
 */
 DataBase.prototype.getData = function (noLines, filter) {
-	var spawn 	= require('child_process').spawn,
+	var noLines = (typeof noLines === 'undefined') ? 100000 : noLines,
+		filter  = (typeof filter === 'undefined') ? '' : filter,
+		spawn 	= require('child_process').spawn,
 		tail 	= spawn("tail", [-noLines, this.dataFileName]),
 		grep 	= spawn("grep", [filter]),
 		lines2JSON = new Lines2JSON;
@@ -145,11 +163,13 @@ DataBase.prototype.streamString = function (string) {
 }
 
 // initiallize the database
-DataBase.prototype.removeDB = function() {
-	var	fs 			= require('fs');
-	var killAll 	= require('child_process').spawn("killall", ['tail']);
+DataBase.prototype.removeDB = function(cb) {
+	var	fs 			= require('fs'),
+		killAll 	= require('child_process').spawn("killall", ['tail']),
+		self 		= this;
 	fs.exists( this.dataFileName, function (exists) {
-  		if (exists) fs.unlinkSync(this.dataFileName);
+  		if (exists) fs.unlinkSync(self.dataFileName);
+		if (cb) cb();
 		});
 	killAll;
 	return this;

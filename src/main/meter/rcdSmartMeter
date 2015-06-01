@@ -24,6 +24,7 @@ then
 else
 	(cd $WPATH; node $SERVER ) > /tmp/smartMeter.log 2>&1 &
 	echo started $SERVER
+	logger "started $SERVER"
 fi
 ;;
 
@@ -33,6 +34,7 @@ for ps in `ps -ef | grep $SERVER | grep -v grep | awk '{print $2}'`
 do
 	echo 'found $SERVER in process '$ps'. Now kill it...'
 	kill -9 $ps
+	logger "killed $SERVER"
 	echo done
 done
 ;;
@@ -44,6 +46,7 @@ $0 start
 
 'rcinstall')
     echo "installing $WPATH$RCDSERVER in /etc/init.d/."
+    logger "installing $WPATH$RCDSERVER in /etc/init.d/."
 	sudo cp $RCPATH$RCDSERVER /etc/init.d/.
     sudo update-rc.d -f $RCDSERVER remove
 	sudo update-rc.d -f $RCDSERVER defaults

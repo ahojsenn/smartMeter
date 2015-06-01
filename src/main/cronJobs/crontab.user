@@ -1,0 +1,9 @@
+# ping something every minute to prevent WLAN sleep mode...
+*/1 * * * * ping -c 1 192.168.178.1
+
+# reduce the data every week
+
+
+# grep yesterdays data and put it into a file with yesterdays timestamp
+5 0 * * 0  (cd production/smartMeter/data; ds=`date -d "yesterday" +%Y-%m-%d`; grep $ds gotResults.json > data.$ds)
+

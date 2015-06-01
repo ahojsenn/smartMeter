@@ -2,7 +2,7 @@
 - hosts: smartMeter
   sudo: True
   connection: ssh # or paramiko
-  gather_facts: no  
+  gather_facts: no
   user: pi
   roles:
       - common
@@ -14,25 +14,6 @@
 
 
     - name: create production/smartMeter directory
-      file: path=/home/pi/production/smartMeter state=directory owner=pi group=pi 
-
-    - name: install the smartMeter
-      local_action: shell cd /Users/johannes.mainusch/docjoe/development/  &&
-                    rsync
-                    -avRe 'ssh -p $ansible_ssh_port -l pi' smartMeter {{ inventory_hostname }}:/home/pi/production/.
-      sudo: False
-
-    - name: set the smartMeter to +x, and start up things
-      shell: 
-             chmod +x production/smartMeter/meter/smartMeter.js &&
-             chmod +x production/smartMeter/meter/rcdSmartMeter &&
-             production/smartMeter/meter/rcdSmartMeter rcinstall &&
-             production/smartMeter/meter/rcdSmartMeter start &&
-             chmod +x production/smartMeter/webServer/rcdSmartMeterWebServer &&
-             chmod +x production/smartMeter/webServer/djserver_eenergy.js &&
-             production/smartMeter/webServer/rcdSmartMeterWebServer rcinstall
-
-    - name: reboot the servers
-      command: /sbin/reboot -t now
+      file: path=/home/pi/production/smartMeter state=directory owner=pi group=pi
 
 

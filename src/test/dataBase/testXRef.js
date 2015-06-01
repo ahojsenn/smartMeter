@@ -40,12 +40,12 @@ describe ('xRef is a stream object, and...', function () {
   })
 
   it ('cross references the things piped to it by filter', function (done) {
-    var testData  = '{"term" : "Kaefer", "Watt" : 0.42, "timestamp": 1419266112003}\n';
-        testData += '{"term" : "Meise", "Watt" : 0.42, "timestamp": 1419266112003}\n';
-        testData += '{"term" : "Wurm", "Watt" : 0.42, "timestamp": 1419266112003}\n';
-        testData += '{"term" : "Meise", "Watt" : 0.42, "timestamp": 1419266112003}\n';
-        testData += '{"term" : "Meise", "Watt" : 0.42, "timestamp": 1419266112003}\n';
-        testData += '{"term" : "Wurm", "Watt" : 0.42, "timestamp": 1419266112003}';
+    var testData  = '{"timestamp":"2015-03-30T07:08:12.247Z", "term" : "Kaefer", "Watt" : 0.42}\n';
+        testData += '{"timestamp":"2015-03-30T07:08:13.247Z", "term" : "Meise", "Watt" : 0.42}\n';
+        testData += '{"timestamp":"2015-03-30T07:08:14.247Z", "term" : "Wurm", "Watt" : 0.42}\n';
+        testData += '{"timestamp":"2015-03-30T07:08:15.247Z", "term" : "Meise", "Watt" : 0.42}\n';
+        testData += '{"timestamp":"2015-03-30T07:08:16.247Z", "term" : "Meise", "Watt" : 0.42}\n';
+        testData += '{"timestamp":"2015-03-30T07:08:17.247Z", "term" : "Wurm", "Watt" : 0.42}';
     var testData_echo  = require('child_process').spawn("echo", [testData]);
     var result = "",
         filter = "term";
