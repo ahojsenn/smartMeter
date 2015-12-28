@@ -74,7 +74,8 @@ function parseRequestAndRespond (request, response) {
 
 	global.log ("got request... req="+requestPath);
 
-	request.on('end', function () { global.log ("...answered request "+ requestPath) } );
+	// log the end of the response
+	response.on('finish', function () { global.log ("...answered request "+ requestPath) } );
 
 	if ( map2Method[reqMethod] )
 		map2Method[reqMethod].func

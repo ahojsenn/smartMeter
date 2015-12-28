@@ -40,7 +40,7 @@ describe ('the testmode object, the switch between test and production, ...', fu
 
   it ('has testmode.isSwitchedOn() false after testmode.setOff', function (done) {
     testmode.setOff ();
-    assert( testmode.isSwitchedOn() != true);
+    assert( testmode.isSwitchedOn() == false);
     done();
   })
 

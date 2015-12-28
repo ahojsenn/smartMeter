@@ -45,9 +45,9 @@ describe ('the dataBase', function () {
     var result = "";
     dataBase
       .getNoLines(filter)
-      .on('data', function (data) { result += data; })
+      .on('data', function (data) { global.log ("adsfasdfasd"+ data); result += data; })
       .on('end', function () {
-        assert (JSON.parse(result.toString())[0] >= 2);
+        assert(JSON.parse(result) == 4500) ;
         done();
       });
     })

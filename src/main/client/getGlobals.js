@@ -24,7 +24,4 @@ function getGlobals(eventName) {
 				return data;
 			}
 	});
-
-
 }
-

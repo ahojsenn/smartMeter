@@ -18,8 +18,12 @@ case "$1" in
 
 		set -e;
 		cd src;
-		mocha --recursive;
-		echo "now deleting the testdata..."
+		mocha --recursive ./test/cronJobs/;
+		mocha --recursive ./test/dataBase/;
+		mocha --recursive ./test/global/;
+		mocha --recursive ./test/meter/;
+		mocha --recursive ./test/webServer/;
+v		echo "now deleting the testdata..."
 		rm -f /tmp/data/gotResults.json
 		cd ..
    		echo "Starting local webServer and smartMeter in test mode..."

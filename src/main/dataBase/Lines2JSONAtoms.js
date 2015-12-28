@@ -4,11 +4,11 @@
 	Johannes Mainusch
 	Start: 20150416
 */
-module.exports = Lines2JSONAtoms;
+module.exports  = Lines2JSONAtoms;
 var util 		= require('util');
 var stream 		= require('stream');
 var Transform 	= stream.Transform;
-var	global 	= global || require ("../../main/global/global.js").init("from DataBase");
+var	global 	    = global || require ("../../main/global/global.js").init("from DataBase");
 
 function Lines2JSONAtoms (options) {
 	// allow use without new

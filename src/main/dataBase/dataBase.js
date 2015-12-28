@@ -61,7 +61,7 @@ DataBase.prototype.getNoLines = function (filter) {
 	getDataAtoms() will return Data as stream of json objects
 */
 DataBase.prototype.getDataAtoms = function (noLines, filter) {
-	var noLines = (typeof noLines === 'undefined') ? 100000 : noLines,
+	var noLines = (typeof noLines === 'undefined') ? 1000 : noLines,
 		filter  = (typeof filter === 'undefined') ? '' : filter,
 		spawn 	= require('child_process').spawn,
 		tail 	= spawn("tail", [-noLines, this.dataFileName]),
@@ -78,7 +78,7 @@ DataBase.prototype.getDataAtoms = function (noLines, filter) {
 	noLines: the number of lines to tail the data...
 */
 DataBase.prototype.getData = function (noLines, filter) {
-	var noLines = (typeof noLines === 'undefined') ? 100000 : noLines,
+	var noLines = (typeof noLines === 'undefined') ? 1000 : noLines,
 		filter  = (typeof filter === 'undefined') ? '' : filter,
 		spawn 	= require('child_process').spawn,
 		tail 	= spawn("tail", [-noLines, this.dataFileName]),

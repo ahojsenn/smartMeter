@@ -1,1 +1,0 @@
-*/1 * * * * (echo '{"test1" : "huhuh", "Watt" : '0.20', "timestamp": '1365102227.000'}' >> /Volumes/docdata/johannes.mainusch/mystuff/development/smartMeter/data/testData.json > dev/null 2>&1)$
