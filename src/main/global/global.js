@@ -32,7 +32,8 @@ var	global = (typeof global != 'undefined' ) ? global :
 		log: 		function log (s) {
 						if (this.debug==true)  console.log(this.deltaT() + "ms later: "+ s);
 						return this;
-					}
+					},
+		lastLogged: new Date().getTime()	
 	}
 
 module.exports = global;
