@@ -1,0 +1,1013 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"border-r",
+				"border-radius"
+			],
+			[
+				"mar",
+				"margin"
+			],
+			[
+				"li",
+				"line-height"
+			],
+			[
+				"ma",
+				"margin"
+			],
+			[
+				"let",
+				"left"
+			],
+			[
+				"co",
+				"color"
+			],
+			[
+				"wid",
+				"width"
+			],
+			[
+				"b",
+				"body	Tag"
+			],
+			[
+				"h",
+				"head	Tag"
+			],
+			[
+				"ri",
+				"right"
+			],
+			[
+				"padd",
+				"padding-left"
+			],
+			[
+				"BACK",
+				"background-image"
+			],
+			[
+				"l",
+				"li	Tag"
+			],
+			[
+				"fo",
+				"font-size"
+			],
+			[
+				"padding",
+				"padding-right"
+			],
+			[
+				"t",
+				"text"
+			],
+			[
+				"a",
+				"attr"
+			],
+			[
+				"hist",
+				"histDiv"
+			],
+			[
+				"get",
+				"getElementById"
+			],
+			[
+				"histogram",
+				"histogram2D"
+			],
+			[
+				"f",
+				"fill"
+			],
+			[
+				"His",
+				"Histogram2D"
+			],
+			[
+				"hi",
+				"histogram2D"
+			],
+			[
+				"m",
+				"mandelbrot"
+			],
+			[
+				"s",
+				"script	Tag"
+			],
+			[
+				"max",
+				"maxBrightness"
+			],
+			[
+				"la",
+				"lastLogged"
+			],
+			[
+				"is",
+				"isSwitchedOn"
+			],
+			[
+				"in",
+				"inline-block"
+			],
+			[
+				"i",
+				"img	Tag"
+			],
+			[
+				"x",
+				"xBinSize"
+			],
+			[
+				"select",
+				"selectAll"
+			],
+			[
+				"se",
+				"selectAll"
+			],
+			[
+				"cre",
+				"createArray"
+			],
+			[
+				"rgb",
+				"rgbSpeed"
+			],
+			[
+				"rg",
+				"rgbRange"
+			],
+			[
+				"g",
+				"get	Get Elements"
+			],
+			[
+				"bi",
+				"binSize"
+			],
+			[
+				"bin",
+				"binNr"
+			],
+			[
+				"fi",
+				"findBin"
+			],
+			[
+				"ci",
+				"cirlces"
+			],
+			[
+				"new",
+				"newScript"
+			],
+			[
+				"pa",
+				"page_load_time"
+			],
+			[
+				"on",
+				"onclick	Attr"
+			],
+			[
+				"backg",
+				"background"
+			],
+			[
+				"font",
+				"font-size"
+			],
+			[
+				"text",
+				"text-align"
+			],
+			[
+				"margin",
+				"margin-top"
+			],
+			[
+				"bo",
+				"bottom"
+			],
+			[
+				"back",
+				"background-color"
+			],
+			[
+				"backgrou",
+				"background"
+			],
+			[
+				"if",
+				"iframe	Tag"
+			],
+			[
+				"mo",
+				"monospace"
+			],
+			[
+				"pl",
+				"plotHistogram2D"
+			],
+			[
+				"wit",
+				"width"
+			],
+			[
+				"fill",
+				"fillArray"
+			],
+			[
+				"n",
+				"nbins"
+			],
+			[
+				"c",
+				"createArray"
+			],
+			[
+				"D",
+				"DIM"
+			],
+			[
+				"pro",
+				"projection"
+			],
+			[
+				"nb",
+				"nbins"
+			],
+			[
+				"o",
+				"opera"
+			],
+			[
+				"font-",
+				"font-weight"
+			],
+			[
+				"wi",
+				"width"
+			],
+			[
+				"te",
+				"text-align"
+			],
+			[
+				"fon",
+				"font-size"
+			],
+			[
+				"ba",
+				"background-color"
+			],
+			[
+				"tm",
+				"tmpData"
+			],
+			[
+				"xM",
+				"xMax"
+			],
+			[
+				"Hi",
+				"Histogram1D"
+			],
+			[
+				"data",
+				"generateData"
+			],
+			[
+				"y",
+				"yMax"
+			],
+			[
+				"width",
+				"widthElt"
+			],
+			[
+				"nYea",
+				"nYears-value"
+			],
+			[
+				"lambda",
+				"nLambda"
+			],
+			[
+				"bord",
+				"border-width"
+			],
+			[
+				"d",
+				"div	Tag"
+			],
+			[
+				"le",
+				"left"
+			],
+			[
+				"bar",
+				"barWidth"
+			],
+			[
+				"ta",
+				"target	Attr"
+			],
+			[
+				"H",
+				"H1	Tag"
+			],
+			[
+				"u",
+				"ul	Tag"
+			],
+			[
+				"border-s",
+				"border-spacing"
+			],
+			[
+				"bor",
+				"border"
+			],
+			[
+				"ali",
+				"text-align"
+			],
+			[
+				"br",
+				"br"
+			],
+			[
+				"st",
+				"style	Tag"
+			],
+			[
+				"_",
+				"_first"
+			],
+			[
+				"lines",
+				"noLines"
+			],
+			[
+				"gr",
+				"groupBy"
+			],
+			[
+				"summa",
+				"Summarizer"
+			],
+			[
+				"request",
+				"requestPath"
+			],
+			[
+				"da",
+				"dataBase"
+			],
+			[
+				"to",
+				"toISOString"
+			],
+			[
+				"requ",
+				"request"
+			],
+			[
+				"dta",
+				"dataTank"
+			],
+			[
+				"sd",
+				"stdout"
+			],
+			[
+				"call",
+				"callback"
+			],
+			[
+				"log",
+				"logObjectID"
+			],
+			[
+				"testD",
+				"testDataBase"
+			],
+			[
+				"tai",
+				"tailStream"
+			],
+			[
+				"tail",
+				"tailDB"
+			],
+			[
+				"test",
+				"testData"
+			],
+			[
+				"res",
+				"responseData"
+			],
+			[
+				"remo",
+				"removeDB"
+			],
+			[
+				"lin",
+				"Lines2JSON"
+			],
+			[
+				"web",
+				"websocket"
+			],
+			[
+				"Ob",
+				"ObjectID"
+			],
+			[
+				"line",
+				"lineArray"
+			],
+			[
+				"read",
+				"readStream"
+			],
+			[
+				"Str",
+				"StreamNoLines"
+			],
+			[
+				"strea",
+				"streamNoLines"
+			],
+			[
+				"Data",
+				"DataBase"
+			],
+			[
+				"myM",
+				"myModGzip"
+			],
+			[
+				"ca",
+				"callback"
+			],
+			[
+				"callback",
+				"wrapWithCallback"
+			],
+			[
+				"meas",
+				"measurements"
+			],
+			[
+				"no",
+				"noLines"
+			],
+			[
+				"Filter",
+				"filter"
+			],
+			[
+				"std",
+				"stdout"
+			],
+			[
+				"gp",
+				"gpioInputPin"
+			],
+			[
+				"de",
+				"defineSetupCommands"
+			],
+			[
+				"file",
+				"filename"
+			],
+			[
+				"time",
+				"timestamp"
+			],
+			[
+				"ent",
+				"entryNumber"
+			],
+			[
+				"mou",
+				"mouseDown"
+			],
+			[
+				"Ener",
+				"EnergyObject"
+			],
+			[
+				"start",
+				"startWebServer"
+			]
+		]
+	},
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 167.0,
+		"last_filter": "install",
+		"selected_items":
+		[
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"instell",
+				"Trailing Spaces: Toggle Trailing Spaces Highlighting"
+			],
+			[
+				"Package Control:",
+				"Package Control: List Packages"
+			],
+			[
+				"",
+				"Build With: opera"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
+			],
+			[
+				"packa",
+				"Package Control: Install Package"
+			],
+			[
+				"PAck",
+				"Package Control: Add Repository"
+			]
+		],
+		"width": 476.0
+	},
+	"console":
+	{
+		"height": 153.0,
+		"history":
+		[
+			"install",
+			"clear",
+			"jsl",
+			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404' + 'e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/_GermanTestingDays/Abstract_Chaos&QA.txt",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/_GermanTestingDays/test.txt",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/_GermanTestingDays/del.me",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Praesentationen/_impress-presentations/_Freiheit/20160204-Freiheit.html",
+		"/Users/docjoe/Library/Application Support/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/_SIGS DATACOM/ObjectSpektrum/i#nterview-SaschaLobo/Fragen für das Interview mit Sascha Lobo:",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/_SIGS DATACOM/ObjectSpektrum/Interview-GunterDueck/Interview mit Gunter Dueck am 4.2.2016 vor seiner",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/_SIGS DATACOM/ObjectSpektrum/OS_Reviews/Interview-GunterDueck.txt",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Praesentationen/_impress-presentations/_Freiheit/css/docjoe2016.css",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Praesentationen/_impress-presentations/_ManageChaos/chaos-v02offlineNotext.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/content/profile/profile-AnkeNehrenberg.md",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Praesentationen/z_oldstuff/2014-Y/abstract_Y-code.txt",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Praesentationen/_impress-presentations/_Performance/css/docjoe2016.css",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Praesentationen/_impress-presentations/_Freiheit/20160204-Freiheit-TAE.html",
+		"/Users/docjoe/Library/Application Support/Sublime Text 3/Packages/Default/Default (OSX).sublime-keymap",
+		"/Users/docjoe/Library/Application Support/Sublime Text 3/Packages/User/Package Control.sublime-settings",
+		"/Users/docjoe/Library/Application Support/Sublime Text 3/Packages/Package Control/Package Control.sublime-settings",
+		"/Users/docjoe/Library/Application Support/Sublime Text 3/Packages/SublimeLinter/Default (OSX).sublime-keymap",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_Performance/css/docjoe02.css",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_Performance/20151126-Performance.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_Freiheit/20160204-Freiheit-TAE.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/content/naming.md",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/themes/blueprint/static/css/blueprint.css",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/themes/blueprint/layouts/_default/single.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/data/_blueprint-NAmenswettbewerb.txt",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_Freiheit/questions.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_Freiheit/LoveChangeLeave.basic",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_FreiheitLaehmt/deploy",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_FreiheitLähmt/img/QR-TaE-Freiheit.png",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_FreiheitLähmt/20160204-Freiheit-TAE.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/_VW/2016/2016-Otto-Besuch-Planung",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/20160126_OOP/Zu viel Freiehit lähmt, get real, 360°agil",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/makefile",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/content/post/JeffBezos-zitat.md",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/themes/blueprint/layouts/_default/list.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/themes/blueprint/layouts/_default/inspiration.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/content/product.md",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/content/inspiration.md",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/_SIGS DATACOM/ObjectSpektrum/OS_Reviews/20151129-DorlKirsch-Projektron-JM.txt",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/content/impressum.md",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/content/profile/profile-RalfWirdemann.md",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/content/profile/profile-JohannesMainusch.md",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/layouts/profile/single.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/layouts/section/profile.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/content/charta.md",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/config.toml",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/content/references.md",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/content/werte.md",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/mandelbrot.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/chaos-bifurkation-v02.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/js/test-histogram2D.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/jasmine/lib/jasmine-2.3.4/jasmine.js",
+		"/Users/docjoe/Documents/Protosync/mystuff/development/smartMeter/src/test/cronJobs/testSummarizer.js",
+		"/Users/docjoe/Documents/Protosync/mystuff/development/smartMeter/src/test/dataBase/testDataBase.js",
+		"/Users/docjoe/Documents/Protosync/mystuff/development/smartMeter/testmode",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/static/js/snowflakes.js",
+		"/Users/docjoe/Documents/Protosync/mystuff/Dokumente/_Feiern/2015Weihnachten/20151225-Weihnachtsrätzel-Joni -obfuscated.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/css/simple.css",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/layouts/profile/profile.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/content/profiles/profile-JohannesMainusch.md",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/layouts/profile/list.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/layouts/profiles/single.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/layouts/profiles/list.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/js/histogram2D.js",
+		"/Users/docjoe/Documents/Protosync/mystuff/_DATEV/20151218-Gespräch mit Herrn Kolleberg",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/_n@work/20151214-Vorbereitung",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/_Fink/Fink.txt",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/_Fink/20151214-Notiz",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/themes/blueprint/layouts/partials/footer.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/themes/blueprint/layouts/partials/navi.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/content/about.md",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/themes/blueprint/blueprint_theme/layouts/partials/navi.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/themes/blueprint/blueprint_theme/static/css/blueprint.css",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/content/profiles/profile-RalfWirdemann.md",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/content/post/TEDtalk-superchicken.md",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/themes/blueprint/archetypes/default.md",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/themes/blueprint/layouts/_default/references.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/themes/blueprint/layouts/index.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/themes/blueprint/layouts/post/list.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/themes/blueprint/layouts/post/single.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/themes/blueprint/layouts/inspiration.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/content/post/second.md",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/themes/blueprint/layouts/post/index.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/archetypes/profile.md",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/layouts/references.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/layouts/erfahrung.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/themes/blueprint/layouts/partials/head.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/layouts/profile.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/themes/blueprint/layouts/404.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/themes/hyde/layouts/index.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/test.me/index.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/content/profile-JohannesMainusch.md",
+		"/Users/docjoe/Documents/Protosync/mystuff/Dokumente/_Verträge/Congstar/20151202-Congstar01.txt",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/__blueprint/.gitignore",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_Performance/Performance.txt",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/_VW/DUNS: Nummer",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Joli/20151118-BriefPostbank.txt",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/chaos-bifurkation.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/20151113-Management.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/chaos-v02offlineNotext.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/20151114-JolisGeburtstag.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/css/docjoe03.css",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/js/histogram1D.js",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/js/test-histogram1D.html",
+		"/Users/docjoe/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/css/docjoe02.css",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/shownotes.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/chaos-v01.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/chaos-v02offline.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/css/docjoe.css",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/_SIGS DATACOM/ObjectSpektrum/OS_Reviews/20151202-Leagile-IT-Management-JM.txt",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/20151021-Management.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/2D-testChaos.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/development/myDashboard/moni.js",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/chaos-v02.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/_stayfriends/Angebotsrahmen für Stayfriends",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/chaos02.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/chaos.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/20150930-CodeTalks/Abstract_Chaos.txt",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_FreiheitLähmt/abstract.txt",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/_SIGS DATACOM/ObjectSpektrum/OS_Reviews/20151009_IoT-Hanna-JM.txt",
+		"/Users/docjoe/Documents/Protosync/mystuff/_Kunden/_SIGS DATACOM/ObjectSpektrum/OS_Reviews/20151009_IoT-HAnna-JM.txt",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/20150929-WegeAusDemChaos.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/Dokumente/_blueprint/_blueprint-TrueNorth",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/20151007-WegeAusDemChaos.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/WegeAusDemChaos.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/Y-manage-20150508.html",
+		"/Users/docjoe/Documents/Protosync/mystuff/Konferenzen&Präsentationen/_impress-presentations/_ManageChaos/OptimalTeamSize.xlsx"
+	],
+	"find":
+	{
+		"height": 26.0
+	},
+	"find_in_files":
+	{
+		"height": 93.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"lang",
+			"persue",
+			"opacity",
+			".bottom",
+			"margin-top",
+			"height=\"700\"",
+			"height=\"600\"",
+			" slide",
+			"\"step",
+			"\n    ",
+			"position: a",
+			"bottom",
+			"red",
+			"bottom",
+			"sublime.log_commands(True)\nsublime.log_input(True)",
+			"blink",
+			"bott",
+			"bottom",
+			"backg",
+			"radio",
+			"white",
+			"print",
+			"background-color",
+			"label love",
+			"left",
+			"table",
+			"tr",
+			"h1",
+			"bottom",
+			"netflix",
+			"font-fa",
+			"QR",
+			"url",
+			"Freieit",
+			"background-i",
+			"background-",
+			"background-im",
+			"background-u",
+			"qr",
+			"qrco",
+			"\n                ",
+			"image",
+			"slide",
+			"transform",
+			"color",
+			"backg",
+			"**",
+			"**<br>",
+			"content",
+			"post",
+			"h4",
+			"name",
+			"helfen",
+			"text",
+			"Histogram2",
+			"xMin",
+			"fill",
+			"path",
+			"domain",
+			"var",
+			"console",
+			".fill",
+			"assert",
+			"block",
+			"color",
+			"opaci",
+			"img",
+			"opacity",
+			"select",
+			"data",
+			"( [6.2, 8.4] );\n		data.push ( [8.2, 2.4] );",
+			"/*",
+			"binSize",
+			"rect",
+			"bar",
+			"rectSize",
+			"bar",
+			"font-si",
+			"img",
+			"size",
+			"left",
+			"radi",
+			"navi",
+			"100%",
+			"img",
+			"big",
+			"img",
+			"big",
+			"opaci",
+			"container",
+			"content",
+			"content con",
+			"site",
+			":00",
+			"performace",
+			"color",
+			"opacity",
+			"opaci",
+			"color",
+			"monospace",
+			"font",
+			"NDIM",
+			"flipcharticon",
+			"03",
+			"height",
+			"min-height",
+			"[i]",
+			"2D",
+			"1D",
+			"xMin",
+			"data-y=\"4000\"",
+			"data-y=\"3200\"",
+			"data-y=\"3600\"",
+			"data-y=\"2400\"",
+			"data-y=\"1600\"",
+			"overview",
+			"circle",
+			"table",
+			"size",
+			"barHei",
+			"position",
+			"h1",
+			"slide",
+			"histogram",
+			"{\n",
+			"barHei",
+			"chart",
+			"  .chart "
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+			"class=\"size700x1120\" ",
+			"height=\"700\"",
+			"",
+			"\"step slide",
+			"label freiheit",
+			"#### ",
+			"",
+			"[dim]",
+			"data-y=\"3200\"",
+			"data-y=\"2400\"",
+			"data-y=\"1600\"",
+			"data-y=\"800\"",
+			"",
+			"    <!--div class=\"owner\">Johannes</div-->",
+			"    <!--div class=\"owner\">Anja</div-->",
+			"    <!--div class=\"owner\">Johannes</div--!>",
+			"$remote",
+			"ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER",
+			"dataBase",
+			"renderDataInTable",
+			"renderTable",
+			"noLines",
+			"readFromGPIO",
+			"gpioInputPin",
+			"execInShell",
+			"nrOfLines",
+			"EnergyObject",
+			"getGlobals",
+			"global.serverPort",
+			"global.url",
+			"global.serverPort",
+			"global.url",
+			"global.serverPort",
+			"global.url",
+			"eventEmitter",
+			"globalParameters",
+			"OBJREF",
+			"global.url",
+			"parseRequestAndRespond",
+			"htmlSnipplet",
+			"OBJREF",
+			"startReader",
+			"global.log",
+			"smr.log",
+			"\""
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"incremental_find":
+	{
+		"height": 26.0
+	},
+	"input":
+	{
+		"height": 35.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 47.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.unsaved_changes":
+	{
+		"height": 134.0
+	},
+	"pinned_build_system": "Packages/User/opera.sublime-build",
+	"replace":
+	{
+		"height": 48.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"20151126-Performance.html"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 392.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"blueprint-home:"
+			]
+		],
+		"width": 392.0
+	},
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": false,
+	"side_bar_visible": true,
+	"side_bar_width": 250.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

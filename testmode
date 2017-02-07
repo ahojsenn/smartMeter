@@ -23,13 +23,14 @@ case "$1" in
 		mocha --recursive ./test/global/;
 		mocha --recursive ./test/meter/;
 		mocha --recursive ./test/webServer/;
-v		echo "now deleting the testdata..."
+		echo "now deleting the testdata..."
 		rm -f /tmp/data/gotResults.json
 		cd ..
    		echo "Starting local webServer and smartMeter in test mode..."
 		./src/main/webServer/webServer.js > /tmp/webServer.log 2>&1 &
 		./src/main/meter/smartMeter.js  > /tmp/smartMeter.log 2>&1 &
 		./src/main/meter/smartMeterSimulator.js  > /tmp/smartMeterSimulator.log 2>&1 &
+		echo "now try http://localhost:42080/smartMeter/client/index.html"
 		exit 0
 	;;
 
