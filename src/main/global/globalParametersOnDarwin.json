@@ -31,7 +31,7 @@
 					],
 
 	"debug": true,
-	"srcPath": "/Users/docjoe/mystuff/development/smartMeter/src/",
+	"srcPath": "/Users/docjoe/dev/smartMeter/src/",
 	"datafilename": "/tmp/data/gotResults.json",
 	"accumulatedDataFileName": "/tmp/data/accumulatedData.json",
 

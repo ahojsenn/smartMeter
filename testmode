@@ -30,7 +30,7 @@ case "$1" in
 		./src/main/webServer/webServer.js > /tmp/webServer.log 2>&1 &
 		./src/main/meter/smartMeter.js  > /tmp/smartMeter.log 2>&1 &
 		./src/main/meter/smartMeterSimulator.js  > /tmp/smartMeterSimulator.log 2>&1 &
-		echo "now try http://localhost:42080/smartMeter/client/index.html"
+		echo "now try http://localhost:42080/smartMeter/client/index-localhost.html"
 		exit 0
 	;;
 

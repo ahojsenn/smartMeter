@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "latest": "^0.2.0",
+    "socket.io": "^4.7.2"
+  }
+}

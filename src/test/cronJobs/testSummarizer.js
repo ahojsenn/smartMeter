@@ -74,7 +74,7 @@ describe ('the Summarizer', function () {
                 global.log ("got data chunk in summarizer: " + chunk);
             })
             .on('end',  function () {
-                global.log ("data before jsonparsing: \n" + data);
+                global.log ("data before json_parsing: \n" + data);
                 data = JSON.parse(data);
                 global.log ("first:" +  data.first + " last: " + data.last);
                 assert (data.first === TESTTIMESTAMP);

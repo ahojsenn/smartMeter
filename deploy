@@ -3,17 +3,23 @@
 # deployment of $1 to pi@192.168.2.42:production/. and remote execution...
 #
 
-TARGETSERVER=192.168.178.23
-TARGET_SSH_PORT=22
+TARGETSERVER=krukas.dyn.amicdns.de
+TARGET_SSH_PORT=42022
+TARGET_USER=pi
+
 
 case "$#" in
+  0)
+    TARGETSERVER=$TARGETSERVER
+		TARGET_SSH_PORT=$TARGET_SSH_PORT
+    ;;
 	1)
-    	TARGETSERVER=$1
-		TARGET_SSH_PORT=22
+    TARGETSERVER=$1
+		TARGET_SSH_PORT=$TARGET_SSH_PORT
 	;;
 
 	2)
-	    TARGETSERVER=$1
+	  TARGETSERVER=$1
 		TARGET_SSH_PORT=$2
 	;;
 	*)
@@ -22,7 +28,23 @@ case "$#" in
 esac
 
 clear
-remote="ssh -p $TARGET_SSH_PORT pi@$TARGETSERVER"
+remote="ssh -p$TARGET_SSH_PORT $TARGET_USER@$TARGETSERVER"
+$remote 'mocha="./node_modules/.bin/mocha"'
+
+
+echo testing ssh connection
+if $remote ls; [ $? -eq 255 ]
+then 
+  echo "SSH connection failed"
+fi
+
+echo "checking, if $TARGET_USER has sudo rights..."
+$remote 'sudo echo "sudo rights are ok"'
+if [ $? -ne 0 ]
+then
+  echo "sudo rights are not ok"
+  exit 1
+fi
 
 case "$1" in
 
@@ -32,15 +54,15 @@ case "$1" in
 	;;
 
 	'-deploy2pi' | * )
-	echo "I will now try to deploy to pi@"$TARGETSERVER:$TARGET_SSH_PORT
+	echo "I will now try to deploy to $TARGET_USER@"$TARGETSERVER:$TARGET_SSH_PORT
 	$remote 'uptime'
 
 
 	# copy the files to the pi
 	$remote 'mkdir -p production/smartMeter';
-	rsync --exclude ".git" -R -ave 'ssh -p '$TARGET_SSH_PORT . pi@$TARGETSERVER:production/smartMeter/.
+	rsync --exclude ".git" -R -ave 'ssh -p '$TARGET_SSH_PORT . $TARGET_USER@$TARGETSERVER:production/smartMeter/.
 #	$remote 'mkdir -p public_html/smartMeter';
-#	rsync -R -ave 'ssh -p '$TARGET_SSH_PORT src/main/client pi@$TARGETSERVER:public_html/smartMeter/.
+#	rsync -R -ave 'ssh -p '$TARGET_SSH_PORT src/main/client $TARGET_USER@$TARGETSERVER:public_html/smartMeter/.
 
 
 	# the smartMeter
@@ -57,18 +79,18 @@ case "$1" in
 	$remote 'sudo rm -f /tmp/data/gotResults.json'
 	$remote 'touch /tmp/smartMeterTestModeIsOn'
 #	$remote 'cd production/smartMeter/src/; mocha --recursive'
-	$remote 'cd production/smartMeter/src/; mocha test/global'
-	$remote 'cd production/smartMeter/src/; mocha test/meter'
-	$remote 'cd production/smartMeter/src/; mocha test/dataBase'
-	$remote 'cd production/smartMeter/src/; mocha test/webServer'
+	$remote './node_modules/.bin/mocha production/smartMeter/src/test/global'
+	$remote './node_modules/.bin/mocha production/smartMeter/src/test/meter --exit'
+	$remote './node_modules/.bin/mocha production/smartMeter/src/test/dataBase'
+	$remote './node_modules/.bin/mocha production/smartMeter/src/test/webServer --exit'
 	# and removing the /tmp/smartMeterTestModeIsOn if necessary
 	$remote 'sudo rm -f /tmp/smartMeterTestModeIsOn'
 
 	# install the server
-    echo "installing the smartMeter bootstrap"
+  echo "installing the smartMeter bootstrap"
 	$remote 'sudo production/smartMeter/src/main/meter/rcdSmartMeter rcinstall'
 	echo "rcinstall the server bootstrap..."
-	$remote 'sudo production/smartMeter/src/main/webServer/rcdSmartMeterWebServer rcinstall'
+	$remote ' '
 
 
 	# start the smartMeter and the server

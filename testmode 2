@@ -1,0 +1,46 @@
+#!/bin/bash
+#
+clear
+
+case "$#" in
+	0 )
+		echo "usage: testmode [start | stop]"
+		echo "    or testmode [on | off]"
+	;;
+esac
+
+
+case "$1" in
+	'start' | 'on')
+		echo killing all node procs
+		killall node
+		rm -f /tmp/data/gotResults.json
+
+		set -e;
+		cd src;
+		mocha --recursive ./test/cronJobs/;
+		mocha --recursive ./test/dataBase/;
+		mocha --recursive ./test/global/;
+		mocha --recursive ./test/meter/;
+		# mocha --recursive ./test/webServer/;
+		echo "now deleting the testdata..."
+		rm -f /tmp/data/gotResults.json
+		cd ..
+   		echo "Starting local webServer and smartMeter in test mode..."
+		./src/main/webServer/webServer.js > /tmp/webServer.log 2>&1 &
+		./src/main/meter/smartMeter.js  > /tmp/smartMeter.log 2>&1 &
+		./src/main/meter/smartMeterSimulator.js  > /tmp/smartMeterSimulator.log 2>&1 &
+		echo "now try http://localhost:42080/smartMeter/client/index-localhost.html"
+    sleep 2
+   # open "http://localhost:42080/smartMeter/client/index-localhost.html"
+		exit 0
+	;;
+
+	'stop' | 'off' )
+		clear
+		echo killing all node procs
+		killall -SIGHUP node
+		killall tail
+		exit 0
+	;;
+esac

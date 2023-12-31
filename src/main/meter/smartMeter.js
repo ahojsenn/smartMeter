@@ -71,7 +71,7 @@ smartMeter.prototype.readFromGPIO = function () {
 		if (objref.lastValue+0 != inputValue+0 ) {
 			var moment = require('moment'),
 				now 	= moment(),
-				nowISO	= moment().format(),
+				nowISO	= moment().format("YYYY-MM-DDTHH:mm:ss.SSSSZ"),
 				watts 	= 0,
 				message	= '{';
 
@@ -81,6 +81,7 @@ smartMeter.prototype.readFromGPIO = function () {
 //			global.log ("in readFromGPIO, observed pin flip..., watts="+watts+", "+now +", "+objref.secondLastTimestamp);
 			global.log ("in readFromGPIO, nowISO="+nowISO);
 			message += '"timestamp":' +'"'+nowISO+'"';
+      // message += ', "now":' +'"'+now+'"';
 			message += ', "term":"'+global.location+'.'+ objref.gpioIdentifier+'"';
 			message += ', "Watt":'+watts;
 			message += '}';

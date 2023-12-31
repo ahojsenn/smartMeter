@@ -45,10 +45,12 @@
 
 	var global = getGlobals("gotGlobalData"),
 		dataFilter = localStorage.getItem("dataFilter");
+    console.log("index-localhost.html: dataFilter="+dataFilter);
 
 	$('body').append('<div id=dataSelectorId></div>');
 	$('body').append('<div id=summaryTableDivId></div>');
 	$('body').append('<div id=meterPlotDivId></div>');
+  console.log("index-localhost.html: ... appended body");
 
 
 	// wait, until the global data is read (event )
